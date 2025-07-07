@@ -1,7 +1,15 @@
 import Fastify, { type FastifyPluginAsync } from "fastify";
+import { World } from "./simulation/world";
+
+// Test world
+const world = new World(100, 100);
+
+world.addAnt({ x: 50, y: 50 });
+world.addAnt({ x: 51, y: 50 });
+world.addAnt({ x: 49, y: 50 });
 
 const app: FastifyPluginAsync = async (fastify, _opts): Promise<void> => {
-  fastify.get("/", async (_request, _reply) => ({ hello: "world" }));
+  fastify.get("/", async (_request, _reply) => world);
 };
 
 export default app;
