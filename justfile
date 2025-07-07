@@ -1,10 +1,25 @@
 set export
 set dotenv-load := true
 
-# Default recipe to list all available recipes
-_default:
+# Default command, runs when no arguments are given
+default:
     @just --list
 
-# Install application dependencies
-init:
-    pnpm install
+# Starts the development server with watch mode
+dev:
+    pnpm --filter @formicary/api dev
+
+# Builds the application for production
+build:
+    pnpm --filter @formicary/api build
+
+# Starts the production build
+start:
+    pnpm --filter @formicary/api start
+
+# Run linting and fix issues
+tidy:
+    pnpm run tidy
+
+tidy-check:
+    pnpm run tidy:check

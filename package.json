@@ -1,0 +1,13 @@
+{
+  "name": "formicary",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "tidy": "biome check --write .",
+    "tidy:check": "biome check"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "^2.0.6",
+    "typescript": "^5.4.5"
+  }
+}
