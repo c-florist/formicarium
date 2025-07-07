@@ -10,7 +10,8 @@ export const PHEROMONE_TYPES = {
   TO_HOME: "to_home",
 } as const;
 
-export type PheromoneType = (typeof PHEROMONE_TYPES)[keyof typeof PHEROMONE_TYPES];
+export type PheromoneType =
+  (typeof PHEROMONE_TYPES)[keyof typeof PHEROMONE_TYPES];
 
 export type Pheromone = {
   position: Position;
@@ -52,4 +53,4 @@ export class World {
     this.food.push(newFood);
     return newFood;
   }
-} 
+}
