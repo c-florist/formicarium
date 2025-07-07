@@ -21,5 +21,6 @@ start:
 tidy:
     pnpm run tidy
 
+# Run linting and check issues
 tidy-check:
     pnpm run tidy:check
