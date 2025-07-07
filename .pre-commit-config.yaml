@@ -1,0 +1,14 @@
+repos:
+  - repo: local
+    hooks:
+      - id: tidy-api
+        name: 'Tidy API'
+        language: system
+        entry: pnpm run tidy
+        files: ^apps/api/
+
+      - id: typecheck-api
+        name: 'Typecheck API'
+        language: system
+        entry: pnpm --filter @formicary/api run typecheck
+        pass_filenames: false
