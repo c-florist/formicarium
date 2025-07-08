@@ -1,6 +1,10 @@
 export type Position = {
-  x: number;
-  y: number;
+  readonly x: number;
+  readonly y: number;
+};
+
+export type Nest = {
+  readonly position: Position;
 };
 
 export const ANT_STATES = {
@@ -11,7 +15,7 @@ export const ANT_STATES = {
 export type AntState = (typeof ANT_STATES)[keyof typeof ANT_STATES];
 
 export type FoodSource = {
-  position: Position;
+  readonly position: Position;
   amount: number;
 };
 
@@ -24,7 +28,7 @@ export type PheromoneType =
   (typeof PHEROMONE_TYPES)[keyof typeof PHEROMONE_TYPES];
 
 export type Pheromone = {
-  position: Position;
+  readonly position: Position;
   intensity: number;
-  type: PheromoneType;
+  readonly type: PheromoneType;
 };
