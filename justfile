@@ -28,3 +28,8 @@ tidy:
 # Run linting and check issues
 tidy-check:
     pnpm run tidy:check
+
+# Run type checking
+typecheck:
+    @echo "Type checking API ..."
+    pnpm --filter @formicarium/api typecheck

@@ -1,4 +1,5 @@
 import { randomUUID } from "node:crypto";
+import { ANT_STATES, type AntState } from "./ant";
 
 import type { SimulationEvent } from "./events";
 
@@ -6,13 +7,6 @@ export type Position = {
   x: number;
   y: number;
 };
-
-export const ANT_STATES = {
-  FORAGING: "FORAGING",
-  RETURNING_TO_NEST: "RETURNING_TO_NEST",
-} as const;
-
-export type AntState = (typeof ANT_STATES)[keyof typeof ANT_STATES];
 
 export class AntActor {
   readonly id: string;

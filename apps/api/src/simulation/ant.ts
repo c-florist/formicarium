@@ -1,6 +1,6 @@
 const ANT_STATES = {
   FORAGING: "FORAGING",
-  CARRYING: "CARRYING",
+  RETURNING_TO_NEST: "RETURNING_TO_NEST",
 } as const;
 
 export type AntState = (typeof ANT_STATES)[keyof typeof ANT_STATES];
