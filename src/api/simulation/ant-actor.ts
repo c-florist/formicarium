@@ -51,8 +51,8 @@ export class AntActor {
       if (!nearestFood) {
         // If there's no food, wander randomly
         this.position = {
-          x: this.position.x + Math.floor(Math.random() * 3) - 1,
-          y: this.position.y + Math.floor(Math.random() * 3) - 1,
+          x: this.position.x + (Math.floor(Math.random() * 3) - 1),
+          y: this.position.y + (Math.floor(Math.random() * 3) - 1),
         };
         return;
       }
