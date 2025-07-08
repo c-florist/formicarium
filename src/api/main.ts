@@ -1,5 +1,5 @@
-import Fastify from "fastify";
 import websocket from "@fastify/websocket";
+import Fastify from "fastify";
 import { base, world } from "./plugins";
 
 async function main() {
