@@ -12,7 +12,8 @@
     }
   },
   "scripts": {
-    "build": "tsc --emitDeclarationOnly",
+    "build": "tsc",
+    "check": "tsc --emitDeclarationOnly",
     "dev": "tsc --watch",
     "test:unit": "vitest run",
     "test:unit:watch": "vitest watch"

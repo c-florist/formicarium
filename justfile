@@ -10,8 +10,12 @@ init:
     pnpm install
 
 # Starts the development server with watch mode
-dev:
+dev-api:
     pnpm dev:api
+
+# Starts the development server with watch mode
+dev-web:
+    pnpm dev:web
 
 # Builds the application for production
 build:
