@@ -1,6 +1,6 @@
 export type Position = {
-  readonly x: number;
-  readonly y: number;
+  x: number;
+  y: number;
 };
 
 export type Nest = {
@@ -28,7 +28,7 @@ export type PheromoneType =
   (typeof PHEROMONE_TYPES)[keyof typeof PHEROMONE_TYPES];
 
 export type Pheromone = {
-  readonly position: Position;
+  position: Position;
   intensity: number;
-  readonly type: PheromoneType;
+  type: PheromoneType;
 };
