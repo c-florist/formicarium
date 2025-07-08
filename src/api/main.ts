@@ -1,20 +1,26 @@
-import { createServer } from "./http/server";
-import { Simulation } from "./simulation/simulation";
-
-const simulation = new Simulation();
-simulation.start();
-
-// Create a couple of ants for starting state
-simulation.createAnt({ x: 50, y: 50 });
-simulation.createAnt({ x: 52, y: 52 });
-
-const server = await createServer(simulation);
+import Fastify from "fastify";
+import websocket from "@fastify/websocket";
+import { base, world } from "./plugins";
 
 async function main() {
+  const fastify = Fastify({
+    logger: {
+      transport: {
+        target: "pino-pretty",
+      },
+    },
+  });
+
+  await fastify.register(websocket);
+
+  fastify.register(base);
+  fastify.register(world);
+
   try {
-    await server.listen({ port: 3000 });
-  } catch (err) {
-    server.log.error(err);
+    await fastify.listen({ port: 3000 });
+    console.log("Server listening on port 3000");
+  } catch (error) {
+    fastify.log.error(error);
     process.exit(1);
   }
 }
