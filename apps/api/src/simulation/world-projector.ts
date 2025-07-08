@@ -1,5 +1,5 @@
 import { Ant } from "./ant";
-import { ANT_CREATED, type SimulationEvent } from "./events";
+import { ANT_EVENT_TYPES, type SimulationEvent } from "./events";
 import { World } from "./world";
 
 /**
@@ -13,10 +13,18 @@ export function projectWorld(events: SimulationEvent[]) {
 
   for (const event of events) {
     switch (event.type) {
-      case ANT_CREATED: {
+      case ANT_EVENT_TYPES.CREATED: {
         const { id, position } = event.payload;
         const ant = new Ant(id, position);
         world.ants.set(ant.id, ant);
+        break;
+      }
+      case ANT_EVENT_TYPES.MOVED: {
+        const { id, position } = event.payload;
+        const ant = world.ants.get(id);
+        if (ant) {
+          ant.position = position;
+        }
         break;
       }
     }

@@ -1,7 +1,7 @@
-import type { Position } from "./ant-actor";
+import type { Position } from "./ant";
 import { AntActor } from "./ant-actor";
 import { EventStore } from "./event-store";
-import { ANT_CREATED, type AntCreatedEvent } from "./events";
+import { ANT_EVENT_TYPES, type AntCreatedEvent } from "./events";
 import type { World } from "./world";
 import { projectWorld } from "./world-projector";
 
@@ -58,7 +58,7 @@ export class Simulation {
     this.actors.set(actor.id, actor);
 
     const event: AntCreatedEvent = {
-      type: ANT_CREATED,
+      type: ANT_EVENT_TYPES.CREATED,
       payload: {
         id: actor.id,
         position,

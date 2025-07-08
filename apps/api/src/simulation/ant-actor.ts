@@ -1,12 +1,8 @@
 import { randomUUID } from "node:crypto";
-import { ANT_STATES, type AntState } from "./ant";
+import { ANT_STATES, type AntState, type Position } from "./ant";
 
 import type { SimulationEvent } from "./events";
-
-export type Position = {
-  x: number;
-  y: number;
-};
+import { ANT_EVENT_TYPES, type AntMovedEvent } from "./events";
 
 export class AntActor {
   readonly id: string;
@@ -25,7 +21,26 @@ export class AntActor {
    * @returns A simulation event if the ant decided to do something, or null if not.
    */
   processTick(): SimulationEvent | null {
-    // For now, the ant does nothing.
+    if (this.state === ANT_STATES.FORAGING) {
+      const newPosition = {
+        x: this.position.x + Math.floor(Math.random() * 3) - 1,
+        y: this.position.y + Math.floor(Math.random() * 3) - 1,
+      };
+
+      this.position = newPosition;
+
+      const event: AntMovedEvent = {
+        type: ANT_EVENT_TYPES.MOVED,
+        payload: {
+          id: this.id,
+          position: newPosition,
+        },
+        timestamp: Date.now(),
+      };
+
+      return event;
+    }
+
     return null;
   }
 }
