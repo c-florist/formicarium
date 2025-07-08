@@ -1,8 +1,6 @@
-import { describe, it, expect } from "vitest";
 import Fastify from "fastify";
+import { describe, expect, it } from "vitest";
 import worldPlugin from "./world";
-import { Simulation } from "@formicarium/core";
-import WebSocket from "ws";
 
 describe("World Plugin", () => {
   it("should return the world state for the /world route", async () => {

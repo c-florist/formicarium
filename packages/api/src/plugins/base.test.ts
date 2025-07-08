@@ -1,5 +1,5 @@
-import { describe, it, expect } from "vitest";
 import Fastify from "fastify";
+import { describe, expect, it } from "vitest";
 import basePlugin from "./base";
 
 describe("Base Plugin", () => {
