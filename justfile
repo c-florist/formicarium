@@ -11,15 +11,15 @@ init:
 
 # Starts the development server with watch mode
 dev:
-    pnpm --filter api dev
+    pnpm dev:api
 
 # Builds the application for production
 build:
-    pnpm --filter api build
+    pnpm build
 
 # Starts the production build
 start:
-    pnpm --filter api start
+    pnpm start
 
 # Run linting and fix issues
 tidy:
@@ -32,12 +32,12 @@ tidy-check:
 # Run type checking
 typecheck:
     @echo "Type checking API ..."
-    pnpm --filter api typecheck
+    pnpm typecheck
 
 # Run tests
 test:
-    pnpm --filter api test:unit
+    pnpm test:unit
 
 # Run tests in watch mode
 tdd:
-    pnpm --filter api test:unit:watch
+    pnpm test:unit:watch
