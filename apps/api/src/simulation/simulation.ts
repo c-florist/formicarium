@@ -46,8 +46,8 @@ export class Simulation {
     for (const actor of this.actors.values()) {
       const ant = this.world.ants.get(actor.id);
       if (ant) {
-        ant.position = actor.position;
-        ant.state = actor.state;
+        ant.position = actor.getPosition();
+        ant.state = actor.getState();
       }
     }
   }
@@ -58,8 +58,8 @@ export class Simulation {
 
     const ant = new Ant({
       id: actor.id,
-      position: actor.position,
-      state: actor.state,
+      position: actor.getPosition(),
+      state: actor.getState(),
     });
     this.world.ants.set(ant.id, ant);
   }

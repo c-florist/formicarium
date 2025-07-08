@@ -9,13 +9,21 @@ import type { World } from "./world";
 
 export class AntActor {
   readonly id: string;
-  position: Position;
-  state: AntState;
+  private position: Position;
+  private state: AntState;
 
   constructor(position: Position) {
     this.id = randomUUID();
     this.position = position;
     this.state = ANT_STATES.FORAGING;
+  }
+
+  getPosition() {
+    return this.position;
+  }
+
+  getState() {
+    return this.state;
   }
 
   private findNearestFood(world: World) {
