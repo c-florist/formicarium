@@ -1,4 +1,5 @@
-import { Ant, type Position } from "./ant";
+import type { Ant } from "./ant";
+import type { Position } from "./ant-actor";
 
 export type FoodSource = {
   position: Position;
@@ -19,38 +20,16 @@ export type Pheromone = {
   type: PheromoneType;
 };
 
+/**
+ * Represents the read model of the entire simulation world.
+ */
 export class World {
-  readonly width: number;
-  readonly height: number;
-  ants: Ant[] = [];
+  ants: Map<string, Ant> = new Map();
   food: FoodSource[] = [];
   pheromones: Map<string, Pheromone> = new Map();
 
-  constructor(width: number, height: number) {
-    this.width = width;
-    this.height = height;
-  }
-
-  /**
-   * Adds a new ant to the simulation at a given position.
-   * @param position The position to add the ant at.
-   * @returns The newly created ant.
-   */
-  addAnt(position: Position) {
-    const newAnt = new Ant(position);
-    this.ants.push(newAnt);
-    return newAnt;
-  }
-
-  /**
-   * Adds a new food source to the world.
-   * @param position The position of the food source.
-   * @param amount The amount of food available.
-   * @returns The newly created food source.
-   */
-  addFood(position: Position, amount: number) {
-    const newFood = { position, amount };
-    this.food.push(newFood);
-    return newFood;
-  }
+  constructor(
+    public width: number,
+    public height: number,
+  ) {}
 }

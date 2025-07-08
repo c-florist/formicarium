@@ -1,28 +1,36 @@
-import Fastify, { type FastifyPluginAsync } from "fastify";
-import { World } from "./simulation/world";
+import Fastify from "fastify";
+import { Simulation } from "./simulation/simulation";
 
-// Test world
-const world = new World(100, 100);
-
-world.addAnt({ x: 50, y: 50 });
-world.addAnt({ x: 51, y: 50 });
-world.addAnt({ x: 49, y: 50 });
-
-const app: FastifyPluginAsync = async (fastify, _opts): Promise<void> => {
-  fastify.get("/", async (_request, _reply) => world);
-};
-
-export default app;
-
-// This allows the file to be both imported as a plugin and run directly
-if (import.meta.url.startsWith("file:")) {
-  const server = Fastify({
-    logger: {
-      transport: {
-        target: "pino-pretty",
-      },
+const fastify = Fastify({
+  logger: {
+    transport: {
+      target: "pino-pretty",
     },
-  });
-  await server.register(app);
-  await server.listen({ port: 3000 });
+  },
+});
+
+const simulation = new Simulation();
+simulation.start();
+
+// Create a couple of ants for starting state
+simulation.createAnt({ x: 50, y: 50 });
+simulation.createAnt({ x: 52, y: 52 });
+
+fastify.get("/", (_request, reply) => {
+  reply.send({ hello: "world" });
+});
+
+fastify.get("/world", (_request, reply) => {
+  reply.send(simulation.world);
+});
+
+async function main() {
+  try {
+    await fastify.listen({ port: 3000 });
+  } catch (err) {
+    fastify.log.error(err);
+    process.exit(1);
+  }
 }
+
+main();
