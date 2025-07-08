@@ -7,13 +7,38 @@ settings:
 importers:
 
   .:
+    dependencies:
+      '@fastify/websocket':
+        specifier: ^11.1.0
+        version: 11.1.0
+      fastify:
+        specifier: ^5.4.0
+        version: 5.4.0
     devDependencies:
       '@biomejs/biome':
         specifier: ^2.0.6
         version: 2.0.6
+      '@types/node':
+        specifier: ^20.14.2
+        version: 20.19.4
+      '@types/ws':
+        specifier: ^8.18.1
+        version: 8.18.1
+      pino-pretty:
+        specifier: ^13.0.0
+        version: 13.0.0
+      tsx:
+        specifier: ^4.15.4
+        version: 4.20.3
       typescript:
         specifier: ^5.4.5
         version: 5.8.3
+      vitest:
+        specifier: ^3.2.4
+        version: 3.2.4(@types/node@20.19.4)(tsx@4.20.3)
+      ws:
+        specifier: ^8.18.3
+        version: 8.18.3
 
   apps/api:
     dependencies:

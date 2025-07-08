@@ -20,6 +20,6 @@
     "noUnusedLocals": true,
     "noUnusedParameters": true
   },
-  "include": ["apps/**/*"],
+  "include": ["src/**/*"],
   "exclude": ["node_modules", "dist"]
 }
