@@ -48,9 +48,6 @@ export class Simulation {
     }
   }
 
-  /**
-   * Command handler to create a new ant.
-   */
   createAnt(position: Position) {
     const actor = new AntActor(position);
     this.actors.set(actor.id, actor);

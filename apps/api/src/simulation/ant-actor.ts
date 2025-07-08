@@ -24,7 +24,6 @@ export class AntActor {
         y: this.position.y + Math.floor(Math.random() * 3) - 1,
       };
 
-      // Directly update private state
       this.position = newPosition;
     }
   }
