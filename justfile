@@ -11,15 +11,15 @@ init:
 
 # Starts the development server with watch mode
 dev:
-    pnpm --filter @formicary/api dev
+    pnpm --filter @formicarium/api dev
 
 # Builds the application for production
 build:
-    pnpm --filter @formicary/api build
+    pnpm --filter @formicarium/api build
 
 # Starts the production build
 start:
-    pnpm --filter @formicary/api start
+    pnpm --filter @formicarium/api start
 
 # Run linting and fix issues
 tidy:

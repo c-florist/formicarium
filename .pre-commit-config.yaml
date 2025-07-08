@@ -10,5 +10,5 @@ repos:
       - id: typecheck-api
         name: 'Typecheck API'
         language: system
-        entry: pnpm --filter @formicary/api run typecheck
+        entry: pnpm --filter @formicarium/api run typecheck
         pass_filenames: false
