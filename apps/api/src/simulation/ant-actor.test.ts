@@ -16,7 +16,7 @@ describe("AntActor", () => {
 
     actor.update(world);
 
-    expect(actor.position).not.toEqual(initialPosition);
+    expect(actor.getPosition()).not.toEqual(initialPosition);
   });
 
   it("should move towards the nearest food source when foraging", () => {
@@ -37,7 +37,7 @@ describe("AntActor", () => {
 
     actor.update(world);
 
-    const newDistance = distance(actor.position, nearestFood.position);
+    const newDistance = distance(actor.getPosition(), nearestFood.position);
 
     expect(newDistance).toBeLessThan(initialDistance);
   });
