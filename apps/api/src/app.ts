@@ -1,5 +1,5 @@
 import Fastify from "fastify";
-import { Simulation } from "./simulation/simulation";
+import { Simulation } from "./simulation";
 
 const fastify = Fastify({
   logger: {

@@ -1,20 +1,21 @@
-import type { Position } from "./ant";
+import type { Position } from "../domain/types";
+
+/**
+ * Base interface for all domain events
+ */
+export interface DomainEvent<T extends string, P> {
+  type: T;
+  payload: P;
+  timestamp: number;
+}
 
 export const ANT_EVENT_TYPES = {
   CREATED: "ANT_CREATED",
   MOVED: "ANT_MOVED",
 } as const;
 
-export type AntEventType = (typeof ANT_EVENT_TYPES)[keyof typeof ANT_EVENT_TYPES];
-
-/**
- * The base interface for all domain events.
- */
-interface DomainEvent<T extends string, P> {
-  type: T;
-  payload: P;
-  timestamp: number;
-}
+export type AntEventType =
+  (typeof ANT_EVENT_TYPES)[keyof typeof ANT_EVENT_TYPES];
 
 export type AntCreatedEvent = DomainEvent<
   typeof ANT_EVENT_TYPES.CREATED,

@@ -1,9 +1,9 @@
-import type { Position } from "./ant";
-import { AntActor } from "./ant-actor";
-import { EventStore } from "./event-store";
-import { ANT_EVENT_TYPES, type AntCreatedEvent } from "./events";
-import type { World } from "./world";
-import { projectWorld } from "./world-projector";
+import { AntActor } from "./actors/ant-actor";
+import type { Position } from "./domain/types";
+import { EventStore } from "./events/store";
+import { ANT_EVENT_TYPES, type AntCreatedEvent } from "./events/types";
+import { projectWorld } from "./world/projector";
+import type { World } from "./world/world";
 
 const TICK_INTERVAL_MS = 1000;
 

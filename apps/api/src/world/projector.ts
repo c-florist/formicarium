@@ -1,6 +1,5 @@
-import { Ant } from "./ant";
-import { ANT_EVENT_TYPES, type SimulationEvent } from "./events";
-import { World } from "./world";
+import { ANT_EVENT_TYPES, type SimulationEvent } from "../events/types";
+import { Ant, World } from "./world";
 
 /**
  * Creates a world state from a series of events.
