@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { distance } from "./utils";
+import { distance } from "./maths";
 
 describe("distance", () => {
   it("should calculate the correct Euclidean distance between two points", () => {

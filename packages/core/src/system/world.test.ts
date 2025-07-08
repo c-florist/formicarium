@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import type { FoodSource, Position } from "./domain";
+import type { FoodSource, Position } from "../domain";
 import { World } from "./world";
 
 describe("World", () => {

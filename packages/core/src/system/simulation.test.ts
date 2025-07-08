@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from "vitest";
-import type { Position } from "./domain";
-import { ANT_STATES } from "./domain";
+import type { Position } from "../domain";
+import { ANT_STATES } from "../domain";
 import { Simulation } from "./simulation";
 
 // biome-ignore-start lint/style/noNonNullAssertion: No need to assert non-nullability in these tests
