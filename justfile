@@ -11,15 +11,15 @@ init:
 
 # Starts the development server with watch mode
 dev:
-    pnpm --filter @formicarium/api dev
+    pnpm --filter api dev
 
 # Builds the application for production
 build:
-    pnpm --filter @formicarium/api build
+    pnpm --filter api build
 
 # Starts the production build
 start:
-    pnpm --filter @formicarium/api start
+    pnpm --filter api start
 
 # Run linting and fix issues
 tidy:
@@ -32,4 +32,4 @@ tidy-check:
 # Run type checking
 typecheck:
     @echo "Type checking API ..."
-    pnpm --filter @formicarium/api typecheck
+    pnpm --filter api typecheck

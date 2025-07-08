@@ -1,20 +1,16 @@
-import { AntActor } from "./actors/ant-actor";
-import type { Position } from "./domain/types";
-import { EventStore } from "./events/store";
-import { ANT_EVENT_TYPES, type AntCreatedEvent } from "./events/types";
-import { projectWorld } from "./world/projector";
-import type { World } from "./world/world";
+import { AntActor } from "./ant-actor";
+import type { Position } from "./types";
+import { Ant, World } from "./world";
 
-const TICK_INTERVAL_MS = 1000;
+const TICK_INTERVAL_MS = 100;
 
 export class Simulation {
-  private eventStore = new EventStore();
   private actors: Map<string, AntActor> = new Map();
   world: World;
   private timer: NodeJS.Timeout | null = null;
 
   constructor() {
-    this.world = projectWorld(this.eventStore.getAllEvents());
+    this.world = new World(100, 100);
   }
 
   start() {
@@ -33,40 +29,29 @@ export class Simulation {
   }
 
   private tick() {
-    const events = [];
+    // Actors update their internal state based on the current world
     for (const actor of this.actors.values()) {
-      const event = actor.processTick();
-      if (event) {
-        events.push(event);
+      actor.update(this.world);
+    }
+
+    // Sync actor state back to the public world for the next tick
+    for (const actor of this.actors.values()) {
+      const ant = this.world.ants.get(actor.id);
+      if (ant) {
+        ant.position = actor.position;
+        ant.state = actor.state;
       }
     }
-
-    for (const event of events) {
-      this.eventStore.dispatch(event);
-    }
-
-    this.world = projectWorld(this.eventStore.getAllEvents());
   }
 
   /**
    * Command handler to create a new ant.
-   *
-   * @param position The position to create the ant at.
    */
   createAnt(position: Position) {
     const actor = new AntActor(position);
     this.actors.set(actor.id, actor);
 
-    const event: AntCreatedEvent = {
-      type: ANT_EVENT_TYPES.CREATED,
-      payload: {
-        id: actor.id,
-        position,
-      },
-      timestamp: Date.now(),
-    };
-
-    this.eventStore.dispatch(event);
-    this.world = projectWorld(this.eventStore.getAllEvents());
+    const ant = new Ant(actor.id, actor.position, actor.state);
+    this.world.ants.set(ant.id, ant);
   }
 }

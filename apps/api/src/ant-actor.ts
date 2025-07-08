@@ -1,11 +1,11 @@
 import { randomUUID } from "node:crypto";
-import { ANT_STATES, type AntState, type Position } from "../domain/types";
-import { ANT_EVENT_TYPES, type AntMovedEvent } from "../events/types";
+import { ANT_STATES, type AntState, type Position } from "./types";
+import type { World } from "./world";
 
 export class AntActor {
   readonly id: string;
-  private position: Position;
-  private state: AntState;
+  position: Position;
+  state: AntState;
 
   constructor(position: Position) {
     this.id = randomUUID();
@@ -15,30 +15,17 @@ export class AntActor {
 
   /**
    * Processes a single tick of the simulation for this ant.
-   *
-   * @returns A simulation event if the ant decided to do something, or null if not.
+   * The ant makes a decision based on the world state and updates its own state.
    */
-  processTick() {
+  update(_world: World) {
     if (this.state === ANT_STATES.FORAGING) {
       const newPosition = {
         x: this.position.x + Math.floor(Math.random() * 3) - 1,
         y: this.position.y + Math.floor(Math.random() * 3) - 1,
       };
 
+      // Directly update private state
       this.position = newPosition;
-
-      const event: AntMovedEvent = {
-        type: ANT_EVENT_TYPES.MOVED,
-        payload: {
-          id: this.id,
-          position: newPosition,
-        },
-        timestamp: Date.now(),
-      };
-
-      return event;
     }
-
-    return null;
   }
 }
