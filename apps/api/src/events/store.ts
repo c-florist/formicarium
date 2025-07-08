@@ -10,7 +10,7 @@ export class EventStore {
     this.events.push(event);
   }
 
-  getAllEvents(): SimulationEvent[] {
+  getAllEvents() {
     return [...this.events];
   }
 }

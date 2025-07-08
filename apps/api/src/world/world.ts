@@ -4,13 +4,7 @@ import type { FoodSource, Pheromone, Position } from "../domain/types";
  * Represents an ant in the world projection
  */
 export class Ant {
-  readonly id: string;
-  position: Position;
-
-  constructor(id: string, position: Position) {
-    this.id = id;
-    this.position = position;
-  }
+  constructor(readonly id: string, public position: Position) {}
 }
 
 /**

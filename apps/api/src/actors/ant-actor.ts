@@ -3,7 +3,6 @@ import { ANT_STATES, type AntState, type Position } from "../domain/types";
 import {
   ANT_EVENT_TYPES,
   type AntMovedEvent,
-  type SimulationEvent,
 } from "../events/types";
 
 export class AntActor {
@@ -22,7 +21,7 @@ export class AntActor {
    *
    * @returns A simulation event if the ant decided to do something, or null if not.
    */
-  processTick(): SimulationEvent | null {
+  processTick() {
     if (this.state === ANT_STATES.FORAGING) {
       const newPosition = {
         x: this.position.x + Math.floor(Math.random() * 3) - 1,

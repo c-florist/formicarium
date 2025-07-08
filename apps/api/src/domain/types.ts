@@ -1,8 +1,4 @@
-/**
- * Core domain types for the ant simulation
- */
-
-export interface Position {
+export type Position = {
   x: number;
   y: number;
 }

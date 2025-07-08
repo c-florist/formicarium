@@ -3,7 +3,7 @@ import type { Position } from "../domain/types";
 /**
  * Base interface for all domain events
  */
-export interface DomainEvent<T extends string, P> {
+export type DomainEvent<T extends string, P> = {
   type: T;
   payload: P;
   timestamp: number;
