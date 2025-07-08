@@ -17,7 +17,7 @@ simulation.createAnt({ x: 50, y: 50 });
 simulation.createAnt({ x: 52, y: 52 });
 
 fastify.get("/", (_request, reply) => {
-  reply.send({ hello: "world" });
+  reply.send("Welcome to the formicarium!");
 });
 
 fastify.get("/world", (_request, reply) => {

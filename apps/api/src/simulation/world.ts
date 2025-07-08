@@ -32,4 +32,14 @@ export class World {
     public width: number,
     public height: number,
   ) {}
+
+  toJSON() {
+    return {
+      width: this.width,
+      height: this.height,
+      ants: Object.fromEntries(this.ants),
+      food: this.food,
+      pheromones: Object.fromEntries(this.pheromones),
+    };
+  }
 }
