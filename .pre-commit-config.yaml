@@ -1,14 +1,13 @@
 repos:
   - repo: local
     hooks:
-      - id: tidy-api
-        name: 'Tidy API'
+      - id: tidy
+        name: 'Tidy'
         language: system
         entry: pnpm run tidy
-        files: ^apps/api/
 
-      - id: typecheck-api
-        name: 'Typecheck API'
+      - id: typecheck
+        name: 'Typecheck'
         language: system
-        entry: pnpm --filter api run typecheck
+        entry: pnpm run typecheck
         pass_filenames: false

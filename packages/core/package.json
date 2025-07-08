@@ -12,7 +12,7 @@
     }
   },
   "scripts": {
-    "build": "tsc",
+    "build": "tsc --emitDeclarationOnly",
     "dev": "tsc --watch"
   }
 }
