@@ -1,4 +1,4 @@
-import type { AntState, FoodSource, Pheromone, Position } from "./types";
+import type { AntState, FoodSource, Pheromone, Position } from "./domain";
 
 /**
  * Represents the public state of an ant in the world.

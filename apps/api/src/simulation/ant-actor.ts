@@ -1,5 +1,5 @@
 import { randomUUID } from "node:crypto";
-import { ANT_STATES, type AntState, type Position } from "./types";
+import { ANT_STATES, type AntState, type Position } from "./domain";
 import type { World } from "./world";
 
 export class AntActor {

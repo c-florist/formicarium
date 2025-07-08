@@ -3,11 +3,11 @@
   "version": "1.0.0",
   "private": true,
   "type": "module",
-  "main": "dist/app.js",
+  "main": "dist/main.js",
   "scripts": {
-    "dev": "tsx watch src/app.ts",
+    "dev": "tsx watch src/main.ts",
     "build": "tsc",
-    "start": "node dist/app.js",
+    "start": "node dist/main.js",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {

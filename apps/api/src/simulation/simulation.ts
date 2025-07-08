@@ -1,5 +1,5 @@
 import { AntActor } from "./ant-actor";
-import type { Position } from "./types";
+import type { Position } from "./domain";
 import { Ant, World } from "./world";
 
 const TICK_INTERVAL_MS = 100;
