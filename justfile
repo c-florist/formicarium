@@ -33,3 +33,11 @@ tidy-check:
 typecheck:
     @echo "Type checking API ..."
     pnpm --filter api typecheck
+
+# Run tests
+test:
+    pnpm --filter api test:unit
+
+# Run tests in watch mode
+tdd:
+    pnpm --filter api test:unit:watch

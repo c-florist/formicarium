@@ -8,6 +8,8 @@
     "dev": "tsx watch src/main.ts",
     "build": "tsc",
     "start": "node dist/main.js",
+    "test:unit": "vitest run",
+    "test:unit:watch": "vitest watch",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
@@ -17,6 +19,7 @@
     "@types/node": "^20.14.2",
     "pino-pretty": "^13.0.0",
     "tsx": "^4.15.4",
-    "typescript": "^5.4.5"
+    "typescript": "^5.4.5",
+    "vitest": "^3.2.4"
   }
 }
