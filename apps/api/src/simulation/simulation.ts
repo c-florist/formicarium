@@ -10,7 +10,11 @@ export class Simulation {
   private timer: NodeJS.Timeout | null = null;
 
   constructor() {
-    this.world = new World(100, 100);
+    this.world = new World({
+      width: 100,
+      height: 100,
+      nestPosition: { x: 50, y: 50 },
+    });
   }
 
   start() {

@@ -1,4 +1,4 @@
-import type { AntState, FoodSource, Pheromone, Position } from "./domain";
+import type { AntState, FoodSource, Nest, Pheromone, Position } from "./domain";
 
 /**
  * Represents the public state of an ant in the world.
@@ -15,6 +15,12 @@ export class Ant {
   }
 }
 
+export type WorldOptions = {
+  width: number;
+  height: number;
+  nestPosition: Position;
+};
+
 /**
  * Represents the read model of the entire simulation world
  */
@@ -24,13 +30,15 @@ export class World {
   ants: Map<string, Ant>;
   food: FoodSource[];
   pheromones: Map<string, Pheromone>;
+  nest: Nest;
 
-  constructor(width: number, height: number) {
-    this.width = width;
-    this.height = height;
+  constructor(options: WorldOptions) {
+    this.width = options.width;
+    this.height = options.height;
     this.ants = new Map();
     this.food = [];
     this.pheromones = new Map();
+    this.nest = { position: options.nestPosition };
   }
 
   toJSON() {
@@ -40,6 +48,7 @@ export class World {
       ants: Object.fromEntries(this.ants),
       food: this.food,
       pheromones: Object.fromEntries(this.pheromones),
+      nest: this.nest,
     };
   }
 }

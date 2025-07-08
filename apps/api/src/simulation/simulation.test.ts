@@ -3,6 +3,7 @@ import type { Position } from "./domain";
 import { ANT_STATES } from "./domain";
 import { Simulation } from "./simulation";
 
+// biome-ignore-start lint/style/noNonNullAssertion: No need to assert non-nullability in these tests
 describe("Simulation", () => {
   it("should add a new ant to the world state when createAnt is called", () => {
     const simulation = new Simulation();
@@ -14,10 +15,8 @@ describe("Simulation", () => {
     const ant = simulation.world.ants.values().next().value;
     expect(ant).toBeDefined();
 
-    // @ts-ignore
-    expect(ant.position).toEqual(initialPosition);
-    // @ts-ignore
-    expect(ant.state).toBe(ANT_STATES.FORAGING);
+    expect(ant!.position).toEqual(initialPosition);
+    expect(ant!.state).toBe(ANT_STATES.FORAGING);
   });
 
   it("should update an ant's position in the world after a simulation tick", () => {
@@ -31,11 +30,11 @@ describe("Simulation", () => {
 
     simulation.tick();
 
-    // @ts-ignore
-    const antAfterStep = simulation.world.ants.get(antId);
+    const antAfterStep = simulation.world.ants.get(antId!);
     expect(antAfterStep).toBeDefined();
-    expect(antAfterStep?.position).not.toEqual(initialPosition);
+    expect(antAfterStep!.position).not.toEqual(initialPosition);
 
     vi.restoreAllMocks();
   });
 });
+// biome-ignore-end lint/style/noNonNullAssertion: No need to assert non-nullability in these tests

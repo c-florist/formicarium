@@ -7,7 +7,11 @@ describe("AntActor", () => {
   it("should change position when in FORAGING state", () => {
     const initialPosition: Position = { x: 10, y: 10 };
     const actor = new AntActor(initialPosition);
-    const world = new World(100, 100);
+    const world = new World({
+      width: 100,
+      height: 100,
+      nestPosition: { x: 50, y: 50 },
+    });
 
     actor.update(world);
 
