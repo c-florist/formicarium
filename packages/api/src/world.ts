@@ -1,5 +1,5 @@
 import type { FastifyInstance } from "fastify";
-import { Simulation } from "../simulation/simulation";
+import { Simulation } from "@formicarium/core";
 
 declare module "fastify" {
   interface FastifyInstance {
