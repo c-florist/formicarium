@@ -28,7 +28,7 @@ export class Simulation {
     }
   }
 
-  private tick() {
+  tick() {
     // Actors update their internal state based on the current world
     for (const actor of this.actors.values()) {
       actor.update(this.world);
