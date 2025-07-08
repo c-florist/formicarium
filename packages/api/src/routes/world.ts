@@ -1,4 +1,4 @@
-import { Simulation } from "@formicarium/core";
+import type { Simulation } from "@formicarium/core";
 import type { FastifyInstance } from "fastify";
 
 declare module "fastify" {
@@ -7,7 +7,7 @@ declare module "fastify" {
   }
 }
 
-async function worldRouter(fastify: FastifyInstance) {
+export default async function worldRouter(fastify: FastifyInstance) {
   fastify.get("/world", async (_request, reply) => {
     reply.send(fastify.simulation.world);
   });
@@ -23,16 +23,4 @@ async function worldRouter(fastify: FastifyInstance) {
       fastify.simulation.removeTickListener(tickListener);
     });
   });
-}
-
-export default async function worldPlugin(fastify: FastifyInstance) {
-  const simulation = new Simulation();
-  simulation.start();
-
-  // TODO: Remove once there's a mechanism for generate a starting state
-  simulation.createAnt({ x: 50, y: 20 });
-  simulation.createAnt({ x: 44, y: 22 });
-
-  fastify.decorate("simulation", simulation);
-  fastify.register(worldRouter);
 }

@@ -13,6 +13,8 @@
   },
   "scripts": {
     "build": "tsc --emitDeclarationOnly",
-    "dev": "tsc --watch"
+    "dev": "tsc --watch",
+    "test:unit": "vitest run",
+    "test:unit:watch": "vitest watch"
   }
 }

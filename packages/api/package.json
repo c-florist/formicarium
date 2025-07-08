@@ -8,8 +8,8 @@
     "dev": "tsx watch src/main.ts",
     "build": "tsc",
     "start": "node dist/main.js",
-    "test": "vitest run",
-    "test:watch": "vitest watch"
+    "test:unit": "vitest run",
+    "test:unit:watch": "vitest watch"
   },
   "dependencies": {
     "@fastify/websocket": "^11.1.0",

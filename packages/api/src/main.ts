@@ -1,6 +1,8 @@
 import websocket from "@fastify/websocket";
 import Fastify from "fastify";
-import { base, world } from "./plugins";
+import baseRouter from "./routes/base";
+import worldRouter from "./routes/world";
+import simulator from "./plugins/simulator";
 
 async function main() {
   const fastify = Fastify({
@@ -13,8 +15,14 @@ async function main() {
 
   await fastify.register(websocket);
 
-  fastify.register(base);
-  fastify.register(world);
+  fastify.register(baseRouter);
+
+  fastify.register((instance, _opts, done) => {
+    simulator(instance);
+
+    fastify.register(worldRouter);
+    done();
+  });
 
   try {
     await fastify.listen({ port: 3000 });

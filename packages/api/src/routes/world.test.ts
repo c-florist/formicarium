@@ -1,11 +1,16 @@
 import Fastify from "fastify";
 import { describe, expect, it } from "vitest";
-import worldPlugin from "./world";
+import worldRouter from "./world";
+import simulator from "../plugins/simulator";
 
-describe("World Plugin", () => {
+describe("World Router", () => {
   it("should return the world state for the /world route", async () => {
     const fastify = Fastify();
-    fastify.register(worldPlugin);
+    fastify.register((instance, _opts, done) => {
+      simulator(instance);
+      fastify.register(worldRouter);
+      done();
+    });
     await fastify.ready();
 
     const response = await fastify.inject({

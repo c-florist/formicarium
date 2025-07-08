@@ -35,9 +35,9 @@ typecheck:
     pnpm typecheck
 
 # Run tests
-test:
-    pnpm test:unit
+test package:
+    pnpm --filter {{package}} test:unit
 
 # Run tests in watch mode
-tdd:
-    pnpm test:unit:watch
+tdd package:
+    pnpm --filter {{package}} test:unit:watch
