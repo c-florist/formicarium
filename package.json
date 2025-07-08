@@ -7,7 +7,7 @@
     "tidy:check": "biome check",
     "typecheck": "pnpm --filter \"@formicarium/*\" run build --noEmit",
     "test": "pnpm --filter \"@formicarium/*\" test",
-    "dev": "pnpm --filter \"@formicarium/api\" dev"
+    "dev:api": "pnpm --filter \"@formicarium/api\" dev"
   },
   "devDependencies": {
     "@biomejs/biome": "^2.0.6",
