@@ -25,6 +25,7 @@ type WorldOptions = {
   width: number;
   height: number;
   nestPosition: Position;
+  foodSources?: FoodSource[];
 };
 
 /**
@@ -42,7 +43,7 @@ export class World {
     this.width = options.width;
     this.height = options.height;
     this.ants = new Map();
-    this.food = [];
+    this.food = options.foodSources ?? [];
     this.pheromones = new Map();
     this.nest = { position: options.nestPosition };
   }

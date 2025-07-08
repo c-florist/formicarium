@@ -14,6 +14,10 @@ export class Simulation {
       width: 100,
       height: 100,
       nestPosition: { x: 50, y: 50 },
+      foodSources: [
+        { position: { x: 20, y: 20 }, amount: 100 },
+        { position: { x: 80, y: 80 }, amount: 100 },
+      ],
     });
   }
 
