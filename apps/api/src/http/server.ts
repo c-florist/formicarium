@@ -21,5 +21,17 @@ export async function createServer(simulation: Simulation) {
     reply.send(simulation.world);
   });
 
+  fastify.get("/ws/world", { websocket: true }, (socket, _request) => {
+    const tickListener = () => {
+      socket.send(JSON.stringify(simulation.world.toJSON()));
+    };
+
+    simulation.addTickListener(tickListener);
+
+    socket.on("close", () => {
+      simulation.removeTickListener(tickListener);
+    });
+  });
+
   return fastify;
 }

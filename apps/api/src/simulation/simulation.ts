@@ -8,6 +8,7 @@ export class Simulation {
   private actors: Map<string, AntActor> = new Map();
   world: World;
   private timer: NodeJS.Timeout | null = null;
+  private tickListeners: Set<() => void> = new Set();
 
   constructor() {
     this.world = new World({
@@ -50,6 +51,10 @@ export class Simulation {
         ant.state = actor.getState();
       }
     }
+
+    for (const listener of this.tickListeners) {
+      listener();
+    }
   }
 
   createAnt(position: Position) {
@@ -62,5 +67,13 @@ export class Simulation {
       state: actor.getState(),
     });
     this.world.ants.set(ant.id, ant);
+  }
+
+  addTickListener(listener: () => void) {
+    this.tickListeners.add(listener);
+  }
+
+  removeTickListener(listener: () => void) {
+    this.tickListeners.delete(listener);
   }
 }
