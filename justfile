@@ -31,12 +31,16 @@ tidy-check:
 
 # Run type checking
 typecheck:
-    @echo "Type checking API ..."
     pnpm typecheck
 
 # Run tests
-test package:
-    pnpm --filter {{package}} test:unit
+test package='all':
+    #!/usr/bin/env sh
+    if [ "$package" = "all" ]; then
+        pnpm --filter "@formicarium/*" test:unit
+    else
+        pnpm --filter "@formicarium/$package" test:unit
+    fi
 
 # Run tests in watch mode
 tdd package:

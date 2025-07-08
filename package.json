@@ -6,7 +6,6 @@
     "tidy": "biome check --write .",
     "tidy:check": "biome check",
     "typecheck": "pnpm --filter @formicarium/core build && pnpm --filter @formicarium/api run build --noEmit",
-    "test": "pnpm --filter \"@formicarium/*\" test",
     "dev:api": "pnpm --filter \"@formicarium/api\" dev"
   },
   "devDependencies": {
