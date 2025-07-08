@@ -14,7 +14,9 @@ describe("Simulation", () => {
     const ant = simulation.world.ants.values().next().value;
     expect(ant).toBeDefined();
 
+    // @ts-ignore
     expect(ant.position).toEqual(initialPosition);
+    // @ts-ignore
     expect(ant.state).toBe(ANT_STATES.FORAGING);
   });
 
@@ -29,6 +31,7 @@ describe("Simulation", () => {
 
     simulation.tick();
 
+    // @ts-ignore
     const antAfterStep = simulation.world.ants.get(antId);
     expect(antAfterStep).toBeDefined();
     expect(antAfterStep?.position).not.toEqual(initialPosition);
