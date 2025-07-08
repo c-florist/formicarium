@@ -8,7 +8,7 @@ simulation.start();
 simulation.createAnt({ x: 50, y: 50 });
 simulation.createAnt({ x: 52, y: 52 });
 
-const server = createServer(simulation);
+const server = await createServer(simulation);
 
 async function main() {
   try {

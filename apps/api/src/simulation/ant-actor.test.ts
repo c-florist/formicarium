@@ -24,7 +24,10 @@ describe("AntActor", () => {
     const actor = new AntActor(initialPosition);
 
     const nearestFood: FoodSource = { position: { x: 20, y: 20 }, amount: 100 };
-    const farthestFood: FoodSource = { position: { x: 80, y: 80 }, amount: 100 };
+    const farthestFood: FoodSource = {
+      position: { x: 80, y: 80 },
+      amount: 100,
+    };
 
     const world = new World({
       width: 100,

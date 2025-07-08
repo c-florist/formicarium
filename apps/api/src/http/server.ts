@@ -1,7 +1,8 @@
+import websocket from "@fastify/websocket";
 import Fastify from "fastify";
 import type { Simulation } from "../simulation/simulation";
 
-export function createServer(simulation: Simulation) {
+export async function createServer(simulation: Simulation) {
   const fastify = Fastify({
     logger: {
       transport: {
@@ -9,6 +10,8 @@ export function createServer(simulation: Simulation) {
       },
     },
   });
+
+  await fastify.register(websocket);
 
   fastify.get("/", (_request, reply) => {
     reply.send("Welcome to the formicarium!");
