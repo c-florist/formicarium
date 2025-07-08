@@ -7,7 +7,7 @@ export type DomainEvent<T extends string, P> = {
   type: T;
   payload: P;
   timestamp: number;
-}
+};
 
 export const ANT_EVENT_TYPES = {
   CREATED: "ANT_CREATED",

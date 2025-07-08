@@ -1,9 +1,6 @@
 import { randomUUID } from "node:crypto";
 import { ANT_STATES, type AntState, type Position } from "../domain/types";
-import {
-  ANT_EVENT_TYPES,
-  type AntMovedEvent,
-} from "../events/types";
+import { ANT_EVENT_TYPES, type AntMovedEvent } from "../events/types";
 
 export class AntActor {
   readonly id: string;
