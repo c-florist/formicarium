@@ -1,5 +1,11 @@
 import type { AntState, FoodSource, Nest, Pheromone, Position } from "./domain";
 
+type AntOptions = {
+  id: string;
+  position: Position;
+  state: AntState;
+};
+
 /**
  * Represents the public state of an ant in the world.
  */
@@ -8,14 +14,14 @@ export class Ant {
   position: Position;
   state: AntState;
 
-  constructor(id: string, position: Position, state: AntState) {
-    this.id = id;
-    this.position = position;
-    this.state = state;
+  constructor(options: AntOptions) {
+    this.id = options.id;
+    this.position = options.position;
+    this.state = options.state;
   }
 }
 
-export type WorldOptions = {
+type WorldOptions = {
   width: number;
   height: number;
   nestPosition: Position;

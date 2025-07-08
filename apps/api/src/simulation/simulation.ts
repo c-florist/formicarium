@@ -52,7 +52,11 @@ export class Simulation {
     const actor = new AntActor(position);
     this.actors.set(actor.id, actor);
 
-    const ant = new Ant(actor.id, actor.position, actor.state);
+    const ant = new Ant({
+      id: actor.id,
+      position: actor.position,
+      state: actor.state,
+    });
     this.world.ants.set(ant.id, ant);
   }
 }
