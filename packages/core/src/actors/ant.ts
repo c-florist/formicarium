@@ -1,7 +1,7 @@
 import { randomUUID } from "node:crypto";
 import { ANT_STATES, type AntState, type Position } from "../domain";
-import { distance } from "../utils/maths";
 import type { World } from "../system/world";
+import { distance } from "../utils/maths";
 
 export class AntActor {
   readonly id: string;

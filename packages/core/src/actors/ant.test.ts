@@ -1,8 +1,8 @@
 import { describe, expect, it } from "vitest";
-import { AntActor } from "./ant";
 import type { FoodSource, Position } from "../domain";
-import { distance } from "../utils/maths";
 import { World } from "../system/world";
+import { distance } from "../utils/maths";
+import { AntActor } from "./ant";
 
 describe("AntActor", () => {
   it("should change position when in FORAGING state", () => {

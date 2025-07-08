@@ -1,4 +1,10 @@
-import type { AntState, FoodSource, Nest, Pheromone, Position } from "../domain";
+import type {
+  AntState,
+  FoodSource,
+  Nest,
+  Pheromone,
+  Position,
+} from "../domain";
 
 type AntOptions = {
   id: string;

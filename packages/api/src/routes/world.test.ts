@@ -1,7 +1,7 @@
 import Fastify from "fastify";
 import { describe, expect, it } from "vitest";
-import worldRouter from "./world";
 import simulator from "../plugins/simulator";
+import worldRouter from "./world";
 
 describe("World Router", () => {
   it("should return the world state for the /world route", async () => {

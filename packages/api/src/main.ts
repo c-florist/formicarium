@@ -1,8 +1,8 @@
 import websocket from "@fastify/websocket";
 import Fastify from "fastify";
+import simulator from "./plugins/simulator";
 import baseRouter from "./routes/base";
 import worldRouter from "./routes/world";
-import simulator from "./plugins/simulator";
 
 async function main() {
   const fastify = Fastify({
