@@ -1,7 +1,7 @@
-import { describe, it, expect } from "vitest";
+import { describe, expect, it } from "vitest";
 import { AntActor } from "./ant-actor";
-import { World } from "./world";
 import type { Position } from "./domain";
+import { World } from "./world";
 
 describe("AntActor", () => {
   it("should change position when in FORAGING state", () => {
