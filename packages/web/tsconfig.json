@@ -3,7 +3,10 @@
   "compilerOptions": {
     "outDir": "dist",
     "lib": ["ESNext", "DOM"],
-    "types": ["svelte"]
+    "types": ["svelte"],
+    "isolatedModules": true,
+    "moduleResolution": "bundler",
+    "allowArbitraryExtensions": true
   },
   "include": ["src"],
   "references": [{ "path": "../core" }]

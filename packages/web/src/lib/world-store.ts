@@ -3,11 +3,11 @@ import { readable } from "svelte/store";
 
 const WS_URL = import.meta.env["VITE_WEBSOCKET_BASE_URL"];
 
-export const world = readable<World | null>(null, (set) => {
+export const worldStore = readable<World | null>(null, (set) => {
   const ws = new WebSocket(`${WS_URL}/ws/world`);
 
   ws.onmessage = (event) => {
-    const worldData = JSON.parse(event.data);
+    const worldData: World = JSON.parse(event.data);
     set(worldData);
   };
 

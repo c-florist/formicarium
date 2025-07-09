@@ -34,8 +34,13 @@ tidy-check:
     pnpm run tidy:check
 
 # Run type checking
-typecheck:
-    pnpm typecheck
+typecheck package='all':
+    #!/usr/bin/env sh
+    if [ "$package" = "all" ]; then
+        pnpm run typecheck
+    else
+        pnpm --filter "@formicarium/$package" check
+    fi
 
 # Run tests
 test package='all':
