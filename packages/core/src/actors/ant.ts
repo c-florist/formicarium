@@ -7,11 +7,14 @@ export class AntActor {
   readonly id: string;
   private position: Position;
   private state: AntState;
+  // @ts-ignore: Whilst I determine how to model carrying capacity
+  private hasFood: boolean;
 
   constructor(position: Position) {
     this.id = randomUUID();
     this.position = position;
     this.state = ANT_STATES.FORAGING;
+    this.hasFood = false;
   }
 
   getPosition() {
@@ -51,11 +54,12 @@ export class AntActor {
 
         if (nearestFood && hasArrived(this.position, nearestFood.position)) {
           this.state = ANT_STATES.RETURNING_TO_NEST;
+          this.hasFood = true;
+          nearestFood.amount -= 1;
           break;
         }
 
         if (!nearestFood) {
-          // If there's no food, wander randomly
           this.position = {
             x: this.position.x + (Math.floor(Math.random() * 3) - 1),
             y: this.position.y + (Math.floor(Math.random() * 3) - 1),
@@ -75,6 +79,7 @@ export class AntActor {
       case ANT_STATES.RETURNING_TO_NEST: {
         if (hasArrived(this.position, world.nest.position)) {
           this.state = ANT_STATES.FORAGING;
+          this.hasFood = false;
           break;
         }
 

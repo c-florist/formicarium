@@ -65,6 +65,9 @@ export class Simulation {
       }
     }
 
+    // Remove depleted food sources
+    this.world.food = this.world.food.filter((food) => food.amount > 0);
+
     for (const listener of this.tickListeners) {
       listener();
     }
