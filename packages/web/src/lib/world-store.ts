@@ -9,10 +9,7 @@ export const worldStore = readable<World | null>(null, (set) => {
     return;
   }
 
-  const width = window.innerWidth;
-  const height = window.innerHeight * 0.9;
-  const url = `${WS_URL}/ws/world?width=${width}&height=${height}`;
-
+  const url = `${WS_URL}/ws/world`;
   const ws = new WebSocket(url);
 
   ws.onmessage = (event) => {

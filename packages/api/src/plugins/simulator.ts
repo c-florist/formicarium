@@ -1,7 +1,13 @@
+import { Simulation } from "@formicarium/core";
 import type { FastifyInstance } from "fastify";
 
 export default async function simulator(fastify: FastifyInstance) {
-  // We will now create the simulation instance dynamically in the route handler.
-  // This decorator will be populated on-demand.
-  fastify.decorate("simulation");
+  const simulation = new Simulation({ width: 800, height: 600 });
+  simulation.start();
+
+  // TODO: Remove once there's a mechanism for generating a starting state
+  simulation.createAnt({ x: 50, y: 20 });
+  simulation.createAnt({ x: 44, y: 22 });
+
+  fastify.decorate("simulation", simulation);
 }
