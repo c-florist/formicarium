@@ -2,7 +2,7 @@ import { AntActor } from "../actors/ant";
 import type { Position } from "../domain";
 import { Ant, World } from "./world";
 
-const TICK_INTERVAL_MS = 25;
+const TICK_INTERVAL_MS = 100;
 
 export class Simulation {
   private actors: Map<string, AntActor> = new Map();
