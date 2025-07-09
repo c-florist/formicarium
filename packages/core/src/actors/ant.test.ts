@@ -1,8 +1,9 @@
 import { describe, expect, it } from "vitest";
-import type { FoodSource, Position } from "../domain";
-import { World } from "../system/world";
-import { distance } from "../utils/maths";
 import { AntActor } from "./ant";
+import type { FoodSource, Position } from "../domain";
+import { ANT_STATES } from "../domain";
+import { distance } from "../utils/maths";
+import { World } from "../system/world";
 
 describe("AntActor", () => {
   it("should change position when in FORAGING state", () => {
@@ -43,5 +44,25 @@ describe("AntActor", () => {
     const newDistance = distance(actor.getPosition(), nearestFood.position);
 
     expect(newDistance).toBeLessThan(initialDistance);
+  });
+
+  it("should switch to RETURNING_TO_NEST state when it finds food", () => {
+    const initialPosition: Position = { x: 18, y: 18 };
+    const actor = new AntActor(initialPosition);
+
+    const food: FoodSource = { position: { x: 20, y: 20 }, amount: 100 };
+
+    const world = new World({
+      width: 100,
+      height: 100,
+      nestPosition: { x: 50, y: 50 },
+      foodSources: [food],
+    });
+
+    // Move the ant close to the food
+    actor.update(world);
+    actor.update(world);
+
+    expect(actor.getState()).toBe(ANT_STATES.RETURNING_TO_NEST);
   });
 });

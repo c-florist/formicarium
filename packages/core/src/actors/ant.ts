@@ -1,7 +1,7 @@
 import { randomUUID } from "node:crypto";
 import { ANT_STATES, type AntState, type Position } from "../domain";
 import type { World } from "../system/world";
-import { distance } from "../utils/maths";
+import { distance, hasArrived } from "../utils/maths";
 
 export class AntActor {
   readonly id: string;
@@ -48,6 +48,11 @@ export class AntActor {
     if (this.state === ANT_STATES.FORAGING) {
       const nearestFood = this.findNearestFood(world);
 
+      if (nearestFood && hasArrived(this.position, nearestFood.position)) {
+        this.state = ANT_STATES.RETURNING_TO_NEST;
+        return;
+      }
+
       if (!nearestFood) {
         // If there's no food, wander randomly
         this.position = {
@@ -60,6 +65,20 @@ export class AntActor {
       // Move towards the nearest food source
       const directionX = nearestFood.position.x - this.position.x;
       const directionY = nearestFood.position.y - this.position.y;
+
+      this.position = {
+        x: this.position.x + Math.sign(directionX),
+        y: this.position.y + Math.sign(directionY),
+      };
+    } else if (this.state === ANT_STATES.RETURNING_TO_NEST) {
+      if (hasArrived(this.position, world.nest.position)) {
+        this.state = ANT_STATES.FORAGING;
+        return;
+      }
+
+      // Move towards the nest
+      const directionX = world.nest.position.x - this.position.x;
+      const directionY = world.nest.position.y - this.position.y;
 
       this.position = {
         x: this.position.x + Math.sign(directionX),
