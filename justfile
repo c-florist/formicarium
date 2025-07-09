@@ -18,8 +18,8 @@ dev-web:
     pnpm dev:web
 
 # Builds the application for production
-build:
-    pnpm build
+build package:
+    pnpm --filter "@formicarium/{{package}}" build
 
 # Starts the production build
 start:
