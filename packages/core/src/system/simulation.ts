@@ -4,21 +4,38 @@ import { Ant, World } from "./world";
 
 const TICK_INTERVAL_MS = 100;
 
+type SimulationOptions = {
+  width?: number;
+  height?: number;
+};
+
 export class Simulation {
   private actors: Map<string, AntActor> = new Map();
   world: World;
   private timer: NodeJS.Timeout | null = null;
   private tickListeners: Set<() => void> = new Set();
 
-  constructor() {
+  constructor(options: SimulationOptions = {}) {
+    const { width = 800, height = 600 } = options;
+
+    const nestPosition = {
+      x: Math.floor(Math.random() * width),
+      y: Math.floor(Math.random() * height),
+    };
+
+    const foodSources = Array.from({ length: 5 }, () => ({
+      position: {
+        x: Math.floor(Math.random() * width),
+        y: Math.floor(Math.random() * height),
+      },
+      amount: 100,
+    }));
+
     this.world = new World({
-      width: 100,
-      height: 100,
-      nestPosition: { x: 50, y: 50 },
-      foodSources: [
-        { position: { x: 20, y: 20 }, amount: 100 },
-        { position: { x: 80, y: 80 }, amount: 100 },
-      ],
+      width,
+      height,
+      nestPosition,
+      foodSources,
     });
   }
 

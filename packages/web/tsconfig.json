@@ -8,6 +8,13 @@
     "moduleResolution": "bundler",
     "allowArbitraryExtensions": true
   },
-  "include": ["src"],
+  "include": [
+    "src/**/*.d.ts",
+    "src/**/*.js",
+    "src/**/*.ts",
+    "src/**/*.svelte",
+    ".svelte-kit/ambient.d.ts",
+    ".svelte-kit/types/**/$types.d.ts"
+  ],
   "references": [{ "path": "../core" }]
 }

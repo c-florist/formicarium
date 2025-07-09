@@ -1,4 +1,4 @@
-import type { Simulation } from "@formicarium/core";
+import { Simulation } from "@formicarium/core";
 import type { FastifyInstance } from "fastify";
 
 declare module "fastify" {
@@ -8,19 +8,28 @@ declare module "fastify" {
 }
 
 export default async function worldRouter(fastify: FastifyInstance) {
-  fastify.get("/world", async (_request, reply) => {
-    reply.send(fastify.simulation.world);
-  });
+  fastify.get("/ws/world", { websocket: true }, (socket, request) => {
+    const { width, height } = request.query as { width?: string; height?: string };
 
-  fastify.get("/ws/world", { websocket: true }, (socket, _request) => {
+    const simulation = new Simulation({
+      width: width ? parseInt(width, 10) : 800,
+      height: height ? parseInt(height, 10) : 600,
+    });
+    simulation.start();
+
+    // TODO: Remove once there's a mechanism for generating a starting state
+    simulation.createAnt({ x: 50, y: 20 });
+    simulation.createAnt({ x: 44, y: 22 });
+
     const tickListener = () => {
-      socket.send(JSON.stringify(fastify.simulation.world.toJSON()));
+      socket.send(JSON.stringify(simulation.world.toJSON()));
     };
 
-    fastify.simulation.addTickListener(tickListener);
+    simulation.addTickListener(tickListener);
 
     socket.on("close", () => {
-      fastify.simulation.removeTickListener(tickListener);
+      simulation.removeTickListener(tickListener);
+      simulation.stop();
     });
   });
 }

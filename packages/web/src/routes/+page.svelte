@@ -5,6 +5,6 @@
     href="/world"
     class="px-6 py-3 bg-green-700 text-white font-semibold rounded-lg shadow-md hover:bg-green-800 transition-colors"
   >
-    Start simulation
+    Enter simulation
   </a>
 </main>
