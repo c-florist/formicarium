@@ -45,45 +45,48 @@ export class AntActor {
   }
 
   update(world: World) {
-    if (this.state === ANT_STATES.FORAGING) {
-      const nearestFood = this.findNearestFood(world);
+    switch (this.state) {
+      case ANT_STATES.FORAGING: {
+        const nearestFood = this.findNearestFood(world);
 
-      if (nearestFood && hasArrived(this.position, nearestFood.position)) {
-        this.state = ANT_STATES.RETURNING_TO_NEST;
-        return;
-      }
+        if (nearestFood && hasArrived(this.position, nearestFood.position)) {
+          this.state = ANT_STATES.RETURNING_TO_NEST;
+          break;
+        }
 
-      if (!nearestFood) {
-        // If there's no food, wander randomly
+        if (!nearestFood) {
+          // If there's no food, wander randomly
+          this.position = {
+            x: this.position.x + (Math.floor(Math.random() * 3) - 1),
+            y: this.position.y + (Math.floor(Math.random() * 3) - 1),
+          };
+          break;
+        }
+
+        const directionX = nearestFood.position.x - this.position.x;
+        const directionY = nearestFood.position.y - this.position.y;
+
         this.position = {
-          x: this.position.x + (Math.floor(Math.random() * 3) - 1),
-          y: this.position.y + (Math.floor(Math.random() * 3) - 1),
+          x: this.position.x + Math.sign(directionX),
+          y: this.position.y + Math.sign(directionY),
         };
-        return;
+        break;
       }
+      case ANT_STATES.RETURNING_TO_NEST: {
+        if (hasArrived(this.position, world.nest.position)) {
+          this.state = ANT_STATES.FORAGING;
+          break;
+        }
 
-      // Move towards the nearest food source
-      const directionX = nearestFood.position.x - this.position.x;
-      const directionY = nearestFood.position.y - this.position.y;
+        const directionX = world.nest.position.x - this.position.x;
+        const directionY = world.nest.position.y - this.position.y;
 
-      this.position = {
-        x: this.position.x + Math.sign(directionX),
-        y: this.position.y + Math.sign(directionY),
-      };
-    } else if (this.state === ANT_STATES.RETURNING_TO_NEST) {
-      if (hasArrived(this.position, world.nest.position)) {
-        this.state = ANT_STATES.FORAGING;
-        return;
+        this.position = {
+          x: this.position.x + Math.sign(directionX),
+          y: this.position.y + Math.sign(directionY),
+        };
+        break;
       }
-
-      // Move towards the nest
-      const directionX = world.nest.position.x - this.position.x;
-      const directionY = world.nest.position.y - this.position.y;
-
-      this.position = {
-        x: this.position.x + Math.sign(directionX),
-        y: this.position.y + Math.sign(directionY),
-      };
     }
   }
 }

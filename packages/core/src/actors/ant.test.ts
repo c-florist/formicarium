@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import { AntActor } from "./ant";
 import type { FoodSource, Position } from "../domain";
 import { ANT_STATES } from "../domain";
@@ -7,6 +7,8 @@ import { World } from "../system/world";
 
 describe("AntActor", () => {
   it("should change position when in FORAGING state", () => {
+    vi.spyOn(Math, "random").mockReturnValue(0.9);
+
     const initialPosition: Position = { x: 10, y: 10 };
     const actor = new AntActor(initialPosition);
     const world = new World({
@@ -18,6 +20,8 @@ describe("AntActor", () => {
     actor.update(world);
 
     expect(actor.getPosition()).not.toEqual(initialPosition);
+
+    vi.restoreAllMocks();
   });
 
   it("should move towards the nearest food source when foraging", () => {
