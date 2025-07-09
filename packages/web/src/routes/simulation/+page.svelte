@@ -1,5 +1,5 @@
 <script lang="ts">
-import WorldCanvas from "$lib/WorldCanvas.svelte";
+  import WorldCanvas from "$lib/WorldCanvas.svelte";
 </script>
 
 <WorldCanvas />

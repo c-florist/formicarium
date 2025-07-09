@@ -1,5 +1,5 @@
 <main>
-  <h1>Welcome to Formicarium</h1>
+  <h1>Welcome to the Formicarium</h1>
   <p>A simulation of ant behavior.</p>
   <a href="/simulation">Start Simulation</a>
 </main>
