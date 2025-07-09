@@ -6,8 +6,8 @@ export default async function simulator(fastify: FastifyInstance) {
   simulation.start();
 
   // TODO: Remove once there's a mechanism for generating a starting state
-  simulation.createAnt({ x: 50, y: 20 });
-  simulation.createAnt({ x: 44, y: 22 });
+  simulation.createAnt({ x: 10, y: 30 });
+  simulation.createAnt({ x: 200, y: 100 });
 
   fastify.decorate("simulation", simulation);
 }
