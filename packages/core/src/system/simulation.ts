@@ -4,19 +4,15 @@ import { Ant, World } from "./world";
 
 const TICK_INTERVAL_MS = 100;
 
-type SimulationOptions = {
-  width?: number;
-  height?: number;
-};
-
 export class Simulation {
   private actors: Map<string, AntActor> = new Map();
   world: World;
   private timer: NodeJS.Timeout | null = null;
   private tickListeners: Set<() => void> = new Set();
 
-  constructor(options: SimulationOptions = {}) {
-    const { width = 800, height = 600 } = options;
+  constructor() {
+    const width = 1000;
+    const height = 600;
 
     const nestPosition = {
       x: Math.floor(Math.random() * width),

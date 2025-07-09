@@ -2,7 +2,7 @@ import { Simulation } from "@formicarium/core";
 import type { FastifyInstance } from "fastify";
 
 export default async function simulator(fastify: FastifyInstance) {
-  const simulation = new Simulation({ width: 800, height: 600 });
+  const simulation = new Simulation();
   simulation.start();
 
   // TODO: Remove once there's a mechanism for generating a starting state

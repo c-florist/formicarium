@@ -39,4 +39,8 @@
   });
 </script>
 
-<canvas bind:this={canvas} class="border border-stone-400 bg-amber-100"></canvas>
+<canvas
+  bind:this={canvas}
+  class="border border-stone-400 bg-amber-100 w-full h-auto"
+  style="aspect-ratio: 1000 / 600;"
+></canvas>
