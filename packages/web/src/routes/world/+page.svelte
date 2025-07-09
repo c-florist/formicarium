@@ -9,10 +9,10 @@
   {:else}
     <div class="text-center">
       <h2 class="text-2xl font-semibold text-stone-700 mb-2">
-        Connecting to Simulation<span class="animated-ellipsis"></span>
+        Connecting<span class="animated-ellipsis"></span>
       </h2>
       <p class="text-stone-500">
-        The ants might be sleeping.
+        Do simulated ants dream of electric sheep?
       </p>
     </div>
   {/if}
