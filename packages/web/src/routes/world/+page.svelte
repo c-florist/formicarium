@@ -8,10 +8,31 @@
     <WorldCanvas />
   {:else}
     <div class="text-center">
-      <h2 class="text-2xl font-semibold text-stone-700 mb-2">Connecting to Simulation...</h2>
+      <h2 class="text-2xl font-semibold text-stone-700 mb-2">
+        Connecting to Simulation<span class="animated-ellipsis"></span>
+      </h2>
       <p class="text-stone-500">
         The ants might be sleeping.
       </p>
     </div>
   {/if}
 </main>
+
+<style>
+  .animated-ellipsis::after {
+    content: ".";
+    animation: ellipsis 1.5s infinite;
+  }
+
+  @keyframes ellipsis {
+    0% {
+      content: ".";
+    }
+    33% {
+      content: "..";
+    }
+    66% {
+      content: "...";
+    }
+  }
+</style>
