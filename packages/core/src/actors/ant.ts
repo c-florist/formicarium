@@ -6,6 +6,8 @@ import {
   ACTOR_ACTIONS,
   type Action,
   type Perception,
+  LIFECYCLE_STATES,
+  type LifecycleState,
 } from "../domain";
 import { hasArrived } from "../utils/maths";
 
@@ -13,6 +15,7 @@ export class AntActor {
   readonly id: string;
   private position: Position;
   private state: AntState;
+  private lifecycle: LifecycleState;
   // @ts-ignore: Whilst I determine how to model carrying capacity
   private hasFood: boolean;
 
@@ -20,6 +23,7 @@ export class AntActor {
     this.id = randomUUID();
     this.position = position;
     this.state = ANT_STATES.FORAGING;
+    this.lifecycle = LIFECYCLE_STATES.ALIVE;
     this.hasFood = false;
   }
 
@@ -29,6 +33,10 @@ export class AntActor {
 
   getState() {
     return this.state;
+  }
+
+  getLifecycle() {
+    return this.lifecycle;
   }
 
   move(directionX: number, directionY: number) {

@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import { randomUUID } from "node:crypto";
 import { AntActor } from "./ant";
 import type { FoodSource, Perception, Position } from "../domain";
-import { ACTOR_ACTIONS } from "../domain";
+import { ACTOR_ACTIONS, LIFECYCLE_STATES } from "../domain";
 
 describe("AntActor", () => {
   it("should update its position when a MOVE action is applied", () => {
@@ -64,5 +64,12 @@ describe("AntActor", () => {
       expect(action.payload.directionX).toBe(1);
       expect(action.payload.directionY).toBe(1);
     }
+  });
+
+  it("should be created with an ALIVE lifecycle state", () => {
+    const initialPosition: Position = { x: 10, y: 10 };
+    const actor = new AntActor(initialPosition);
+
+    expect(actor.getLifecycle()).toBe(LIFECYCLE_STATES.ALIVE);
   });
 });

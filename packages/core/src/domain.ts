@@ -63,6 +63,14 @@ export type IdleAction = {
 
 export type Action = MoveAction | TakeFoodAction | IdleAction;
 
+export const LIFECYCLE_STATES = {
+  ALIVE: "ALIVE",
+  DEAD: "DEAD",
+} as const;
+
+export type LifecycleState =
+  (typeof LIFECYCLE_STATES)[keyof typeof LIFECYCLE_STATES];
+
 export type Perception = {
   nearestFood: FoodSource | null;
   nestPosition: Position;
