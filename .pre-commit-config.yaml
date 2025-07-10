@@ -19,9 +19,11 @@ repos:
         language: system
         entry: cargo check --manifest-path packages/core-rs/Cargo.toml
         files: ^packages/core-rs/
+        pass_filenames: false
 
       - id: rustfmt
         name: 'Rustfmt'
         language: system
         entry: cargo fmt --manifest-path packages/core-rs/Cargo.toml
         files: ^packages/core-rs/
+        pass_filenames: false
