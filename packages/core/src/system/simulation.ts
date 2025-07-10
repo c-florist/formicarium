@@ -1,6 +1,9 @@
+import { randomUUID } from "node:crypto";
 import { AntActor } from "../actors/ant";
-import type { Position } from "../domain";
+import type { Position, Action, Perception } from "../domain";
+import { ACTOR_ACTIONS } from "../domain";
 import { Ant, World } from "./world";
+import { distance } from "../utils/maths";
 
 const TICK_INTERVAL_MS = 100;
 
@@ -20,6 +23,7 @@ export class Simulation {
     };
 
     const foodSources = Array.from({ length: 5 }, () => ({
+      id: randomUUID(),
       position: {
         x: Math.floor(Math.random() * width),
         y: Math.floor(Math.random() * height),
@@ -33,6 +37,28 @@ export class Simulation {
       nestPosition,
       foodSources,
     });
+  }
+
+  private findNearestFood(position: Position) {
+    if (this.world.food.length === 0) {
+      return null;
+    }
+
+    let nearestFood = this.world.food[0];
+    if (!nearestFood) {
+      return null;
+    }
+
+    let minDistance = distance(position, nearestFood.position);
+
+    for (const food of this.world.food) {
+      const d = distance(position, food.position);
+      if (d < minDistance) {
+        minDistance = d;
+        nearestFood = food;
+      }
+    }
+    return nearestFood;
   }
 
   start() {
@@ -51,9 +77,38 @@ export class Simulation {
   }
 
   tick() {
-    // Actors update their internal state based on the current world
+    const actions = new Map<string, Action>();
+    // Actors perceive the world and decide on an action
     for (const actor of this.actors.values()) {
-      actor.update(this.world);
+      const perception: Perception = {
+        nearestFood: this.findNearestFood(actor.getPosition()),
+        nestPosition: this.world.nest.position,
+      };
+      const action = actor.perceive(perception);
+      actions.set(actor.id, action);
+    }
+
+    // The simulation updates the world based on the actors' actions
+    for (const [actorId, action] of actions.entries()) {
+      const actor = this.actors.get(actorId);
+      if (!actor) {
+        continue;
+      }
+
+      switch (action.type) {
+        case ACTOR_ACTIONS.MOVE:
+          actor.move(action.payload.directionX, action.payload.directionY);
+          break;
+        case ACTOR_ACTIONS.TAKE_FOOD: {
+          const food = this.world.food.find((f) => f.id === action.payload.foodId);
+          if (food) {
+            food.amount -= 1;
+          }
+          break;
+        }
+        case ACTOR_ACTIONS.IDLE:
+          break;
+      }
     }
 
     // Sync actor state back to the public world for the next tick

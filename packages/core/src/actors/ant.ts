@@ -5,9 +5,9 @@ import {
   type Position,
   ACTOR_ACTIONS,
   type Action,
+  type Perception,
 } from "../domain";
-import type { World } from "../system/world";
-import { distance, hasArrived } from "../utils/maths";
+import { hasArrived } from "../utils/maths";
 
 export class AntActor {
   readonly id: string;
@@ -31,40 +31,26 @@ export class AntActor {
     return this.state;
   }
 
-  private findNearestFood(world: World) {
-    if (world.food.length === 0) {
-      return null;
-    }
-
-    let nearestFood = world.food[0];
-    if (!nearestFood) {
-      return null;
-    }
-
-    let minDistance = distance(this.position, nearestFood.position);
-
-    for (const food of world.food) {
-      const d = distance(this.position, food.position);
-      if (d < minDistance) {
-        minDistance = d;
-        nearestFood = food;
-      }
-    }
-    return nearestFood;
+  move(directionX: number, directionY: number) {
+    this.position = {
+      x: this.position.x + directionX,
+      y: this.position.y + directionY,
+    };
   }
 
-  perceive(world: World): Action {
+  perceive(perception: Perception): Action {
     switch (this.state) {
       case ANT_STATES.FORAGING: {
-        const nearestFood = this.findNearestFood(world);
+        const { nearestFood } = perception;
 
         if (nearestFood && hasArrived(this.position, nearestFood.position)) {
           this.state = ANT_STATES.RETURNING_TO_NEST;
           this.hasFood = true;
-          nearestFood.amount -= 1;
-          // This will be changed to a TAKE_FOOD action
           return {
-            type: ACTOR_ACTIONS.IDLE,
+            type: ACTOR_ACTIONS.TAKE_FOOD,
+            payload: {
+              foodId: nearestFood.id,
+            },
           };
         }
 
@@ -90,7 +76,8 @@ export class AntActor {
         };
       }
       case ANT_STATES.RETURNING_TO_NEST: {
-        if (hasArrived(this.position, world.nest.position)) {
+        const { nestPosition } = perception;
+        if (hasArrived(this.position, nestPosition)) {
           this.state = ANT_STATES.FORAGING;
           this.hasFood = false;
           return {
@@ -98,8 +85,8 @@ export class AntActor {
           };
         }
 
-        const directionX = world.nest.position.x - this.position.x;
-        const directionY = world.nest.position.y - this.position.y;
+        const directionX = nestPosition.x - this.position.x;
+        const directionY = nestPosition.y - this.position.y;
 
         return {
           type: ACTOR_ACTIONS.MOVE,
@@ -109,25 +96,6 @@ export class AntActor {
           },
         };
       }
-    }
-  }
-
-  update(world: World) {
-    const action = this.perceive(world);
-
-    switch (action.type) {
-      case ACTOR_ACTIONS.MOVE:
-        this.position = {
-          x: this.position.x + action.payload.directionX,
-          y: this.position.y + action.payload.directionY,
-        };
-        break;
-      case ACTOR_ACTIONS.TAKE_FOOD:
-        // This will be implemented later
-        break;
-      case ACTOR_ACTIONS.IDLE:
-        // Do nothing
-        break;
     }
   }
 }

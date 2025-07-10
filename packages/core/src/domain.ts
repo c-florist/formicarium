@@ -15,6 +15,7 @@ export const ANT_STATES = {
 export type AntState = (typeof ANT_STATES)[keyof typeof ANT_STATES];
 
 export type FoodSource = {
+  readonly id: string;
   readonly position: Position;
   amount: number;
 };
