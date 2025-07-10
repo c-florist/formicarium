@@ -2,7 +2,7 @@ import { randomUUID } from "node:crypto";
 import { describe, expect, it, vi } from "vitest";
 import type { Position } from "../domain";
 import { ANT_STATES, LIFECYCLE_STATES } from "../domain";
-import { Simulation } from "./simulation";
+import { Simulation } from "./Simulation";
 
 describe("Simulation", () => {
   it("should add a new ant to the world state when createAnt is called", () => {

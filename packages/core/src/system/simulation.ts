@@ -1,5 +1,5 @@
 import { randomUUID } from "node:crypto";
-import { AntActor } from "../actors/ant";
+import { AntActor } from "../actors/Ant";
 import type { Action, Perception, Position } from "../domain";
 import { ACTOR_ACTIONS, LIFECYCLE_STATES } from "../domain";
 import { distance } from "../utils/maths";
