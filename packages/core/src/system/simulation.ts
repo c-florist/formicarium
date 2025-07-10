@@ -1,9 +1,9 @@
 import { randomUUID } from "node:crypto";
 import { AntActor } from "../actors/ant";
-import type { Position, Action, Perception } from "../domain";
+import type { Action, Perception, Position } from "../domain";
 import { ACTOR_ACTIONS } from "../domain";
-import { Ant, World } from "./world";
 import { distance } from "../utils/maths";
+import { Ant, World } from "./world";
 
 const TICK_INTERVAL_MS = 100;
 
@@ -101,7 +101,9 @@ export class Simulation {
           actor.move(action.payload.directionX, action.payload.directionY);
           break;
         case ACTOR_ACTIONS.TAKE_FOOD: {
-          const food = this.world.food.find((f) => f.id === action.payload.foodId);
+          const food = this.world.food.find(
+            (f) => f.id === action.payload.foodId,
+          );
           if (food) {
             food.amount -= 1;
           }

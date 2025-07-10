@@ -1,13 +1,13 @@
 import { randomUUID } from "node:crypto";
 import {
-  ANT_STATES,
-  type AntState,
-  type Position,
   ACTOR_ACTIONS,
   type Action,
-  type Perception,
+  ANT_STATES,
+  type AntState,
   LIFECYCLE_STATES,
   type LifecycleState,
+  type Perception,
+  type Position,
 } from "../domain";
 import { hasArrived } from "../utils/maths";
 

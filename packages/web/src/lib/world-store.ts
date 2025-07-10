@@ -1,6 +1,6 @@
+import { browser } from "$app/environment";
 import type { World } from "@formicarium/core";
 import { readable } from "svelte/store";
-import { browser } from "$app/environment";
 
 const WS_URL = import.meta.env["VITE_WEBSOCKET_BASE_URL"];
 

@@ -1,7 +1,7 @@
+import { randomUUID } from "node:crypto";
 import { describe, expect, it } from "vitest";
 import type { FoodSource, Position } from "../domain";
 import { World } from "./world";
-import { randomUUID } from "node:crypto";
 
 describe("World", () => {
   const nestPosition: Position = { x: 50, y: 50 };

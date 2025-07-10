@@ -1,11 +1,10 @@
-import { describe, expect, it, vi } from "vitest";
 import { randomUUID } from "node:crypto";
+import { describe, expect, it, vi } from "vitest";
 import type { Position } from "../domain";
 import { ANT_STATES, LIFECYCLE_STATES } from "../domain";
 import { Simulation } from "./simulation";
 
 describe("Simulation", () => {
-  // biome-ignore-start lint/style/noNonNullAssertion: No need to assert non-nullability in these tests
   it("should add a new ant to the world state when createAnt is called", () => {
     const simulation = new Simulation();
     const initialPosition: Position = { x: 10, y: 10 };
@@ -16,8 +15,8 @@ describe("Simulation", () => {
     const ant = simulation.world.ants.values().next().value;
     expect(ant).toBeDefined();
 
-    expect(ant!.position).toEqual(initialPosition);
-    expect(ant!.state).toBe(ANT_STATES.FORAGING);
+    expect(ant?.position).toEqual(initialPosition);
+    expect(ant?.state).toBe(ANT_STATES.FORAGING);
   });
 
   it("should update an ant's position in the world after a simulation tick", () => {
@@ -33,11 +32,10 @@ describe("Simulation", () => {
 
     const antAfterStep = simulation.world.ants.get(antId!);
     expect(antAfterStep).toBeDefined();
-    expect(antAfterStep!.position).not.toEqual(initialPosition);
+    expect(antAfterStep?.position).not.toEqual(initialPosition);
 
     vi.restoreAllMocks();
   });
-  // biome-ignore-end lint/style/noNonNullAssertion: No need to assert non-nullability in these tests
 
   it("should remove a food source when its amount reaches zero", () => {
     const simulation = new Simulation();
@@ -64,7 +62,6 @@ describe("Simulation", () => {
 
     const ant = simulation.world.ants.values().next().value;
     expect(ant).toBeDefined();
-    expect(ant!.lifecycle).toBe(LIFECYCLE_STATES.ALIVE);
+    expect(ant?.lifecycle).toBe(LIFECYCLE_STATES.ALIVE);
   });
 });
-// biome-ignore-end lint/style/noNonNullAssertion: No need to assert non-nullability in these tests

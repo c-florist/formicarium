@@ -1,6 +1,6 @@
 <script lang="ts">
-  import WorldCanvas from "$lib/WorldCanvas.svelte";
-  import { worldStore } from "$lib/world-store";
+import WorldCanvas from "$lib/WorldCanvas.svelte";
+import { worldStore } from "$lib/world-store";
 </script>
 
 <main class="flex items-center justify-center w-full h-screen p-4 bg-amber-50">

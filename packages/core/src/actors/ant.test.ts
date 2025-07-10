@@ -1,8 +1,8 @@
-import { describe, expect, it } from "vitest";
 import { randomUUID } from "node:crypto";
-import { AntActor } from "./ant";
+import { describe, expect, it } from "vitest";
 import type { FoodSource, Perception, Position } from "../domain";
 import { ACTOR_ACTIONS, LIFECYCLE_STATES } from "../domain";
+import { AntActor } from "./ant";
 
 describe("AntActor", () => {
   it("should update its position when a MOVE action is applied", () => {
