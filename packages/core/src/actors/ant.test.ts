@@ -72,4 +72,13 @@ describe("AntActor", () => {
 
     expect(actor.getLifecycle()).toBe(LIFECYCLE_STATES.ALIVE);
   });
+
+  it("should have a DEAD lifecycle state after being killed", () => {
+    const initialPosition: Position = { x: 10, y: 10 };
+    const actor = new AntActor(initialPosition);
+
+    actor.kill();
+
+    expect(actor.getLifecycle()).toBe(LIFECYCLE_STATES.DEAD);
+  });
 });

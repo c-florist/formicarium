@@ -39,6 +39,10 @@ export class AntActor {
     return this.lifecycle;
   }
 
+  kill() {
+    this.lifecycle = LIFECYCLE_STATES.DEAD;
+  }
+
   move(directionX: number, directionY: number) {
     this.position = {
       x: this.position.x + directionX,
