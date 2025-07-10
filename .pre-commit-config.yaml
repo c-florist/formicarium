@@ -5,9 +5,11 @@ repos:
         name: 'Tidy'
         language: system
         entry: pnpm run tidy
+        exclude: ^packages/core-rs/
 
       - id: typecheck
         name: 'Typecheck'
         language: system
         entry: pnpm run typecheck
+        exclude: ^packages/core-rs/
         pass_filenames: false
