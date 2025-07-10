@@ -1,4 +1,4 @@
-import type { Simulation } from "@formicarium/core";
+import type { Simulation } from "@formicarium/orchestrator";
 import type { FastifyInstance } from "fastify";
 
 declare module "fastify" {

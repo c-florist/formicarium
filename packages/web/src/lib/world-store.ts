@@ -1,5 +1,5 @@
 import { browser } from "$app/environment";
-import type { WorldDto } from "@formicarium/core";
+import type { WorldDto } from "@formicarium/orchestrator";
 import { readable } from "svelte/store";
 
 const WS_URL = import.meta.env["VITE_WEBSOCKET_BASE_URL"];

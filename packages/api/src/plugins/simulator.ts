@@ -1,4 +1,4 @@
-import { Simulation } from "@formicarium/core";
+import { Simulation } from "@formicarium/orchestrator";
 import type { FastifyInstance } from "fastify";
 
 export default async function simulator(fastify: FastifyInstance) {
