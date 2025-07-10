@@ -1,7 +1,6 @@
 import { randomUUID } from "node:crypto";
 import {
-  ACTOR_ACTIONS,
-  type Action,
+  ANT_ACTOR_ACTIONS,
   ANT_STATES,
   type AntState,
   LIFECYCLE_STATES,
@@ -50,7 +49,7 @@ export class AntActor {
     };
   }
 
-  perceive(perception: Perception): Action {
+  perceive(perception: Perception) {
     switch (this.state) {
       case ANT_STATES.FORAGING: {
         const { nearestFood } = perception;
@@ -59,7 +58,7 @@ export class AntActor {
           this.state = ANT_STATES.RETURNING_TO_NEST;
           this.hasFood = true;
           return {
-            type: ACTOR_ACTIONS.TAKE_FOOD,
+            actionType: ANT_ACTOR_ACTIONS.TAKE_FOOD,
             payload: {
               foodId: nearestFood.id,
             },
@@ -68,7 +67,7 @@ export class AntActor {
 
         if (!nearestFood) {
           return {
-            type: ACTOR_ACTIONS.MOVE,
+            actionType: ANT_ACTOR_ACTIONS.MOVE,
             payload: {
               directionX: Math.floor(Math.random() * 3) - 1,
               directionY: Math.floor(Math.random() * 3) - 1,
@@ -80,7 +79,7 @@ export class AntActor {
         const directionY = nearestFood.position.y - this.position.y;
 
         return {
-          type: ACTOR_ACTIONS.MOVE,
+          actionType: ANT_ACTOR_ACTIONS.MOVE,
           payload: {
             directionX: Math.sign(directionX),
             directionY: Math.sign(directionY),
@@ -93,7 +92,7 @@ export class AntActor {
           this.state = ANT_STATES.FORAGING;
           this.hasFood = false;
           return {
-            type: ACTOR_ACTIONS.IDLE,
+            actionType: ANT_ACTOR_ACTIONS.IDLE,
           };
         }
 
@@ -101,7 +100,7 @@ export class AntActor {
         const directionY = nestPosition.y - this.position.y;
 
         return {
-          type: ACTOR_ACTIONS.MOVE,
+          actionType: ANT_ACTOR_ACTIONS.MOVE,
           payload: {
             directionX: Math.sign(directionX),
             directionY: Math.sign(directionY),

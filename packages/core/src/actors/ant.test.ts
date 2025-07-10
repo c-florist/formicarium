@@ -1,7 +1,7 @@
 import { randomUUID } from "node:crypto";
 import { describe, expect, it } from "vitest";
 import type { FoodSource, Perception, Position } from "../domain";
-import { ACTOR_ACTIONS, LIFECYCLE_STATES } from "../domain";
+import { ANT_ACTOR_ACTIONS, LIFECYCLE_STATES } from "../domain";
 import { AntActor } from "./Ant";
 
 describe("AntActor", () => {
@@ -35,8 +35,8 @@ describe("AntActor", () => {
 
     const action = actor.perceive(perception);
 
-    expect(action.type).toBe(ACTOR_ACTIONS.TAKE_FOOD);
-    if (action.type === ACTOR_ACTIONS.TAKE_FOOD) {
+    expect(action.actionType).toBe(ANT_ACTOR_ACTIONS.TAKE_FOOD);
+    if (action.actionType === ANT_ACTOR_ACTIONS.TAKE_FOOD) {
       expect(action.payload.foodId).toBe(foodId);
     }
   });
@@ -59,8 +59,8 @@ describe("AntActor", () => {
 
     const action = actor.perceive(perception);
 
-    expect(action.type).toBe(ACTOR_ACTIONS.MOVE);
-    if (action.type === ACTOR_ACTIONS.MOVE) {
+    expect(action.actionType).toBe(ANT_ACTOR_ACTIONS.MOVE);
+    if (action.actionType === ANT_ACTOR_ACTIONS.MOVE) {
       expect(action.payload.directionX).toBe(1);
       expect(action.payload.directionY).toBe(1);
     }

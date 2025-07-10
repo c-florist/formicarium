@@ -21,7 +21,7 @@ export class WorldActor {
     });
   }
 
-  getDto(): WorldDto {
+  getDto() {
     return this.world;
   }
 

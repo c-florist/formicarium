@@ -1,14 +1,14 @@
 import { randomUUID } from "node:crypto";
 import { AntActor } from "../actors/Ant";
-import type { Action, Perception, Position } from "../domain";
-import { ACTOR_ACTIONS, LIFECYCLE_STATES } from "../domain";
+import type { AntActorMessage, Perception, Position } from "../domain";
+import { ANT_ACTOR_ACTIONS, LIFECYCLE_STATES } from "../domain";
 import { distance } from "../utils/maths";
 import { AntDto, WorldDto } from "./Dto";
 
 const TICK_INTERVAL_MS = 100;
 
 export class Simulation {
-  private actors: Map<string, AntActor> = new Map();
+  private antActors: Map<string, AntActor> = new Map();
   world: WorldDto;
   private timer: NodeJS.Timeout | null = null;
   private tickListeners: Set<() => void> = new Set();
@@ -85,10 +85,10 @@ export class Simulation {
   }
 
   tick() {
-    const actions = new Map<string, Action>();
+    const actions = new Map<string, AntActorMessage>();
 
     // Collect actions from actors based on their perception of the world
-    for (const actor of this.actors.values()) {
+    for (const actor of this.antActors.values()) {
       const perception: Perception = {
         nearestFood: this.findNearestFood(actor.getPosition()),
         nestPosition: this.world.nest.position,
@@ -99,16 +99,16 @@ export class Simulation {
 
     // Update the world based on the actors' actions
     for (const [actorId, action] of actions.entries()) {
-      const actor = this.actors.get(actorId);
+      const actor = this.antActors.get(actorId);
       if (!actor) {
         continue;
       }
 
-      switch (action.type) {
-        case ACTOR_ACTIONS.MOVE:
+      switch (action.actionType) {
+        case ANT_ACTOR_ACTIONS.MOVE:
           actor.move(action.payload.directionX, action.payload.directionY);
           break;
-        case ACTOR_ACTIONS.TAKE_FOOD: {
+        case ANT_ACTOR_ACTIONS.TAKE_FOOD: {
           const food = this.world.food.find(
             (f) => f.id === action.payload.foodId,
           );
@@ -117,13 +117,13 @@ export class Simulation {
           }
           break;
         }
-        case ACTOR_ACTIONS.IDLE:
+        case ANT_ACTOR_ACTIONS.IDLE:
           break;
       }
     }
 
     // Sync actor state back to the public world for the next tick
-    for (const actor of this.actors.values()) {
+    for (const actor of this.antActors.values()) {
       const ant = this.world.ants.get(actor.id);
       if (ant) {
         ant.position = actor.getPosition();
@@ -136,9 +136,9 @@ export class Simulation {
     this.world.food = this.world.food.filter((food) => food.amount > 0);
 
     // Remove dead ants
-    for (const actor of this.actors.values()) {
+    for (const actor of this.antActors.values()) {
       if (actor.getLifecycle() === LIFECYCLE_STATES.DEAD) {
-        this.actors.delete(actor.id);
+        this.antActors.delete(actor.id);
         this.world.ants.delete(actor.id);
       }
     }
@@ -150,7 +150,7 @@ export class Simulation {
 
   createAnt(position: Position) {
     const actor = new AntActor(position);
-    this.actors.set(actor.id, actor);
+    this.antActors.set(actor.id, actor);
 
     const ant = new AntDto({
       id: actor.id,
@@ -162,7 +162,7 @@ export class Simulation {
   }
 
   killAnt(antId: string) {
-    const actor = this.actors.get(antId);
+    const actor = this.antActors.get(antId);
     if (actor) {
       actor.kill();
     }

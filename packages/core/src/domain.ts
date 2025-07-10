@@ -34,34 +34,38 @@ export type Pheromone = {
   type: PheromoneType;
 };
 
-export const ACTOR_ACTIONS = {
+export const ANT_ACTOR_ACTIONS = {
   MOVE: "MOVE",
   TAKE_FOOD: "TAKE_FOOD",
   IDLE: "IDLE",
 } as const;
 
-export type ActorAction = (typeof ACTOR_ACTIONS)[keyof typeof ACTOR_ACTIONS];
+export type AntActorAction =
+  (typeof ANT_ACTOR_ACTIONS)[keyof typeof ANT_ACTOR_ACTIONS];
 
-export type MoveAction = {
-  type: typeof ACTOR_ACTIONS.MOVE;
+export type AntActorMoveMessage = {
+  actionType: typeof ANT_ACTOR_ACTIONS.MOVE;
   payload: {
     directionX: number;
     directionY: number;
   };
 };
 
-export type TakeFoodAction = {
-  type: typeof ACTOR_ACTIONS.TAKE_FOOD;
+export type AntActorTakeFoodMessage = {
+  actionType: typeof ANT_ACTOR_ACTIONS.TAKE_FOOD;
   payload: {
     foodId: string;
   };
 };
 
-export type IdleAction = {
-  type: typeof ACTOR_ACTIONS.IDLE;
+export type AntActorIdleMessage = {
+  actionType: typeof ANT_ACTOR_ACTIONS.IDLE;
 };
 
-export type Action = MoveAction | TakeFoodAction | IdleAction;
+export type AntActorMessage =
+  | AntActorMoveMessage
+  | AntActorTakeFoodMessage
+  | AntActorIdleMessage;
 
 export const LIFECYCLE_STATES = {
   ALIVE: "ALIVE",
