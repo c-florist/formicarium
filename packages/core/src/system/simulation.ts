@@ -78,7 +78,8 @@ export class Simulation {
 
   tick() {
     const actions = new Map<string, Action>();
-    // Actors perceive the world and decide on an action
+
+    // Collect actions from actors based on their perception of the world
     for (const actor of this.actors.values()) {
       const perception: Perception = {
         nearestFood: this.findNearestFood(actor.getPosition()),
@@ -88,7 +89,7 @@ export class Simulation {
       actions.set(actor.id, action);
     }
 
-    // The simulation updates the world based on the actors' actions
+    // Update the world based on the actors' actions
     for (const [actorId, action] of actions.entries()) {
       const actor = this.actors.get(actorId);
       if (!actor) {
