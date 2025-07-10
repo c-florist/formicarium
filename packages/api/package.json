@@ -14,7 +14,7 @@
   },
   "dependencies": {
     "@fastify/websocket": "^11.1.0",
-    "@formicarium/orchestrator": "workspace:*",
+    "@formicarium/domain": "workspace:*",
     "fastify": "^5.4.0"
   },
   "devDependencies": {

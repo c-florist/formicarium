@@ -5,7 +5,7 @@ import type {
   Nest,
   Pheromone,
   Position,
-} from "../domain";
+} from "./domain";
 
 /**
  * Represents the public state of an ant in the world.

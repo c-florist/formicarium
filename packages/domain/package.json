@@ -1,5 +1,5 @@
 {
-  "name": "@formicarium/orchestrator",
+  "name": "@formicarium/domain",
   "version": "1.0.0",
   "private": true,
   "type": "module",
@@ -12,10 +12,7 @@
     }
   },
   "scripts": {
-    "build": "tsc",
-    "check": "tsc --noEmit",
-    "dev": "tsc --watch",
-    "test:unit": "vitest run",
-    "test:unit:watch": "vitest watch"
+    "build": "tsc -b",
+    "check": "tsc --noEmit"
   }
 }

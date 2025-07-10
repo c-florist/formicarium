@@ -5,7 +5,7 @@
   "scripts": {
     "tidy": "biome check --write .",
     "tidy:check": "biome check",
-    "typecheck": "pnpm --filter @formicarium/orchestrator run build && pnpm --filter @formicarium/api run check && pnpm --filter @formicarium/web run check",
+    "typecheck": "pnpm --filter @formicarium/domain run build && pnpm --filter @formicarium/api run check && pnpm --filter @formicarium/web run check",
     "dev:api": "pnpm --filter \"@formicarium/api\" dev",
     "dev:web": "pnpm --filter \"@formicarium/web\" dev"
   },

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { Simulation } from "../../core-rs/pkg/core_rs";
+import { Simulation } from "../../../core-rs/pkg/core_rs";
 
 describe("Wasm Simulation", () => {
   it("should update an entity's position after a tick", () => {

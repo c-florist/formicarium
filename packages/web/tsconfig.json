@@ -16,5 +16,5 @@
     ".svelte-kit/ambient.d.ts",
     ".svelte-kit/types/**/$types.d.ts"
   ],
-  "references": [{ "path": "../orchestrator" }]
+  "references": [{ "path": "../domain" }]
 }
