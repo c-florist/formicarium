@@ -1,10 +1,10 @@
 import { browser } from "$app/environment";
-import type { World } from "@formicarium/core";
+import type { WorldDto } from "@formicarium/core";
 import { readable } from "svelte/store";
 
 const WS_URL = import.meta.env["VITE_WEBSOCKET_BASE_URL"];
 
-export const worldStore = readable<World | null>(null, (set) => {
+export const worldStore = readable<WorldDto | null>(null, (set) => {
   if (!browser) {
     return;
   }
@@ -13,7 +13,7 @@ export const worldStore = readable<World | null>(null, (set) => {
   const ws = new WebSocket(url);
 
   ws.onmessage = (event) => {
-    const worldData: World = JSON.parse(event.data);
+    const worldData: WorldDto = JSON.parse(event.data);
     set(worldData);
   };
 

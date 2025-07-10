@@ -17,7 +17,7 @@ type AntOptions = {
 /**
  * Represents the public state of an ant in the world.
  */
-export class Ant {
+export class AntDto {
   readonly id: string;
   position: Position;
   state: AntState;
@@ -41,10 +41,10 @@ type WorldOptions = {
 /**
  * Represents the read model of the entire simulation world
  */
-export class World {
+export class WorldDto {
   width: number;
   height: number;
-  ants: Map<string, Ant>;
+  ants: Map<string, AntDto>;
   food: FoodSource[];
   pheromones: Map<string, Pheromone>;
   nest: Nest;

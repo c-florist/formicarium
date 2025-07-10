@@ -3,13 +3,13 @@ import { AntActor } from "../actors/ant";
 import type { Action, Perception, Position } from "../domain";
 import { ACTOR_ACTIONS, LIFECYCLE_STATES } from "../domain";
 import { distance } from "../utils/maths";
-import { Ant, World } from "./world";
+import { AntDto, WorldDto } from "./Dto";
 
 const TICK_INTERVAL_MS = 100;
 
 export class Simulation {
   private actors: Map<string, AntActor> = new Map();
-  world: World;
+  world: WorldDto;
   private timer: NodeJS.Timeout | null = null;
   private tickListeners: Set<() => void> = new Set();
 
@@ -31,7 +31,7 @@ export class Simulation {
       amount: 5,
     }));
 
-    this.world = new World({
+    this.world = new WorldDto({
       width,
       height,
       nestPosition,
@@ -152,7 +152,7 @@ export class Simulation {
     const actor = new AntActor(position);
     this.actors.set(actor.id, actor);
 
-    const ant = new Ant({
+    const ant = new AntDto({
       id: actor.id,
       position: actor.getPosition(),
       state: actor.getState(),

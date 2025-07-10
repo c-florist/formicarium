@@ -1,13 +1,13 @@
 import { randomUUID } from "node:crypto";
 import { describe, expect, it } from "vitest";
 import type { FoodSource, Position } from "../domain";
-import { World } from "./world";
+import { WorldDto } from "./Dto";
 
-describe("World", () => {
+describe("WorldDto", () => {
   const nestPosition: Position = { x: 50, y: 50 };
 
   it("should initialize the nest at the correct position", () => {
-    const world = new World({
+    const world = new WorldDto({
       width: 100,
       height: 100,
       nestPosition,
@@ -22,7 +22,7 @@ describe("World", () => {
       { id: randomUUID(), position: { x: 80, y: 20 }, amount: 50 },
     ];
 
-    const world = new World({
+    const world = new WorldDto({
       width: 100,
       height: 100,
       nestPosition,
@@ -34,7 +34,7 @@ describe("World", () => {
   });
 
   it("should default to an empty array if food sources are not provided", () => {
-    const world = new World({
+    const world = new WorldDto({
       width: 100,
       height: 100,
       nestPosition,
