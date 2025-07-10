@@ -34,6 +34,9 @@ jobs:
       - name: Run Biome check
         run: pnpm run tidy:check
 
+      - name: Run rustfmt check
+        run: cargo fmt --manifest-path packages/core-rs/Cargo.toml -- --check
+
   typecheck:
     name: Typecheck
     runs-on: ubuntu-latest
@@ -79,5 +82,11 @@ jobs:
       - name: Install node modules
         run: pnpm install
 
-      - name: Run unit tests
+      - name: Run TypeScript unit tests
         run: pnpm --filter "@formicarium/*" test:unit
+
+      - name: Build Rust binaries
+        run: cargo build --manifest-path packages/core-rs/Cargo.toml
+
+      - name: Run Rust unit tests
+        run: cargo test --manifest-path packages/core-rs/Cargo.toml
