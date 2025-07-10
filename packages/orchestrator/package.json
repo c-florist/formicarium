@@ -13,7 +13,7 @@
   },
   "scripts": {
     "build": "tsc",
-    "check": "tsc --emitDeclarationOnly",
+    "check": "tsc --noEmit",
     "dev": "tsc --watch",
     "test:unit": "vitest run",
     "test:unit:watch": "vitest watch"

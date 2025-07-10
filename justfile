@@ -39,6 +39,7 @@ typecheck package='all':
     #!/usr/bin/env sh
     if [ "$package" = "all" ]; then
         pnpm run typecheck
+        cargo check --manifest-path packages/core-rs/Cargo.toml
     elif [ "$package" = "core-rs" ]; then
         cargo check --manifest-path packages/core-rs/Cargo.toml
     else
