@@ -1,4 +1,5 @@
 import { describe, expect, it, vi } from "vitest";
+import { randomUUID } from "node:crypto";
 import type { Position } from "../domain";
 import { ANT_STATES } from "../domain";
 import { Simulation } from "./simulation";
@@ -40,7 +41,10 @@ describe("Simulation", () => {
 
   it("should remove a food source when its amount reaches zero", () => {
     const simulation = new Simulation();
-    simulation.world.food = [{ position: { x: 20, y: 20 }, amount: 1 }];
+    const foodId = randomUUID();
+    simulation.world.food = [
+      { id: foodId, position: { x: 20, y: 20 }, amount: 1 },
+    ];
     simulation.createAnt({ x: 19, y: 19 });
 
     expect(simulation.world.food.length).toBe(1);

@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import type { FoodSource, Position } from "../domain";
 import { World } from "./world";
+import { randomUUID } from "node:crypto";
 
 describe("World", () => {
   const nestPosition: Position = { x: 50, y: 50 };
@@ -17,8 +18,8 @@ describe("World", () => {
 
   it("should initialize food sources when provided", () => {
     const foodSources: FoodSource[] = [
-      { position: { x: 10, y: 10 }, amount: 100 },
-      { position: { x: 80, y: 20 }, amount: 50 },
+      { id: randomUUID(), position: { x: 10, y: 10 }, amount: 100 },
+      { id: randomUUID(), position: { x: 80, y: 20 }, amount: 50 },
     ];
 
     const world = new World({

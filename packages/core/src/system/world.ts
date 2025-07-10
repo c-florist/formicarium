@@ -13,7 +13,7 @@ type AntOptions = {
 };
 
 /**
- * Represents the public state of an ant in the world.
+ * Represents the public state of an ant in the world
  */
 export class Ant {
   readonly id: string;

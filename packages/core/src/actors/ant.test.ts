@@ -1,72 +1,68 @@
-import { describe, expect, it, vi } from "vitest";
+import { describe, expect, it } from "vitest";
+import { randomUUID } from "node:crypto";
 import { AntActor } from "./ant";
-import type { FoodSource, Position } from "../domain";
-import { ANT_STATES } from "../domain";
-import { distance } from "../utils/maths";
-import { World } from "../system/world";
+import type { FoodSource, Perception, Position } from "../domain";
+import { ACTOR_ACTIONS } from "../domain";
 
 describe("AntActor", () => {
-  it("should change position when in FORAGING state", () => {
-    vi.spyOn(Math, "random").mockReturnValue(0.9);
-
+  it("should update its position when a MOVE action is applied", () => {
     const initialPosition: Position = { x: 10, y: 10 };
     const actor = new AntActor(initialPosition);
-    const world = new World({
-      width: 100,
-      height: 100,
-      nestPosition: { x: 50, y: 50 },
-    });
 
-    actor.update(world);
+    actor.move(1, -1);
 
-    expect(actor.getPosition()).not.toEqual(initialPosition);
-
-    vi.restoreAllMocks();
+    const newPosition = actor.getPosition();
+    expect(newPosition.x).toBe(11);
+    expect(newPosition.y).toBe(9);
   });
 
-  it("should move towards the nearest food source when foraging", () => {
-    const initialPosition: Position = { x: 10, y: 10 };
+  it("should return a TAKE_FOOD action when it finds food", () => {
+    const initialPosition: Position = { x: 19, y: 19 };
     const actor = new AntActor(initialPosition);
+    const foodId = randomUUID();
 
-    const nearestFood: FoodSource = { position: { x: 20, y: 20 }, amount: 100 };
-    const farthestFood: FoodSource = {
-      position: { x: 80, y: 80 },
+    const food: FoodSource = {
+      id: foodId,
+      position: { x: 20, y: 20 },
       amount: 100,
     };
+    const nestPosition: Position = { x: 50, y: 50 };
 
-    const world = new World({
-      width: 100,
-      height: 100,
-      nestPosition: { x: 50, y: 50 },
-      foodSources: [farthestFood, nearestFood],
-    });
+    const perception: Perception = {
+      nearestFood: food,
+      nestPosition,
+    };
 
-    const initialDistance = distance(initialPosition, nearestFood.position);
+    const action = actor.perceive(perception);
 
-    actor.update(world);
-
-    const newDistance = distance(actor.getPosition(), nearestFood.position);
-
-    expect(newDistance).toBeLessThan(initialDistance);
+    expect(action.type).toBe(ACTOR_ACTIONS.TAKE_FOOD);
+    if (action.type === ACTOR_ACTIONS.TAKE_FOOD) {
+      expect(action.payload.foodId).toBe(foodId);
+    }
   });
 
-  it("should switch to RETURNING_TO_NEST state when it finds food", () => {
-    const initialPosition: Position = { x: 18, y: 18 };
+  it("should return a MOVE action towards the nearest food source when perceiving the world", () => {
+    const initialPosition: Position = { x: 10, y: 10 };
     const actor = new AntActor(initialPosition);
 
-    const food: FoodSource = { position: { x: 20, y: 20 }, amount: 100 };
+    const nearestFood: FoodSource = {
+      id: randomUUID(),
+      position: { x: 20, y: 20 },
+      amount: 100,
+    };
+    const nestPosition: Position = { x: 50, y: 50 };
 
-    const world = new World({
-      width: 100,
-      height: 100,
-      nestPosition: { x: 50, y: 50 },
-      foodSources: [food],
-    });
+    const perception: Perception = {
+      nearestFood,
+      nestPosition,
+    };
 
-    // Move the ant close to the food
-    actor.update(world);
-    actor.update(world);
+    const action = actor.perceive(perception);
 
-    expect(actor.getState()).toBe(ANT_STATES.RETURNING_TO_NEST);
+    expect(action.type).toBe(ACTOR_ACTIONS.MOVE);
+    if (action.type === ACTOR_ACTIONS.MOVE) {
+      expect(action.payload.directionX).toBe(1);
+      expect(action.payload.directionY).toBe(1);
+    }
   });
 });
