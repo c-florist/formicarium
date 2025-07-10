@@ -1,6 +1,7 @@
 import type {
   AntState,
   FoodSource,
+  LifecycleState,
   Nest,
   Pheromone,
   Position,
@@ -10,20 +11,23 @@ type AntOptions = {
   id: string;
   position: Position;
   state: AntState;
+  lifecycle: LifecycleState;
 };
 
 /**
- * Represents the public state of an ant in the world
+ * Represents the public state of an ant in the world.
  */
 export class Ant {
   readonly id: string;
   position: Position;
   state: AntState;
+  lifecycle: LifecycleState;
 
   constructor(options: AntOptions) {
     this.id = options.id;
     this.position = options.position;
     this.state = options.state;
+    this.lifecycle = options.lifecycle;
   }
 }
 

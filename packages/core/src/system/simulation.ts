@@ -118,6 +118,7 @@ export class Simulation {
       if (ant) {
         ant.position = actor.getPosition();
         ant.state = actor.getState();
+        ant.lifecycle = actor.getLifecycle();
       }
     }
 
@@ -137,6 +138,7 @@ export class Simulation {
       id: actor.id,
       position: actor.getPosition(),
       state: actor.getState(),
+      lifecycle: actor.getLifecycle(),
     });
     this.world.ants.set(ant.id, ant);
   }

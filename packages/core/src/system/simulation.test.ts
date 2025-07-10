@@ -1,7 +1,7 @@
 import { describe, expect, it, vi } from "vitest";
 import { randomUUID } from "node:crypto";
 import type { Position } from "../domain";
-import { ANT_STATES } from "../domain";
+import { ANT_STATES, LIFECYCLE_STATES } from "../domain";
 import { Simulation } from "./simulation";
 
 describe("Simulation", () => {
@@ -54,6 +54,17 @@ describe("Simulation", () => {
 
     // The simulation should now remove the empty food source
     expect(simulation.world.food.length).toBe(0);
+  });
+
+  it("should add an ant with an ALIVE lifecycle state to the world", () => {
+    const simulation = new Simulation();
+    const initialPosition: Position = { x: 10, y: 10 };
+
+    simulation.createAnt(initialPosition);
+
+    const ant = simulation.world.ants.values().next().value;
+    expect(ant).toBeDefined();
+    expect(ant!.lifecycle).toBe(LIFECYCLE_STATES.ALIVE);
   });
 });
 // biome-ignore-end lint/style/noNonNullAssertion: No need to assert non-nullability in these tests
