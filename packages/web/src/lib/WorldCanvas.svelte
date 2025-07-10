@@ -21,20 +21,20 @@ $effect(() => {
   ctx.fillRect(
     $worldStore.nest.position.x,
     $worldStore.nest.position.y,
-    10,
-    10,
+    20,
+    20,
   );
 
   // Draw food sources
   ctx.fillStyle = "#4ade80";
   $worldStore.foodSources.forEach((foodSource) => {
-    ctx.fillRect(foodSource.position.x, foodSource.position.y, 5, 5);
+    ctx.fillRect(foodSource.position.x, foodSource.position.y, 10, 10);
   });
 
   // Draw ants
   ctx.fillStyle = "#8a3324";
   Object.values($worldStore.ants).forEach((ant) => {
-    ctx.fillRect(ant.position.x, ant.position.y, 2, 2);
+    ctx.fillRect(ant.position.x, ant.position.y, 3, 3);
   });
 });
 </script>

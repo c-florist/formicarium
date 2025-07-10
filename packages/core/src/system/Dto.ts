@@ -73,7 +73,7 @@ export class WorldDto {
       width: this.width,
       height: this.height,
       ants: Object.fromEntries(this.ants),
-      food: this.foodSources,
+      foodSources: this.foodSources,
       pheromones: Object.fromEntries(this.pheromones),
       nest: this.nest,
     };
