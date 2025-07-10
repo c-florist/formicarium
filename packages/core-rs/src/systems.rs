@@ -1,5 +1,5 @@
-use hecs::World;
 use crate::components::{Position, Velocity};
+use hecs::World;
 
 pub fn movement_system(world: &mut World) {
     // Query for all entities that have both a Position and a Velocity component.
@@ -12,8 +12,8 @@ pub fn movement_system(world: &mut World) {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use hecs::World;
     use crate::components::{Position, Velocity};
+    use hecs::World;
 
     #[test]
     fn test_movement_system() {

@@ -26,7 +26,8 @@ start:
     pnpm start
 
 # Run linting and fix issues
-tidy flags:
+tidy *flags:
+    cargo fmt --manifest-path packages/core-rs/Cargo.toml
     pnpm run tidy {{flags}}
 
 # Run linting and check issues
@@ -38,6 +39,8 @@ typecheck package='all':
     #!/usr/bin/env sh
     if [ "$package" = "all" ]; then
         pnpm run typecheck
+    elif [ "$package" = "core-rs" ]; then
+        cargo check --manifest-path packages/core-rs/Cargo.toml
     else
         pnpm --filter "@formicarium/$package" check
     fi
