@@ -26,8 +26,8 @@ start:
     pnpm start
 
 # Run linting and fix issues
-tidy:
-    pnpm run tidy
+tidy flags:
+    pnpm run tidy {{flags}}
 
 # Run linting and check issues
 tidy-check:

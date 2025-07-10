@@ -10,7 +10,7 @@ declare module "fastify" {
 export default async function worldRouter(fastify: FastifyInstance) {
   fastify.get("/ws/world", { websocket: true }, (socket, _request) => {
     const tickListener = () => {
-      socket.send(JSON.stringify(fastify.simulation.world.toJSON()));
+      socket.send(JSON.stringify(fastify.simulation.getWorld()));
     };
 
     fastify.simulation.addTickListener(tickListener);

@@ -27,8 +27,8 @@ $effect(() => {
 
   // Draw food sources
   ctx.fillStyle = "#4ade80";
-  $worldStore.food.forEach((food) => {
-    ctx.fillRect(food.position.x, food.position.y, 5, 5);
+  $worldStore.foodSources.forEach((foodSource) => {
+    ctx.fillRect(foodSource.position.x, foodSource.position.y, 5, 5);
   });
 
   // Draw ants

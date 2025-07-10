@@ -7,55 +7,65 @@ import type {
   Position,
 } from "../domain";
 
-type AntOptions = {
-  id: string;
-  position: Position;
-  state: AntState;
-  lifecycle: LifecycleState;
-};
-
 /**
  * Represents the public state of an ant in the world.
  */
 export class AntDto {
   readonly id: string;
-  position: Position;
-  state: AntState;
-  lifecycle: LifecycleState;
+  readonly position: Position;
+  readonly state: AntState;
+  readonly lifecycle: LifecycleState;
 
-  constructor(options: AntOptions) {
-    this.id = options.id;
-    this.position = options.position;
-    this.state = options.state;
-    this.lifecycle = options.lifecycle;
+  constructor({
+    id,
+    position,
+    state,
+    lifecycle,
+  }: {
+    id: string;
+    position: Position;
+    state: AntState;
+    lifecycle: LifecycleState;
+  }) {
+    this.id = id;
+    this.position = position;
+    this.state = state;
+    this.lifecycle = lifecycle;
   }
 }
-
-type WorldOptions = {
-  width: number;
-  height: number;
-  nestPosition: Position;
-  foodSources?: FoodSource[];
-};
 
 /**
  * Represents the read model of the entire simulation world
  */
 export class WorldDto {
-  width: number;
-  height: number;
-  ants: Map<string, AntDto>;
-  food: FoodSource[];
-  pheromones: Map<string, Pheromone>;
-  nest: Nest;
+  readonly width: number;
+  readonly height: number;
+  readonly ants: ReadonlyMap<string, AntDto>;
+  readonly foodSources: readonly FoodSource[];
+  readonly pheromones: ReadonlyMap<string, Pheromone>;
+  readonly nest: Nest;
 
-  constructor(options: WorldOptions) {
-    this.width = options.width;
-    this.height = options.height;
-    this.ants = new Map();
-    this.food = options.foodSources ?? [];
-    this.pheromones = new Map();
-    this.nest = { position: options.nestPosition };
+  constructor({
+    width,
+    height,
+    ants,
+    foodSources,
+    pheromones,
+    nest,
+  }: {
+    width: number;
+    height: number;
+    ants: Map<string, AntDto>;
+    foodSources: FoodSource[];
+    pheromones: Map<string, Pheromone>;
+    nest: Nest;
+  }) {
+    this.width = width;
+    this.height = height;
+    this.ants = ants;
+    this.foodSources = foodSources;
+    this.pheromones = pheromones;
+    this.nest = nest;
   }
 
   toJSON() {
@@ -63,7 +73,7 @@ export class WorldDto {
       width: this.width,
       height: this.height,
       ants: Object.fromEntries(this.ants),
-      food: this.food,
+      food: this.foodSources,
       pheromones: Object.fromEntries(this.pheromones),
       nest: this.nest,
     };

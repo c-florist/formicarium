@@ -58,6 +58,7 @@ export class AntActor {
           this.state = ANT_STATES.RETURNING_TO_NEST;
           this.hasFood = true;
           return {
+            id: this.id,
             actionType: ANT_ACTOR_ACTIONS.TAKE_FOOD,
             payload: {
               foodId: nearestFood.id,
@@ -66,23 +67,26 @@ export class AntActor {
         }
 
         if (!nearestFood) {
+          const directionX = Math.floor(Math.random() * 3) - 1;
+          const directionY = Math.floor(Math.random() * 3) - 1;
           return {
+            id: this.id,
             actionType: ANT_ACTOR_ACTIONS.MOVE,
             payload: {
-              directionX: Math.floor(Math.random() * 3) - 1,
-              directionY: Math.floor(Math.random() * 3) - 1,
+              directionX,
+              directionY,
             },
           };
         }
 
-        const directionX = nearestFood.position.x - this.position.x;
-        const directionY = nearestFood.position.y - this.position.y;
-
+        const directionX = Math.sign(nearestFood.position.x - this.position.x);
+        const directionY = Math.sign(nearestFood.position.y - this.position.y);
         return {
+          id: this.id,
           actionType: ANT_ACTOR_ACTIONS.MOVE,
           payload: {
-            directionX: Math.sign(directionX),
-            directionY: Math.sign(directionY),
+            directionX,
+            directionY,
           },
         };
       }
@@ -92,18 +96,19 @@ export class AntActor {
           this.state = ANT_STATES.FORAGING;
           this.hasFood = false;
           return {
+            id: this.id,
             actionType: ANT_ACTOR_ACTIONS.IDLE,
           };
         }
 
-        const directionX = nestPosition.x - this.position.x;
-        const directionY = nestPosition.y - this.position.y;
-
+        const directionX = Math.sign(nestPosition.x - this.position.x);
+        const directionY = Math.sign(nestPosition.y - this.position.y);
         return {
+          id: this.id,
           actionType: ANT_ACTOR_ACTIONS.MOVE,
           payload: {
-            directionX: Math.sign(directionX),
-            directionY: Math.sign(directionY),
+            directionX,
+            directionY,
           },
         };
       }

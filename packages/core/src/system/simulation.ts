@@ -1,15 +1,13 @@
-import { randomUUID } from "node:crypto";
 import { AntActor } from "../actors/Ant";
-import type { AntActorMessage, Perception, Position } from "../domain";
-import { ANT_ACTOR_ACTIONS, LIFECYCLE_STATES } from "../domain";
-import { distance } from "../utils/maths";
-import { AntDto, WorldDto } from "./Dto";
+import { WorldActor } from "../actors/World";
+import type { AntActorMessage, Perception } from "../domain";
+import { ANT_ACTOR_ACTIONS } from "../domain";
 
 const TICK_INTERVAL_MS = 100;
 
 export class Simulation {
   private antActors: Map<string, AntActor> = new Map();
-  world: WorldDto;
+  private worldActor: WorldActor;
   private timer: NodeJS.Timeout | null = null;
   private tickListeners: Set<() => void> = new Set();
 
@@ -17,26 +15,25 @@ export class Simulation {
     const width = 1000;
     const height = 600;
 
-    const nestPosition = {
-      x: Math.floor(Math.random() * width),
-      y: Math.floor(Math.random() * height),
-    };
-
-    const foodSources = Array.from({ length: 5 }, () => ({
-      id: randomUUID(),
-      position: {
-        x: Math.floor(Math.random() * width),
-        y: Math.floor(Math.random() * height),
-      },
-      amount: 5,
-    }));
-
-    this.world = new WorldDto({
-      width,
-      height,
-      nestPosition,
-      foodSources,
+    this.worldActor = new WorldActor({
+      width: width,
+      height: height,
     });
+
+    // Currently AntActors are funnelled into WorldActor.ManagedAnts - this should change in future
+    for (let i = 0; i < 100; i++) {
+      const ant = new AntActor({
+        x: Math.random() * width,
+        y: Math.random() * height,
+      });
+      this.antActors.set(ant.id, ant);
+      this.worldActor.addAnt({
+        id: ant.id,
+        position: ant.getPosition(),
+        state: ant.getState(),
+        lifecycle: ant.getLifecycle(),
+      });
+    }
   }
 
   start() {
@@ -62,109 +59,56 @@ export class Simulation {
     this.tickListeners.delete(listener);
   }
 
-  private findNearestFood(position: Position) {
-    if (this.world.food.length === 0) {
-      return null;
-    }
+  getWorld() {
+    return this.worldActor.getDto();
+  }
 
-    let nearestFood = this.world.food[0];
-    if (!nearestFood) {
-      return null;
-    }
+  processActions(actions: Map<AntActor, AntActorMessage>) {
+    for (const [antActor, action] of actions) {
+      switch (action.actionType) {
+        case ANT_ACTOR_ACTIONS.MOVE:
+          antActor.move(action.payload.directionX, action.payload.directionY);
+          break;
 
-    let minDistance = distance(position, nearestFood.position);
-
-    for (const food of this.world.food) {
-      const d = distance(position, food.position);
-      if (d < minDistance) {
-        minDistance = d;
-        nearestFood = food;
+        case ANT_ACTOR_ACTIONS.TAKE_FOOD:
+          this.worldActor.depleteFoodSource(action.payload.foodId);
+          break;
       }
     }
-    return nearestFood;
   }
 
   tick() {
-    const actions = new Map<string, AntActorMessage>();
+    const currentWorld = this.getWorld();
+    const actions = new Map<AntActor, AntActorMessage>();
 
-    // Collect actions from actors based on their perception of the world
-    for (const actor of this.antActors.values()) {
+    // Collect actions to be processed
+    for (const antActor of this.antActors.values()) {
+      const antActorPosition = antActor.getPosition();
+
       const perception: Perception = {
-        nearestFood: this.findNearestFood(actor.getPosition()),
-        nestPosition: this.world.nest.position,
+        nearestFood: this.worldActor.getNearestFoodSource(antActorPosition),
+        nestPosition: currentWorld.nest.position,
       };
-      const action = actor.perceive(perception);
-      actions.set(actor.id, action);
+      const antActorResponse = antActor.perceive(perception);
+      actions.set(antActor, antActorResponse);
     }
 
-    // Update the world based on the actors' actions
-    for (const [actorId, action] of actions.entries()) {
-      const actor = this.antActors.get(actorId);
-      if (!actor) {
-        continue;
-      }
+    this.processActions(actions);
 
-      switch (action.actionType) {
-        case ANT_ACTOR_ACTIONS.MOVE:
-          actor.move(action.payload.directionX, action.payload.directionY);
-          break;
-        case ANT_ACTOR_ACTIONS.TAKE_FOOD: {
-          const food = this.world.food.find(
-            (f) => f.id === action.payload.foodId,
-          );
-          if (food) {
-            food.amount -= 1;
-          }
-          break;
-        }
-        case ANT_ACTOR_ACTIONS.IDLE:
-          break;
-      }
+    // Synchronise world state - this is a departure from the actor modelling as its centralised
+    for (const antActor of this.antActors.values()) {
+      this.worldActor.updateAnt({
+        id: antActor.id,
+        position: antActor.getPosition(),
+        lifecycle: antActor.getLifecycle(),
+        state: antActor.getState(),
+      });
     }
 
-    // Sync actor state back to the public world for the next tick
-    for (const actor of this.antActors.values()) {
-      const ant = this.world.ants.get(actor.id);
-      if (ant) {
-        ant.position = actor.getPosition();
-        ant.state = actor.getState();
-        ant.lifecycle = actor.getLifecycle();
-      }
-    }
-
-    // Remove depleted food sources
-    this.world.food = this.world.food.filter((food) => food.amount > 0);
-
-    // Remove dead ants
-    for (const actor of this.antActors.values()) {
-      if (actor.getLifecycle() === LIFECYCLE_STATES.DEAD) {
-        this.antActors.delete(actor.id);
-        this.world.ants.delete(actor.id);
-      }
-    }
+    this.worldActor.endOfTickCleanup();
 
     for (const listener of this.tickListeners) {
       listener();
-    }
-  }
-
-  createAnt(position: Position) {
-    const actor = new AntActor(position);
-    this.antActors.set(actor.id, actor);
-
-    const ant = new AntDto({
-      id: actor.id,
-      position: actor.getPosition(),
-      state: actor.getState(),
-      lifecycle: actor.getLifecycle(),
-    });
-    this.world.ants.set(ant.id, ant);
-  }
-
-  killAnt(antId: string) {
-    const actor = this.antActors.get(antId);
-    if (actor) {
-      actor.kill();
     }
   }
 }

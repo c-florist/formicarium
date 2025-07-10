@@ -29,6 +29,9 @@
         "noExplicitAny": "warn",
         "noArrayIndexKey": "off"
       },
+      "correctness": {
+        "noUnusedImports": "error"
+      },
       "style": {
         "noUselessElse": "off",
         "useTemplate": "off",

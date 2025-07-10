@@ -44,6 +44,7 @@ export type AntActorAction =
   (typeof ANT_ACTOR_ACTIONS)[keyof typeof ANT_ACTOR_ACTIONS];
 
 export type AntActorMoveMessage = {
+  id: string;
   actionType: typeof ANT_ACTOR_ACTIONS.MOVE;
   payload: {
     directionX: number;
@@ -52,6 +53,7 @@ export type AntActorMoveMessage = {
 };
 
 export type AntActorTakeFoodMessage = {
+  id: string;
   actionType: typeof ANT_ACTOR_ACTIONS.TAKE_FOOD;
   payload: {
     foodId: string;
@@ -59,6 +61,7 @@ export type AntActorTakeFoodMessage = {
 };
 
 export type AntActorIdleMessage = {
+  id: string;
   actionType: typeof ANT_ACTOR_ACTIONS.IDLE;
 };
 

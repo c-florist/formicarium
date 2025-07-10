@@ -1,19 +1,26 @@
 import { randomUUID } from "node:crypto";
 import { describe, expect, it } from "vitest";
-import type { FoodSource, Position } from "../domain";
-import { WorldDto } from "./Dto";
+import type { FoodSource, Nest, Pheromone } from "../domain";
+import { type AntDto, WorldDto } from "./Dto";
 
 describe("WorldDto", () => {
-  const nestPosition: Position = { x: 50, y: 50 };
+  const nest: Nest = { position: { x: 50, y: 50 } };
+  const pheromones = new Map<string, Pheromone>();
+  const ants = new Map<string, AntDto>();
 
-  it("should initialize the nest at the correct position", () => {
+  it("should initialize correctly", () => {
     const world = new WorldDto({
       width: 100,
       height: 100,
-      nestPosition,
+      nest,
+      foodSources: [],
+      pheromones,
+      ants,
     });
 
-    expect(world.nest.position).toEqual(nestPosition);
+    expect(world.width).toBe(100);
+    expect(world.height).toBe(100);
+    expect(world.nest).toEqual(nest);
   });
 
   it("should initialize food sources when provided", () => {
@@ -25,22 +32,13 @@ describe("WorldDto", () => {
     const world = new WorldDto({
       width: 100,
       height: 100,
-      nestPosition,
+      nest,
       foodSources,
+      pheromones,
+      ants,
     });
 
-    expect(world.food).toEqual(foodSources);
-    expect(world.food.length).toBe(2);
-  });
-
-  it("should default to an empty array if food sources are not provided", () => {
-    const world = new WorldDto({
-      width: 100,
-      height: 100,
-      nestPosition,
-    });
-
-    expect(world.food).toEqual([]);
-    expect(world.food.length).toBe(0);
+    expect(world.foodSources).toEqual(foodSources);
+    expect(world.foodSources.length).toBe(2);
   });
 });
