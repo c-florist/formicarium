@@ -1,9 +1,17 @@
 import { describe, expect, it } from "vitest";
-import { add } from "../../core-rs/pkg/core_rs";
+import { Simulation } from "../../core-rs/pkg/core_rs";
 
-describe("Wasm Module", () => {
-  it("should call a core-rs WASM function and get the correct result", () => {
-    const result = add(2, 3);
-    expect(result).toBe(5);
+describe("Wasm Simulation", () => {
+  it("should update an entity's position after a tick", () => {
+    // 1. Setup
+    const simulation = new Simulation();
+    const entityId = simulation.add_ant(10.0, 10.0, 5.0, -5.0);
+
+    // 2. Action
+    simulation.tick();
+
+    // 3. Assertion
+    const newPositionX = simulation.get_ant_position_x(entityId);
+    expect(newPositionX).toBe(15.0);
   });
 });
