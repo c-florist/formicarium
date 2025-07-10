@@ -2,14 +2,26 @@ repos:
   - repo: local
     hooks:
       - id: tidy
-        name: 'Tidy'
+        name: 'TS Tidy'
         language: system
         entry: pnpm run tidy
         exclude: ^packages/core-rs/
 
       - id: typecheck
-        name: 'Typecheck'
+        name: 'TS Typecheck'
         language: system
         entry: pnpm run typecheck
         exclude: ^packages/core-rs/
         pass_filenames: false
+
+      - id: cargo-check
+        name: 'Cargo Check'
+        language: system
+        entry: cargo check --manifest-path packages/core-rs/Cargo.toml
+        files: ^packages/core-rs/
+
+      - id: rustfmt
+        name: 'Rustfmt'
+        language: system
+        entry: cargo fmt --manifest-path packages/core-rs/Cargo.toml
+        files: ^packages/core-rs/
