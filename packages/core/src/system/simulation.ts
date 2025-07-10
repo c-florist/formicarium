@@ -1,7 +1,7 @@
 import { randomUUID } from "node:crypto";
 import { AntActor } from "../actors/ant";
 import type { Action, Perception, Position } from "../domain";
-import { ACTOR_ACTIONS } from "../domain";
+import { ACTOR_ACTIONS, LIFECYCLE_STATES } from "../domain";
 import { distance } from "../utils/maths";
 import { Ant, World } from "./world";
 
@@ -39,6 +39,29 @@ export class Simulation {
     });
   }
 
+  start() {
+    if (this.timer) {
+      console.log("Simulation is already running");
+      return;
+    }
+    this.timer = setInterval(() => this.tick(), TICK_INTERVAL_MS);
+  }
+
+  stop() {
+    if (this.timer) {
+      clearInterval(this.timer);
+      this.timer = null;
+    }
+  }
+
+  addTickListener(listener: () => void) {
+    this.tickListeners.add(listener);
+  }
+
+  removeTickListener(listener: () => void) {
+    this.tickListeners.delete(listener);
+  }
+
   private findNearestFood(position: Position) {
     if (this.world.food.length === 0) {
       return null;
@@ -59,21 +82,6 @@ export class Simulation {
       }
     }
     return nearestFood;
-  }
-
-  start() {
-    if (this.timer) {
-      console.log("Simulation is already running");
-      return;
-    }
-    this.timer = setInterval(() => this.tick(), TICK_INTERVAL_MS);
-  }
-
-  stop() {
-    if (this.timer) {
-      clearInterval(this.timer);
-      this.timer = null;
-    }
   }
 
   tick() {
@@ -129,7 +137,7 @@ export class Simulation {
 
     // Remove dead ants
     for (const actor of this.actors.values()) {
-      if (actor.getLifecycle() === "DEAD") {
+      if (actor.getLifecycle() === LIFECYCLE_STATES.DEAD) {
         this.actors.delete(actor.id);
         this.world.ants.delete(actor.id);
       }
@@ -158,13 +166,5 @@ export class Simulation {
     if (actor) {
       actor.kill();
     }
-  }
-
-  addTickListener(listener: () => void) {
-    this.tickListeners.add(listener);
-  }
-
-  removeTickListener(listener: () => void) {
-    this.tickListeners.delete(listener);
   }
 }
