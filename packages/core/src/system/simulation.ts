@@ -127,6 +127,14 @@ export class Simulation {
     // Remove depleted food sources
     this.world.food = this.world.food.filter((food) => food.amount > 0);
 
+    // Remove dead ants
+    for (const actor of this.actors.values()) {
+      if (actor.getLifecycle() === "DEAD") {
+        this.actors.delete(actor.id);
+        this.world.ants.delete(actor.id);
+      }
+    }
+
     for (const listener of this.tickListeners) {
       listener();
     }
@@ -143,6 +151,13 @@ export class Simulation {
       lifecycle: actor.getLifecycle(),
     });
     this.world.ants.set(ant.id, ant);
+  }
+
+  killAnt(antId: string) {
+    const actor = this.actors.get(antId);
+    if (actor) {
+      actor.kill();
+    }
   }
 
   addTickListener(listener: () => void) {

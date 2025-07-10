@@ -64,4 +64,17 @@ describe("Simulation", () => {
     expect(ant).toBeDefined();
     expect(ant?.lifecycle).toBe(LIFECYCLE_STATES.ALIVE);
   });
+
+  it("should remove dead ants from the simulation", () => {
+    const simulation = new Simulation();
+    const initialPosition: Position = { x: 10, y: 10 };
+    simulation.createAnt(initialPosition);
+
+    const antId = simulation.world.ants.keys().next().value;
+    simulation.killAnt(antId!);
+
+    simulation.tick();
+
+    expect(simulation.world.ants.size).toBe(0);
+  });
 });
