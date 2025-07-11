@@ -5,56 +5,17 @@ set dotenv-load := true
 _default:
     @just --list
 
-# Install all project dependencies
-init:
-    pnpm install
-
-# Starts the development server with watch mode
-dev-api:
-    pnpm dev:api
-
-# Starts the development server with watch mode
-dev-web:
-    pnpm dev:web
-
-# Builds the application for production
-build package:
-    pnpm --filter "@formicarium/{{package}}" build
-
-# Starts the production build
-start:
-    pnpm start
-
 # Run linting and fix issues
 tidy *flags:
     cargo fmt --manifest-path packages/core-rs/Cargo.toml
     pnpm run tidy {{flags}}
 
-# Run linting and check issues
-tidy-check:
-    pnpm run tidy:check
-
 # Run type checking
-typecheck package='all':
-    #!/usr/bin/env sh
-    if [ "$package" = "all" ]; then
-        pnpm run typecheck
-        cargo check --manifest-path packages/core-rs/Cargo.toml
-    elif [ "$package" = "core-rs" ]; then
-        cargo check --manifest-path packages/core-rs/Cargo.toml
-    else
-        pnpm --filter "@formicarium/$package" check
-    fi
+typecheck:
+    pnpm run typecheck
+    cargo check --manifest-path packages/core-rs/Cargo.toml
 
 # Run tests
-test package='all':
-    #!/usr/bin/env sh
-    if [ "$package" = "all" ]; then
-        pnpm --filter "@formicarium/*" test:unit
-    else
-        pnpm --filter "@formicarium/$package" test:unit
-    fi
-
-# Run tests in watch mode
-tdd package:
-    pnpm --filter {{package}} test:unit:watch
+test:
+    pnpm --filter "@formicarium/*" test:unit
+    cargo test --manifest-path packages/core-rs/Cargo.toml
