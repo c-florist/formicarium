@@ -18,7 +18,7 @@ jobs:
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
 
       - name: Install Rust toolchain
-        uses: dtolnay/rust-toolchain@57951197789633361d699a72e3214257ead117cf
+        uses: dtolnay/rust-toolchain@1.88.0
         with:
           toolchain: stable
 
@@ -46,7 +46,7 @@ jobs:
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
 
       - name: Install Rust toolchain
-        uses: dtolnay/rust-toolchain@57951197789633361d699a72e3214257ead117cf
+        uses: dtolnay/rust-toolchain@1.88.0
         with:
           toolchain: stable
 
@@ -116,7 +116,7 @@ jobs:
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
 
       - name: Install Rust toolchain
-        uses: dtolnay/rust-toolchain@57951197789633361d699a72e3214257ead117cf
+        uses: dtolnay/rust-toolchain@1.88.0
         with:
           toolchain: stable
 
