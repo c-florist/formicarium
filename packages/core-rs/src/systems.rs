@@ -1,7 +1,7 @@
 use crate::components::{Food, Position, Target, Velocity, Wandering};
 use hecs::{Entity, World};
 
-pub fn movement_system(world: &mut World) {
+pub fn apply_velocity_system(world: &mut World) {
     // Query for all entities that have both a Position and a Velocity component.
     for (_entity, (pos, vel)) in world.query_mut::<(&mut Position, &Velocity)>() {
         pos.x += vel.dx;
@@ -19,7 +19,7 @@ pub fn wandering_system(world: &mut World) {
 
 pub fn food_discovery_system(world: &mut World) {
     let mut updates = Vec::new();
-    const DISCOVERY_RADIUS_SQUARED: f32 = 100.0; // Use squared distance to avoid sqrt
+    const DISCOVERY_RADIUS_SQUARED: f32 = 100.0;
 
     // Collect wandering ants' positions and entities
     let wandering_ants: Vec<(Entity, Position)> = world
@@ -66,7 +66,7 @@ mod tests {
     use hecs::World;
 
     #[test]
-    fn test_movement_system() {
+    fn test_apply_velocity_system() {
         // 1. Setup
         let mut world = World::new();
         let entity = world.spawn((
@@ -75,7 +75,7 @@ mod tests {
         ));
 
         // 2. Action
-        movement_system(&mut world);
+        apply_velocity_system(&mut world);
 
         // 3. Assertion
         let pos = world.get::<&Position>(entity).unwrap();

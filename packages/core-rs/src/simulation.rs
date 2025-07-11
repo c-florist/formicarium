@@ -1,5 +1,5 @@
 use crate::components::{Position, Velocity};
-use crate::systems::movement_system;
+use crate::systems::apply_velocity_system;
 use hecs::{Entity, World};
 use wasm_bindgen::prelude::*;
 
@@ -21,7 +21,7 @@ impl Simulation {
     }
 
     pub fn tick(&mut self) {
-        movement_system(&mut self.world);
+        apply_velocity_system(&mut self.world);
     }
 
     /// Spawns an ant and returns its stable index as a handle.
