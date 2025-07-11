@@ -1,5 +1,8 @@
 use crate::components::{Position, Velocity};
-use crate::systems::apply_velocity_system;
+use crate::systems::{
+    apply_velocity_system, food_discovery_system, movement_system, state_transition_system,
+    wandering_system,
+};
 use hecs::{Entity, World};
 use wasm_bindgen::prelude::*;
 
@@ -21,6 +24,10 @@ impl Simulation {
     }
 
     pub fn tick(&mut self) {
+        food_discovery_system(&mut self.world);
+        state_transition_system(&mut self.world);
+        movement_system(&mut self.world);
+        wandering_system(&mut self.world);
         apply_velocity_system(&mut self.world);
     }
 
