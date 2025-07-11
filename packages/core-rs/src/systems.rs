@@ -29,7 +29,6 @@ mod tests {
 
         // 3. Assertion
         let pos = world.get::<&Position>(entity).unwrap();
-        // This will fail because the position should be 10.0, not 12.5.
         assert_eq!(pos.x, 12.5);
         assert_eq!(pos.y, 8.5);
     }
