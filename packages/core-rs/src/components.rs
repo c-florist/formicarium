@@ -17,14 +17,24 @@ pub struct Velocity {
 pub struct Ant;
 
 #[derive(Debug, PartialEq)]
-pub struct FoodSource;
+pub struct Food;
 
 #[wasm_bindgen]
 #[derive(Debug, PartialEq, Clone, Copy)]
 pub enum AntState {
+    Wandering,
     Foraging,
     ReturningToNest,
 }
 
 #[derive(Debug, PartialEq)]
 pub struct Target(pub Entity);
+
+#[derive(Debug, PartialEq)]
+pub struct Wandering;
+
+#[derive(Debug, PartialEq)]
+pub struct CarryingCapacity(pub f32);
+
+#[derive(Debug, PartialEq)]
+pub struct Payload(pub f32);
