@@ -25,6 +25,7 @@ pub fn movement_system(world: &mut World) {
 
 pub fn state_transition_system(world: &mut World) {
     let mut to_update_to_returning = Vec::new();
+    let mut to_update_to_wandering = Vec::new();
     const ARRIVAL_DISTANCE_SQUARED: f32 = 0.01;
 
     // Find the nest entity first. Assumes one nest.
@@ -46,21 +47,37 @@ pub fn state_transition_system(world: &mut World) {
                 (ant_pos.x - target_pos.x).powi(2) + (ant_pos.y - target_pos.y).powi(2);
 
             if distance_sq < ARRIVAL_DISTANCE_SQUARED {
-                // Check if the target is food and the ant is foraging
+                // Case 1: Ant is foraging and has reached food.
                 if ant_state == AntState::Foraging && world.get::<&Food>(target_entity).is_ok() {
                     to_update_to_returning.push(ant_entity);
+                }
+                // Case 2: Ant is returning and has reached the nest.
+                else if ant_state == AntState::ReturningToNest
+                    && world.get::<&Nest>(target_entity).is_ok()
+                {
+                    to_update_to_wandering.push(ant_entity);
                 }
             }
         }
     }
 
+    // Apply updates for ants that have found food
     for entity in to_update_to_returning {
         if let Ok(state) = world.query_one_mut::<&mut AntState>(entity) {
             *state = AntState::ReturningToNest;
         }
         world
-            .insert(entity, (Payload(2.0), Target(nest_entity)))
+            .insert(entity, (Payload(10.0), Target(nest_entity)))
             .unwrap();
+    }
+
+    // Apply updates for ants that have returned to the nest
+    for entity in to_update_to_wandering {
+        if let Ok(state) = world.query_one_mut::<&mut AntState>(entity) {
+            *state = AntState::Wandering;
+        }
+        world.remove::<(Payload, Target)>(entity).unwrap();
+        world.insert_one(entity, Wandering).unwrap();
     }
 }
 
@@ -153,6 +170,32 @@ mod tests {
         // Check that the ant is now targeting the nest
         let target = world.get::<&Target>(ant_entity).unwrap();
         assert_eq!(target.0, nest_entity);
+    }
+
+    #[test]
+    fn test_state_transition_system_returning_to_wandering() {
+        // 1. Setup
+        let mut world = World::new();
+        let nest_entity = world.spawn((Position { x: 0.0, y: 0.0 }, Nest));
+        let ant_entity = world.spawn((
+            Position { x: 0.0, y: 0.0 },
+            AntState::ReturningToNest,
+            Payload(10.0),
+            Target(nest_entity),
+        ));
+
+        // 2. Action
+        state_transition_system(&mut world);
+
+        // 3. Assertion
+        let ant_state = world.get::<&AntState>(ant_entity).unwrap();
+        assert_eq!(*ant_state, AntState::Wandering);
+
+        // Check that the ant no longer has a payload or target
+        assert!(world.get::<&Payload>(ant_entity).is_err());
+        assert!(world.get::<&Target>(ant_entity).is_err());
+        // Check that the ant is now wandering
+        assert!(world.get::<&Wandering>(ant_entity).is_ok());
     }
 
     #[test]
