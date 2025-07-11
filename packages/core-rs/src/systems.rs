@@ -1,4 +1,4 @@
-use crate::components::{Food, Position, Target, Velocity, Wandering};
+use crate::components::{AntState, Food, Nest, Payload, Position, Target, Velocity, Wandering};
 use hecs::{Entity, World};
 
 pub fn movement_system(world: &mut World) {
@@ -20,6 +20,47 @@ pub fn movement_system(world: &mut World) {
             vel.dx = dx;
             vel.dy = dy;
         }
+    }
+}
+
+pub fn state_transition_system(world: &mut World) {
+    let mut to_update_to_returning = Vec::new();
+    const ARRIVAL_DISTANCE_SQUARED: f32 = 0.01;
+
+    // Find the nest entity first. Assumes one nest.
+    let nest_entity = match world.query::<&Nest>().iter().next() {
+        Some((e, _)) => e,
+        None => return,
+    };
+
+    // Collect all ants with targets
+    let ants_with_targets: Vec<(Entity, Position, AntState, Entity)> = world
+        .query::<(&Position, &AntState, &Target)>()
+        .iter()
+        .map(|(e, (p, s, t))| (e, *p, *s, t.0))
+        .collect();
+
+    for (ant_entity, ant_pos, ant_state, target_entity) in ants_with_targets {
+        if let Ok(target_pos) = world.get::<&Position>(target_entity) {
+            let distance_sq =
+                (ant_pos.x - target_pos.x).powi(2) + (ant_pos.y - target_pos.y).powi(2);
+
+            if distance_sq < ARRIVAL_DISTANCE_SQUARED {
+                // Check if the target is food and the ant is foraging
+                if ant_state == AntState::Foraging && world.get::<&Food>(target_entity).is_ok() {
+                    to_update_to_returning.push(ant_entity);
+                }
+            }
+        }
+    }
+
+    for entity in to_update_to_returning {
+        if let Ok(state) = world.query_one_mut::<&mut AntState>(entity) {
+            *state = AntState::ReturningToNest;
+        }
+        world
+            .insert(entity, (Payload(2.0), Target(nest_entity)))
+            .unwrap();
     }
 }
 
@@ -84,8 +125,35 @@ pub fn food_discovery_system(world: &mut World) {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::components::{Food, Position, Target, Velocity, Wandering};
+    use crate::components::{AntState, Food, Nest, Payload, Position, Target, Velocity, Wandering};
     use hecs::World;
+
+    #[test]
+    fn test_state_transition_system_foraging_to_returning() {
+        // 1. Setup
+        let mut world = World::new();
+        let nest_entity = world.spawn((Position { x: 0.0, y: 0.0 }, Nest));
+        let food_entity = world.spawn((Position { x: 10.0, y: 10.0 }, Food));
+        let ant_entity = world.spawn((
+            Position { x: 10.0, y: 10.0 },
+            AntState::Foraging,
+            Target(food_entity),
+        ));
+
+        // 2. Action
+        state_transition_system(&mut world);
+
+        // 3. Assertion
+        let ant = world.get::<&AntState>(ant_entity).unwrap();
+        assert_eq!(*ant, AntState::ReturningToNest);
+
+        // Check that the ant now has a payload
+        assert!(world.get::<&Payload>(ant_entity).is_ok());
+
+        // Check that the ant is now targeting the nest
+        let target = world.get::<&Target>(ant_entity).unwrap();
+        assert_eq!(target.0, nest_entity);
+    }
 
     #[test]
     fn test_movement_system_moves_towards_target() {
