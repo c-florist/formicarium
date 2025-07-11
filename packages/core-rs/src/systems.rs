@@ -1,6 +1,28 @@
 use crate::components::{Food, Position, Target, Velocity, Wandering};
 use hecs::{Entity, World};
 
+pub fn movement_system(world: &mut World) {
+    let mut updates = Vec::new();
+
+    for (entity, (pos, target)) in world.query::<(&Position, &Target)>().iter() {
+        if let Ok(target_pos) = world.get::<&Position>(target.0) {
+            let dir_x = target_pos.x - pos.x;
+            let dir_y = target_pos.y - pos.y;
+            let magnitude = (dir_x * dir_x + dir_y * dir_y).sqrt();
+            if magnitude > 1e-6 {
+                updates.push((entity, (dir_x / magnitude, dir_y / magnitude)));
+            }
+        }
+    }
+
+    for (entity, (dx, dy)) in updates {
+        if let Ok(vel) = world.query_one_mut::<&mut Velocity>(entity) {
+            vel.dx = dx;
+            vel.dy = dy;
+        }
+    }
+}
+
 pub fn apply_velocity_system(world: &mut World) {
     // Query for all entities that have both a Position and a Velocity component.
     for (_entity, (pos, vel)) in world.query_mut::<(&mut Position, &Velocity)>() {
@@ -64,6 +86,29 @@ mod tests {
     use super::*;
     use crate::components::{Food, Position, Target, Velocity, Wandering};
     use hecs::World;
+
+    #[test]
+    fn test_movement_system_moves_towards_target() {
+        // 1. Setup
+        let mut world = World::new();
+        let food_entity = world.spawn((Position { x: 10.0, y: 10.0 }, Food));
+        let ant_entity = world.spawn((
+            Position { x: 0.0, y: 0.0 },
+            Velocity { dx: 0.0, dy: 0.0 },
+            Target(food_entity),
+        ));
+
+        // 2. Action
+        movement_system(&mut world);
+
+        // 3. Assertion
+        let vel = world.get::<&Velocity>(ant_entity).unwrap();
+        // The velocity should be a unit vector pointing towards the target.
+        // For a target at (10, 10) from (0, 0), the vector is (10, 10).
+        // The normalized vector is (1/sqrt(2), 1/sqrt(2)) approx (0.707, 0.707)
+        assert!((vel.dx - 0.707).abs() < 1e-3);
+        assert!((vel.dy - 0.707).abs() < 1e-3);
+    }
 
     #[test]
     fn test_apply_velocity_system() {
