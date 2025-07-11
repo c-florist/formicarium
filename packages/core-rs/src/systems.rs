@@ -18,15 +18,8 @@ pub fn wandering_system(world: &mut World) {
 }
 
 pub fn food_discovery_system(world: &mut World) {
-    let mut to_update = Vec::new();
-    const DISCOVERY_RADIUS: f32 = 10.0;
-
-    // Collect food sources' positions and entities
-    let food_sources: Vec<(Entity, Position)> = world
-        .query::<(&Position, &Food)>()
-        .iter()
-        .map(|(e, (p, _))| (e, *p))
-        .collect();
+    let mut updates = Vec::new();
+    const DISCOVERY_RADIUS_SQUARED: f32 = 100.0; // Use squared distance to avoid sqrt
 
     // Collect wandering ants' positions and entities
     let wandering_ants: Vec<(Entity, Position)> = world
@@ -35,21 +28,32 @@ pub fn food_discovery_system(world: &mut World) {
         .map(|(e, (p, _))| (e, *p))
         .collect();
 
-    // Now, iterate over the collected data without borrowing the world
     for (ant_entity, ant_pos) in &wandering_ants {
-        for (food_entity, food_pos) in &food_sources {
-            let distance =
-                ((ant_pos.x - food_pos.x).powi(2) + (ant_pos.y - food_pos.y).powi(2)).sqrt();
-            if distance < DISCOVERY_RADIUS {
-                to_update.push((*ant_entity, *food_entity));
-                // Ant has found food, no need to check other food sources for this ant
-                break;
+        let mut closest_food: Option<(Entity, f32)> = None;
+
+        for (food_entity, (food_pos, _)) in world.query::<(&Position, &Food)>().iter() {
+            let dx = ant_pos.x - food_pos.x;
+            let dy = ant_pos.y - food_pos.y;
+            let distance_sq = dx * dx + dy * dy;
+
+            if distance_sq < DISCOVERY_RADIUS_SQUARED {
+                if let Some((_, closest_dist_sq)) = closest_food {
+                    if distance_sq < closest_dist_sq {
+                        closest_food = Some((food_entity, distance_sq));
+                    }
+                } else {
+                    closest_food = Some((food_entity, distance_sq));
+                }
             }
+        }
+
+        if let Some((food_entity, _)) = closest_food {
+            updates.push((*ant_entity, food_entity));
         }
     }
 
     // Apply updates
-    for (ant_entity, food_entity) in to_update {
+    for (ant_entity, food_entity) in updates {
         world.insert_one(ant_entity, Target(food_entity)).unwrap();
         world.remove_one::<Wandering>(ant_entity).unwrap();
     }
