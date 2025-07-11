@@ -1,5 +1,5 @@
 import type { FastifyInstance } from "fastify";
-import { Simulation } from "../simulation/simulation";
+import { Simulation } from "../core/simulation";
 
 export default async function simulator(fastify: FastifyInstance) {
   const simulation = new Simulation();

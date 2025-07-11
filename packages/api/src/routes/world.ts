@@ -1,5 +1,5 @@
 import type { FastifyInstance } from "fastify";
-import type { Simulation } from "../simulation/simulation";
+import type { Simulation } from "../core/simulation";
 
 declare module "fastify" {
   interface FastifyInstance {
