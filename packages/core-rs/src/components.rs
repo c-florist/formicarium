@@ -17,6 +17,9 @@ pub struct Velocity {
 pub struct Ant;
 
 #[derive(Debug, PartialEq)]
+pub struct Nest;
+
+#[derive(Debug, PartialEq)]
 pub struct Food;
 
 #[wasm_bindgen]
