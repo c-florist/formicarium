@@ -1,7 +1,7 @@
 use hecs::Entity;
 use wasm_bindgen::prelude::*;
 
-#[derive(Debug, PartialEq)]
+#[derive(Debug, PartialEq, Clone, Copy)]
 pub struct Position {
     pub x: f32,
     pub y: f32,
