@@ -1,5 +1,4 @@
 use hecs::Entity;
-use wasm_bindgen::prelude::*;
 
 #[derive(Debug, PartialEq, Clone, Copy)]
 pub struct Position {
@@ -22,7 +21,6 @@ pub struct Nest;
 #[derive(Debug, PartialEq)]
 pub struct Food;
 
-#[wasm_bindgen]
 #[derive(Debug, PartialEq, Clone, Copy)]
 pub enum AntState {
     Wandering,

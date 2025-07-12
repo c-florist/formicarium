@@ -16,25 +16,25 @@ $effect(() => {
   // Clear the canvas
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-  // Draw the nest
-  ctx.fillStyle = "#6b4226";
-  ctx.fillRect(
-    $worldStore.nest.position.x,
-    $worldStore.nest.position.y,
-    20,
-    20,
-  );
+  // // Draw the nest
+  // ctx.fillStyle = "#6b4226";
+  // ctx.fillRect(
+  //   $worldStore.nest.position.x,
+  //   $worldStore.nest.position.y,
+  //   20,
+  //   20,
+  // );
 
-  // Draw food sources
-  ctx.fillStyle = "#4ade80";
-  $worldStore.foodSources.forEach((foodSource) => {
-    ctx.fillRect(foodSource.position.x, foodSource.position.y, 10, 10);
-  });
+  // // Draw food sources
+  // ctx.fillStyle = "#4ade80";
+  // $worldStore.foodSources.forEach((foodSource) => {
+  //   ctx.fillRect(foodSource.position.x, foodSource.position.y, 10, 10);
+  // });
 
   // Draw ants
   ctx.fillStyle = "#8a3324";
-  Object.values($worldStore.ants).forEach((ant) => {
-    ctx.fillRect(ant.position.x, ant.position.y, 3, 3);
+  $worldStore.ants.forEach((ant) => {
+    ctx.fillRect(ant.x, ant.y, 3, 3);
   });
 });
 </script>
