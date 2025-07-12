@@ -24,7 +24,11 @@ fn get_world_state_dto(world: &World) -> WorldDto {
         })
         .collect();
 
-    WorldDto { ants }
+    WorldDto {
+        ants,
+        width: 1000.0,
+        height: 600.0,
+    }
 }
 
 #[wasm_bindgen]

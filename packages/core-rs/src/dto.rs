@@ -12,4 +12,6 @@ pub struct AntDto {
 #[ts(export, export_to = "../../domain/src/WorldDto.ts")]
 pub struct WorldDto {
     pub ants: Vec<AntDto>,
+    pub width: f32,
+    pub height: f32,
 }
