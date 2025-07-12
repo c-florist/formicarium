@@ -14,7 +14,7 @@ export const worldStore = readable<WorldDto | null>(null, (set) => {
 
   ws.onmessage = (event) => {
     console.log("Received data from WebSocket:", event.data);
-    const worldData: WorldDto = JSON.parse(event.data);
+    const worldData: WorldDto | null = JSON.parse(event.data);
     set(worldData);
   };
 

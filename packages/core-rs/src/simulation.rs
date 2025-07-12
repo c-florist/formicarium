@@ -16,14 +16,14 @@ pub struct Simulation {
     height: f32,
 }
 
-fn get_world_state_dto(simulation: &Simulation) -> WorldDto {
+fn get_world_state_dto(simulation: &Simulation) -> Result<WorldDto, &'static str> {
     let nest = simulation
         .world
         .query::<(&Position, &Nest)>()
         .iter()
         .next()
         .map(|(_, (pos, _))| NestDto { x: pos.x, y: pos.y })
-        .expect("World should have a nest");
+        .ok_or("World should have a nest")?;
 
     let ants = simulation
         .world
@@ -45,13 +45,13 @@ fn get_world_state_dto(simulation: &Simulation) -> WorldDto {
         })
         .collect();
 
-    WorldDto {
+    Ok(WorldDto {
         nest,
         food_sources,
         ants,
         width: simulation.width,
         height: simulation.height,
-    }
+    })
 }
 
 #[wasm_bindgen]
@@ -111,21 +111,20 @@ impl Simulation {
         food_discovery_system(&mut self.world);
         ant_arrival_at_food_system(&mut self.world);
         ant_arrival_at_nest_system(&mut self.world);
+        despawn_food_system(&mut self.world);
 
         // Systems that execute movement based on the current state.
         wandering_system(&mut self.world);
         target_movement_system(&mut self.world);
 
-        // Apply calculated velocity to the positions.
+        // Simulation-wide systems.
         apply_velocity_system(&mut self.world);
-
-        despawn_food_system(&mut self.world);
         enforce_bounds_system(&mut self.world, self.width, self.height);
     }
 
-    pub fn get_world_state(&self) -> JsValue {
+    pub fn get_world_state(&self) -> Result<JsValue, JsValue> {
         let dto = get_world_state_dto(self);
-        serde_wasm_bindgen::to_value(&dto).unwrap()
+        serde_wasm_bindgen::to_value(&dto).map_err(|e| JsValue::from_str(&e.to_string()))
     }
 }
 
@@ -180,7 +179,7 @@ mod tests {
         let simulation = Simulation::new();
 
         // 2. Action
-        let dto = get_world_state_dto(&simulation);
+        let dto = get_world_state_dto(&simulation).unwrap();
 
         // 3. Assertion
         assert_eq!(dto.nest, NestDto { x: 475.0, y: 275.0 });

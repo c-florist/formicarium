@@ -20,8 +20,13 @@ export class Orchestrator {
     this.tickListeners.forEach((listener) => listener());
   }
 
-  getWorldState(): WorldDto {
-    return this.simulation.get_world_state();
+  getWorldState(): WorldDto | null {
+    try {
+      return this.simulation.get_world_state();
+    } catch (error) {
+      console.error("Error getting world state:", error);
+      return null;
+    }
   }
 
   addTickListener(listener: () => void) {

@@ -51,7 +51,7 @@ pub fn ant_arrival_at_food_system(world: &mut World) {
                     ant_entity,
                     (FoodPayload(FOOD_PAYLOAD_AMOUNT), Target(nest_entity)),
                 )
-                .unwrap();
+                .expect("Failed to update ant state in ant_arrival_at_food_system");
         }
     }
 }
@@ -88,7 +88,9 @@ pub fn ant_arrival_at_nest_system(world: &mut World) {
         if let Ok(state) = world.query_one_mut::<&mut AntState>(entity) {
             *state = AntState::Wandering;
         }
-        world.remove::<(FoodPayload, Target)>(entity).unwrap();
+        world
+            .remove::<(FoodPayload, Target)>(entity)
+            .expect("Failed to update ant state in ant_arrival_at_nest_system");
     }
 }
 
@@ -177,7 +179,7 @@ pub fn food_discovery_system(world: &mut World) {
     for (ant_entity, food_entity) in updates {
         world
             .insert(ant_entity, (Target(food_entity), AntState::Foraging))
-            .unwrap();
+            .expect("Failed to update ant state in food_discovery_system");
     }
 }
 
@@ -210,7 +212,9 @@ pub fn despawn_food_system(world: &mut World) {
     }
 
     for entity in to_despawn {
-        world.despawn(entity).unwrap();
+        world
+            .despawn(entity)
+            .expect("Failed to despawn food entity in despawn_food_system");
     }
 }
 
