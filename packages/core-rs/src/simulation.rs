@@ -5,6 +5,7 @@ use crate::systems::{
     wandering_system,
 };
 use hecs::{Entity, World};
+use rand::Rng;
 use wasm_bindgen::prelude::*;
 
 #[wasm_bindgen]
@@ -35,10 +36,20 @@ fn get_world_state_dto(world: &World) -> WorldDto {
 impl Simulation {
     #[wasm_bindgen(constructor)]
     pub fn new() -> Self {
-        Self {
-            world: World::new(),
-            entities: Vec::new(),
+        let mut world = World::new();
+        let mut entities = Vec::new();
+        let mut rng = rand::thread_rng();
+
+        for _ in 0..500 {
+            let x = 500.0;
+            let y = 300.0;
+            let dx = rng.gen_range(-1.0..1.0);
+            let dy = rng.gen_range(-1.0..1.0);
+            let entity = world.spawn((Position { x, y }, Velocity { dx, dy }));
+            entities.push(entity);
         }
+
+        Self { world, entities }
     }
 
     pub fn tick(&mut self) {
@@ -95,7 +106,10 @@ mod tests {
     #[test]
     fn get_world_state_returns_correct_dto() {
         // 1. Setup
-        let mut simulation = Simulation::new();
+        let mut simulation = Simulation {
+            world: World::new(),
+            entities: Vec::new(),
+        };
         simulation.add_ant(10.0, 10.0, 0.0, 0.0);
         simulation.add_ant(20.0, 20.0, 0.0, 0.0);
 
@@ -108,5 +122,15 @@ mod tests {
         assert_eq!(world_dto.ants[0].y, 10.0);
         assert_eq!(world_dto.ants[1].x, 20.0);
         assert_eq!(world_dto.ants[1].y, 20.0);
+    }
+
+    #[test]
+    fn simulation_new_spawns_500_ants() {
+        // 1. Action
+        let simulation = Simulation::new();
+
+        // 2. Assertion
+        assert_eq!(simulation.entities.len(), 500);
+        assert_eq!(simulation.world.len(), 500);
     }
 }
