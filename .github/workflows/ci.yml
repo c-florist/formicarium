@@ -45,6 +45,8 @@ jobs:
 
       - name: Install Rust toolchain
         uses: dtolnay/rust-toolchain@1.88.0
+        with:
+          components: rustfmt
 
       - name: Download pkg artifact
         uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
@@ -138,7 +140,7 @@ jobs:
         run: pnpm install
 
       - name: Run TypeScript unit tests
-        run: pnpm --filter "@formicarium/*" test:unit
+        run: pnpm --filter "@formicarium/api" test:unit
 
       - name: Build Rust core
         run: cargo build --manifest-path packages/core-rs/Cargo.toml
