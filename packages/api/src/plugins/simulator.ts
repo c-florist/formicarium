@@ -1,9 +1,9 @@
 import type { FastifyInstance } from "fastify";
-import { Simulation } from "../core/simulation";
+import { Orchestrator } from "../core/orchestrator";
 
 export default async function simulator(fastify: FastifyInstance) {
-  const simulation = new Simulation();
-  simulation.start();
+  const simOrchestrator = new Orchestrator();
+  simOrchestrator.start();
 
-  fastify.decorate("simulation", simulation);
+  fastify.decorate("simulator", simOrchestrator);
 }
