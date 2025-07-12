@@ -18,7 +18,7 @@ $effect(() => {
 
   // Draw the nest
   ctx.fillStyle = "#6b4226";
-  ctx.fillRect($worldStore.nest.x, $worldStore.nest.y, 40, 40);
+  ctx.fillRect($worldStore.nest.x, $worldStore.nest.y, 35, 35);
 
   // Draw food sources
   ctx.fillStyle = "#4ade80";
