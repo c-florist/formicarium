@@ -92,9 +92,12 @@ pub fn apply_velocity_system(world: &mut World) {
 
 pub fn wandering_system(world: &mut World) {
     let mut rng = rand::thread_rng();
-    const WANDER_PROBABILITY: f64 = 0.1;
+    const WANDER_PROBABILITY: f64 = 0.05;
 
-    for (_entity, (vel, _)) in world.query_mut::<(&mut Velocity, &Wandering)>() {
+    for (_entity, (vel, _)) in world
+        .query_mut::<(&mut Velocity, &Wandering)>()
+        .without::<&Target>()
+    {
         if rng.gen_bool(WANDER_PROBABILITY) {
             let new_dx = rng.gen_range(-1.0..1.0);
             let new_dy = rng.gen_range(-1.0..1.0);

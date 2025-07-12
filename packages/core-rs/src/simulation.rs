@@ -53,25 +53,26 @@ impl Simulation {
     }
 
     pub fn tick(&mut self) {
+        // Systems that determine decisions and state changes.
         food_discovery_system(&mut self.world);
         state_transition_system(&mut self.world);
-        target_movement_system(&mut self.world);
+
+        // Systems that execute movement based on the current state.
         wandering_system(&mut self.world);
+        target_movement_system(&mut self.world);
+
+        // Apply calculated velocity to the positions.
         apply_velocity_system(&mut self.world);
     }
 
     /// Spawns an ant and returns its stable index as a handle.
     pub fn add_ant(&mut self, x: f32, y: f32, dx: f32, dy: f32) -> usize {
-        let entity = self.world.spawn((Position { x, y }, Velocity { dx, dy }));
+        let entity = self
+            .world
+            .spawn((Position { x, y }, Velocity { dx, dy }, Wandering));
         self.entities.push(entity);
         // Return the index, which is now a stable handle.
         self.entities.len() - 1
-    }
-
-    /// Gets a position component using the stable index.
-    pub fn get_ant_position_x(&self, entity_index: usize) -> f32 {
-        let entity = self.entities[entity_index];
-        self.world.get::<&Position>(entity).unwrap().x
     }
 
     pub fn get_world_state(&self) -> JsValue {
