@@ -16,14 +16,9 @@ $effect(() => {
   // Clear the canvas
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-  // // Draw the nest
-  // ctx.fillStyle = "#6b4226";
-  // ctx.fillRect(
-  //   $worldStore.nest.position.x,
-  //   $worldStore.nest.position.y,
-  //   20,
-  //   20,
-  // );
+  // Draw the nest
+  ctx.fillStyle = "#6b4226";
+  ctx.fillRect($worldStore.nest.x, $worldStore.nest.y, 40, 40);
 
   // // Draw food sources
   // ctx.fillStyle = "#4ade80";

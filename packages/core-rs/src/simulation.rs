@@ -1,8 +1,8 @@
 use crate::components::{Ant, Nest, Position, Velocity, Wandering};
 use crate::dto::{AntDto, NestDto, WorldDto};
 use crate::systems::{
-    apply_velocity_system, food_discovery_system, state_transition_system, target_movement_system,
-    wandering_system,
+    apply_velocity_system, enforce_bounds_system, food_discovery_system, state_transition_system,
+    target_movement_system, wandering_system,
 };
 use hecs::World;
 use rand::Rng;
@@ -11,17 +11,21 @@ use wasm_bindgen::prelude::*;
 #[wasm_bindgen]
 pub struct Simulation {
     world: World,
+    width: f32,
+    height: f32,
 }
 
-fn get_world_state_dto(world: &World) -> WorldDto {
-    let nest = world
+fn get_world_state_dto(simulation: &Simulation) -> WorldDto {
+    let nest = simulation
+        .world
         .query::<(&Position, &Nest)>()
         .iter()
         .next()
         .map(|(_, (pos, _))| NestDto { x: pos.x, y: pos.y })
         .expect("World should have a nest");
 
-    let ants = world
+    let ants = simulation
+        .world
         .query::<(&Position, &Ant)>()
         .iter()
         .map(|(_entity, (position, _))| AntDto {
@@ -33,8 +37,8 @@ fn get_world_state_dto(world: &World) -> WorldDto {
     WorldDto {
         nest,
         ants,
-        width: 1000.0,
-        height: 600.0,
+        width: simulation.width,
+        height: simulation.height,
     }
 }
 
@@ -45,18 +49,42 @@ impl Simulation {
         let mut world = World::new();
         let mut rng = rand::thread_rng();
 
-        world.spawn((Position { x: 0.0, y: 0.0 }, Nest));
+        let width = 1000.0;
+        let height = 600.0;
+
+        const START_X: f32 = 500.0;
+        const START_Y: f32 = 300.0;
+
+        let nest_pos_x = START_X - 25.0;
+        let nest_pos_y = START_Y - 25.0;
+        world.spawn((
+            Position {
+                x: nest_pos_x,
+                y: nest_pos_y,
+            },
+            Nest,
+        ));
 
         // Spawn ants
         for _ in 0..500 {
-            let x = 500.0;
-            let y = 300.0;
             let dx = rng.gen_range(-1.0..1.0);
             let dy = rng.gen_range(-1.0..1.0);
-            world.spawn((Position { x, y }, Velocity { dx, dy }, Wandering, Ant));
+            world.spawn((
+                Position {
+                    x: START_X,
+                    y: START_Y,
+                },
+                Velocity { dx, dy },
+                Wandering,
+                Ant,
+            ));
         }
 
-        Self { world }
+        Self {
+            world,
+            width,
+            height,
+        }
     }
 
     pub fn tick(&mut self) {
@@ -70,10 +98,12 @@ impl Simulation {
 
         // Apply calculated velocity to the positions.
         apply_velocity_system(&mut self.world);
+
+        enforce_bounds_system(&mut self.world, self.width, self.height);
     }
 
     pub fn get_world_state(&self) -> JsValue {
-        let dto = get_world_state_dto(&self.world);
+        let dto = get_world_state_dto(self);
         serde_wasm_bindgen::to_value(&dto).unwrap()
     }
 }

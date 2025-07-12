@@ -83,7 +83,6 @@ pub fn state_transition_system(world: &mut World) {
 }
 
 pub fn apply_velocity_system(world: &mut World) {
-    // Query for all entities that have both a Position and a Velocity component.
     for (_entity, (pos, vel)) in world.query_mut::<(&mut Position, &Velocity)>() {
         pos.x += vel.dx;
         pos.y += vel.dy;
@@ -99,10 +98,9 @@ pub fn wandering_system(world: &mut World) {
         .without::<&Target>()
     {
         if rng.gen_bool(WANDER_PROBABILITY) {
-            let new_dx = rng.gen_range(-1.0..1.0);
-            let new_dy = rng.gen_range(-1.0..1.0);
-            let magnitude: f32 = new_dx * new_dx + new_dy * new_dy;
-            let magnitude = magnitude.sqrt();
+            let new_dx: f32 = rng.gen_range(-1.0..1.0);
+            let new_dy: f32 = rng.gen_range(-1.0..1.0);
+            let magnitude = (new_dx * new_dx + new_dy * new_dy).sqrt();
             if magnitude > 1e-6 {
                 vel.dx = new_dx / magnitude;
                 vel.dy = new_dy / magnitude;
@@ -115,7 +113,6 @@ pub fn food_discovery_system(world: &mut World) {
     let mut updates = Vec::new();
     const DISCOVERY_RADIUS_SQUARED: f32 = 100.0;
 
-    // Collect wandering ants' positions and entities
     let wandering_ants: Vec<(Entity, Position)> = world
         .query::<(&Position, &Wandering)>()
         .iter()
@@ -150,6 +147,26 @@ pub fn food_discovery_system(world: &mut World) {
     for (ant_entity, food_entity) in updates {
         world.insert_one(ant_entity, Target(food_entity)).unwrap();
         world.remove_one::<Wandering>(ant_entity).unwrap();
+    }
+}
+
+pub fn enforce_bounds_system(world: &mut World, width: f32, height: f32) {
+    for (_entity, (pos, vel)) in world.query_mut::<(&mut Position, &mut Velocity)>() {
+        if pos.x < 0.0 {
+            pos.x = 0.0;
+            vel.dx = -vel.dx;
+        } else if pos.x > width {
+            pos.x = width;
+            vel.dx = -vel.dx;
+        }
+
+        if pos.y < 0.0 {
+            pos.y = 0.0;
+            vel.dy = -vel.dy;
+        } else if pos.y > height {
+            pos.y = height;
+            vel.dy = -vel.dy;
+        }
     }
 }
 
@@ -255,7 +272,7 @@ mod tests {
 
     #[test]
     fn test_wandering_system() {
-        // Figure out how to test the wandering system when it uses RNG
+        // TODO: Figure out how to test the wandering system when it uses RNG
     }
 
     #[test]
@@ -279,5 +296,34 @@ mod tests {
 
         // The ant should no longer have the Wandering component.
         assert!(world.get::<&Wandering>(ant_entity).is_err());
+    }
+
+    #[test]
+    fn test_enforce_bounds_system() {
+        // 1. Setup
+        let mut world = World::new();
+        let width = 100.0;
+        let height = 100.0;
+
+        // Spawn an ant outside the bounds
+        let out_of_bounds_entity = world.spawn((
+            Position { x: -10.0, y: 110.0 },
+            Velocity { dx: -1.0, dy: 1.0 },
+        ));
+
+        // 2. Action
+        enforce_bounds_system(&mut world, width, height);
+
+        // 3. Assertion
+        let pos = world.get::<&Position>(out_of_bounds_entity).unwrap();
+        let vel = world.get::<&Velocity>(out_of_bounds_entity).unwrap();
+
+        // Position should be clamped to the boundaries
+        assert_eq!(pos.x, 0.0);
+        assert_eq!(pos.y, 100.0);
+
+        // Velocity should be inverted
+        assert_eq!(vel.dx, 1.0);
+        assert_eq!(vel.dy, -1.0);
     }
 }
