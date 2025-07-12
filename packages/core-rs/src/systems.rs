@@ -27,14 +27,17 @@ pub fn target_movement_system(world: &mut World) {
 pub fn state_transition_system(world: &mut World) {
     let mut to_update_to_returning = Vec::new();
     let mut to_update_to_wandering = Vec::new();
+    let mut to_despawn = Vec::new();
     const ARRIVAL_DISTANCE_SQUARED: f32 = 5.0;
     const FOOD_PAYLOAD_AMOUNT: u32 = 10;
 
     // Find the nest entity first. Assumes one nest.
-    let nest_entity = match world.query::<&Nest>().iter().next() {
-        Some((e, _)) => e,
-        None => return,
-    };
+    let nest_entity = world
+        .query::<&Nest>()
+        .iter()
+        .next()
+        .expect("No nest entity found")
+        .0;
 
     // Collect all ants with targets
     let ants_with_targets: Vec<(Entity, Position, AntState, Entity)> = world
@@ -68,8 +71,10 @@ pub fn state_transition_system(world: &mut World) {
     // Apply updates for ants that have found food
     for (ant_entity, food_entity) in to_update_to_returning {
         if let Ok(food_source) = world.query_one_mut::<&mut FoodSource>(food_entity) {
-            let amount_taken = FOOD_PAYLOAD_AMOUNT;
-            food_source.amount -= amount_taken;
+            food_source.amount -= FOOD_PAYLOAD_AMOUNT;
+            if food_source.amount <= 0 {
+                to_despawn.push(food_entity);
+            }
 
             if let Ok(state) = world.query_one_mut::<&mut AntState>(ant_entity) {
                 *state = AntState::ReturningToNest;
@@ -89,6 +94,10 @@ pub fn state_transition_system(world: &mut World) {
             *state = AntState::Wandering;
         }
         world.remove::<(FoodPayload, Target)>(entity).unwrap();
+    }
+
+    for entity in to_despawn {
+        world.despawn(entity).unwrap();
     }
 }
 
@@ -363,5 +372,26 @@ mod tests {
         // Velocity should be inverted
         assert_eq!(vel.dx, 1.0);
         assert_eq!(vel.dy, -1.0);
+    }
+
+    #[test]
+    fn test_food_source_depleted_and_removed() {
+        // 1. Setup
+        let mut world = World::new();
+        world.spawn((Position { x: 0.0, y: 0.0 }, Nest));
+        let food_entity = world.spawn((Position { x: 10.0, y: 10.0 }, FoodSource { amount: 10 }));
+        world.spawn((
+            Position { x: 10.0, y: 10.0 },
+            AntState::Foraging,
+            Target(food_entity),
+            Ant,
+        ));
+
+        // 2. Action
+        state_transition_system(&mut world);
+
+        // 3. Assertion
+        // The food source entity should be removed from the world.
+        assert!(world.get::<&FoodSource>(food_entity).is_err());
     }
 }
