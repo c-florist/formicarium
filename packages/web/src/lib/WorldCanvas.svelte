@@ -34,7 +34,7 @@ $effect(() => {
   // Draw ants
   ctx.fillStyle = "#8a3324";
   $worldStore.ants.forEach((ant) => {
-    ctx.fillRect(ant.x, ant.y, 3, 3);
+    ctx.fillRect(ant.x, ant.y, 1, 1);
   });
 });
 </script>
