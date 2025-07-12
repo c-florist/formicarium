@@ -17,11 +17,9 @@ async function main() {
 
   fastify.register(baseRouter);
 
-  fastify.register((instance, _opts, done) => {
-    simulator(instance);
-
-    fastify.register(worldRouter);
-    done();
+  fastify.register(async (instance) => {
+    await simulator(instance);
+    await instance.register(worldRouter);
   });
 
   try {

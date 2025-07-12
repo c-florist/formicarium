@@ -1,3 +1,4 @@
+import type { WorldDto } from "@formicarium/domain";
 import { Simulation } from "../../../core-rs/pkg/core_rs";
 
 export class Orchestrator {
@@ -19,7 +20,7 @@ export class Orchestrator {
     this.tickListeners.forEach((listener) => listener());
   }
 
-  getWorldState() {
+  getWorldState(): WorldDto {
     return this.simulation.get_world_state();
   }
 

@@ -3,23 +3,23 @@ import type { Orchestrator } from "../core/orchestrator";
 
 declare module "fastify" {
   interface FastifyInstance {
-    simOrchestrator: Orchestrator;
+    simulator: Orchestrator;
   }
 }
 
 export default async function worldRouter(fastify: FastifyInstance) {
   fastify.get("/ws/world", { websocket: true }, (socket, _request) => {
     const tickListener = () => {
-      socket.send(JSON.stringify(fastify.simOrchestrator.getWorldState()));
+      socket.send(JSON.stringify(fastify.simulator.getWorldState()));
     };
 
-    fastify.simOrchestrator.addTickListener(tickListener);
+    fastify.simulator.addTickListener(tickListener);
 
     // Immediately send the current state upon connection
     tickListener();
 
     socket.on("close", () => {
-      fastify.simOrchestrator.removeTickListener(tickListener);
+      fastify.simulator.removeTickListener(tickListener);
     });
   });
 }
