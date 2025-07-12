@@ -249,7 +249,7 @@ mod tests {
     }
 
     #[test]
-    fn test_ant_gathers_food_and_decrements_source() {
+    fn test_state_transition_system_ant_gathers_food_and_decrements_source() {
         // 1. Setup
         let mut world = World::new();
         world.spawn((Position { x: 0.0, y: 0.0 }, Nest));
@@ -272,6 +272,27 @@ mod tests {
         // The ant should have a payload.
         let payload = world.get::<&FoodPayload>(ant_entity).unwrap();
         assert_eq!(payload.0, 10);
+    }
+
+    #[test]
+    fn test_state_transition_system_food_source_depleted_and_removed() {
+        // 1. Setup
+        let mut world = World::new();
+        world.spawn((Position { x: 0.0, y: 0.0 }, Nest));
+        let food_entity = world.spawn((Position { x: 10.0, y: 10.0 }, FoodSource { amount: 10 }));
+        world.spawn((
+            Position { x: 10.0, y: 10.0 },
+            AntState::Foraging,
+            Target(food_entity),
+            Ant,
+        ));
+
+        // 2. Action
+        state_transition_system(&mut world);
+
+        // 3. Assertion
+        // The food source entity should be removed from the world.
+        assert!(world.get::<&FoodSource>(food_entity).is_err());
     }
 
     #[test]
@@ -372,26 +393,5 @@ mod tests {
         // Velocity should be inverted
         assert_eq!(vel.dx, 1.0);
         assert_eq!(vel.dy, -1.0);
-    }
-
-    #[test]
-    fn test_food_source_depleted_and_removed() {
-        // 1. Setup
-        let mut world = World::new();
-        world.spawn((Position { x: 0.0, y: 0.0 }, Nest));
-        let food_entity = world.spawn((Position { x: 10.0, y: 10.0 }, FoodSource { amount: 10 }));
-        world.spawn((
-            Position { x: 10.0, y: 10.0 },
-            AntState::Foraging,
-            Target(food_entity),
-            Ant,
-        ));
-
-        // 2. Action
-        state_transition_system(&mut world);
-
-        // 3. Assertion
-        // The food source entity should be removed from the world.
-        assert!(world.get::<&FoodSource>(food_entity).is_err());
     }
 }
