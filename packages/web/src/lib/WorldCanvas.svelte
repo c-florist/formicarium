@@ -20,11 +20,11 @@ $effect(() => {
   ctx.fillStyle = "#6b4226";
   ctx.fillRect($worldStore.nest.x, $worldStore.nest.y, 40, 40);
 
-  // // Draw food sources
-  // ctx.fillStyle = "#4ade80";
-  // $worldStore.foodSources.forEach((foodSource) => {
-  //   ctx.fillRect(foodSource.position.x, foodSource.position.y, 10, 10);
-  // });
+  // Draw food sources
+  ctx.fillStyle = "#4ade80";
+  $worldStore.foodSources.forEach((foodSource) => {
+    ctx.fillRect(foodSource.x, foodSource.y, 10, 10);
+  });
 
   // Draw ants
   ctx.fillStyle = "#8a3324";

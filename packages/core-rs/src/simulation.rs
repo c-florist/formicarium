@@ -1,5 +1,5 @@
-use crate::components::{Ant, Nest, Position, Velocity, Wandering};
-use crate::dto::{AntDto, NestDto, WorldDto};
+use crate::components::{Ant, AntState, FoodSource, Nest, Position, Velocity};
+use crate::dto::{AntDto, FoodSourceDto, NestDto, WorldDto};
 use crate::systems::{
     apply_velocity_system, enforce_bounds_system, food_discovery_system, state_transition_system,
     target_movement_system, wandering_system,
@@ -34,8 +34,19 @@ fn get_world_state_dto(simulation: &Simulation) -> WorldDto {
         })
         .collect();
 
+    let food_sources = simulation
+        .world
+        .query::<(&Position, &FoodSource)>()
+        .iter()
+        .map(|(_entity, (position, _))| FoodSourceDto {
+            x: position.x,
+            y: position.y,
+        })
+        .collect();
+
     WorldDto {
         nest,
+        food_sources,
         ants,
         width: simulation.width,
         height: simulation.height,
@@ -65,8 +76,15 @@ impl Simulation {
             Nest,
         ));
 
+        // Spawn food sources
+        for _ in 0..10 {
+            let x = rng.gen_range(0.0..width);
+            let y = rng.gen_range(0.0..height);
+            world.spawn((Position { x, y }, FoodSource));
+        }
+
         // Spawn ants
-        for _ in 0..500 {
+        for _ in 0..100 {
             let dx = rng.gen_range(-1.0..1.0);
             let dy = rng.gen_range(-1.0..1.0);
             world.spawn((
@@ -75,7 +93,7 @@ impl Simulation {
                     y: START_Y,
                 },
                 Velocity { dx, dy },
-                Wandering,
+                AntState::Wandering,
                 Ant,
             ));
         }
@@ -141,9 +159,29 @@ mod tests {
             .query::<(&Position, &Nest)>()
             .iter()
             .count();
+        let food_sources = simulation
+            .world
+            .query::<(&Position, &FoodSource)>()
+            .iter()
+            .count();
 
         // 2. Assertion
-        assert_eq!(ants, 500);
+        assert_eq!(ants, 100);
         assert_eq!(nests, 1);
+        assert_eq!(food_sources, 10);
+    }
+
+    #[test]
+    fn test_get_world_state_dto_includes_all_entities() {
+        // 1. Setup
+        let simulation = Simulation::new();
+
+        // 2. Action
+        let dto = get_world_state_dto(&simulation);
+
+        // 3. Assertion
+        assert_eq!(dto.nest, NestDto { x: 475.0, y: 275.0 });
+        assert_eq!(dto.food_sources.len(), 10);
+        assert_eq!(dto.ants.len(), 100);
     }
 }

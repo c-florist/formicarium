@@ -16,9 +16,18 @@ pub struct NestDto {
 }
 
 #[derive(Serialize, Deserialize, TS, PartialEq, Debug)]
+#[ts(export, export_to = "../../domain/src/FoodSourceDto.ts")]
+pub struct FoodSourceDto {
+    pub x: f32,
+    pub y: f32,
+}
+
+#[derive(Serialize, Deserialize, TS, PartialEq, Debug)]
+#[serde(rename_all = "camelCase")]
 #[ts(export, export_to = "../../domain/src/WorldDto.ts")]
 pub struct WorldDto {
     pub nest: NestDto,
+    pub food_sources: Vec<FoodSourceDto>,
     pub ants: Vec<AntDto>,
     pub width: f32,
     pub height: f32,

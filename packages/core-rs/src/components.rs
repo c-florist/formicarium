@@ -19,7 +19,7 @@ pub struct Ant;
 pub struct Nest;
 
 #[derive(Debug, PartialEq)]
-pub struct Food;
+pub struct FoodSource;
 
 #[derive(Debug, PartialEq, Clone, Copy)]
 pub enum AntState {
@@ -30,12 +30,6 @@ pub enum AntState {
 
 #[derive(Debug, PartialEq)]
 pub struct Target(pub Entity);
-
-#[derive(Debug, PartialEq)]
-pub struct Wandering;
-
-#[derive(Debug, PartialEq)]
-pub struct CarryingCapacity(pub f32);
 
 #[derive(Debug, PartialEq)]
 pub struct Payload(pub f32);
