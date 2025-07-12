@@ -79,8 +79,18 @@ impl Simulation {
 
         // Spawn food sources
         for _ in 0..10 {
-            let x = rng.gen_range(0.0..width);
-            let y = rng.gen_range(0.0..height);
+            let mut x;
+            let mut y;
+            // Loop until a valid position is found
+            loop {
+                x = rng.gen_range(0.0..width);
+                y = rng.gen_range(0.0..height);
+                let distance_sq = (nest_pos_x - x).powi(2) + (nest_pos_y - y).powi(2);
+                // Ensure the food source is not too close to the nest
+                if distance_sq > 50.0_f32.powi(2) {
+                    break;
+                }
+            }
             world.spawn((Position { x, y }, FoodSource { amount: 100 }));
         }
 
