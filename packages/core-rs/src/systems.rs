@@ -206,7 +206,7 @@ pub fn enforce_bounds_system(world: &mut World, width: f32, height: f32) {
 pub fn despawn_food_system(world: &mut World) {
     let mut to_despawn = Vec::new();
     for (entity, (food_source, _)) in world.query::<(&FoodSource, &Position)>().iter() {
-        if food_source.amount <= 0 {
+        if food_source.amount == 0 {
             to_despawn.push(entity);
         }
     }
