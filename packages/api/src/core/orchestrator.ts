@@ -12,7 +12,7 @@ export class Orchestrator {
   start() {
     setInterval(() => {
       this.tick();
-    }, 100);
+    }, 50);
   }
 
   private tick() {

@@ -1,7 +1,7 @@
-use crate::components::{Position, Velocity};
+use crate::components::{Position, Velocity, Wandering};
 use crate::dto::{AntDto, WorldDto};
 use crate::systems::{
-    apply_velocity_system, food_discovery_system, movement_system, state_transition_system,
+    apply_velocity_system, food_discovery_system, state_transition_system, target_movement_system,
     wandering_system,
 };
 use hecs::{Entity, World};
@@ -45,7 +45,7 @@ impl Simulation {
             let y = 300.0;
             let dx = rng.gen_range(-1.0..1.0);
             let dy = rng.gen_range(-1.0..1.0);
-            let entity = world.spawn((Position { x, y }, Velocity { dx, dy }));
+            let entity = world.spawn((Position { x, y }, Velocity { dx, dy }, Wandering));
             entities.push(entity);
         }
 
@@ -55,7 +55,7 @@ impl Simulation {
     pub fn tick(&mut self) {
         food_discovery_system(&mut self.world);
         state_transition_system(&mut self.world);
-        movement_system(&mut self.world);
+        target_movement_system(&mut self.world);
         wandering_system(&mut self.world);
         apply_velocity_system(&mut self.world);
     }
