@@ -19,7 +19,9 @@ pub struct Ant;
 pub struct Nest;
 
 #[derive(Debug, PartialEq)]
-pub struct FoodSource;
+pub struct FoodSource {
+    pub amount: u32,
+}
 
 #[derive(Debug, PartialEq, Clone, Copy)]
 pub enum AntState {
@@ -32,4 +34,4 @@ pub enum AntState {
 pub struct Target(pub Entity);
 
 #[derive(Debug, PartialEq)]
-pub struct Payload(pub f32);
+pub struct FoodPayload(pub u32);

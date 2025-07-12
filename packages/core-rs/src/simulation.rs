@@ -80,7 +80,7 @@ impl Simulation {
         for _ in 0..10 {
             let x = rng.gen_range(0.0..width);
             let y = rng.gen_range(0.0..height);
-            world.spawn((Position { x, y }, FoodSource));
+            world.spawn((Position { x, y }, FoodSource { amount: 100 }));
         }
 
         // Spawn ants
