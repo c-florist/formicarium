@@ -26,12 +26,11 @@ pub fn ant_arrival_at_food_system(world: &mut World) {
             let distance_sq =
                 (ant_pos.x - target_pos.x).powi(2) + (ant_pos.y - target_pos.y).powi(2);
 
-            if distance_sq < ARRIVAL_DISTANCE_SQUARED {
-                if ant_state == AntState::Foraging
-                    && world.get::<&FoodSource>(target_entity).is_ok()
-                {
-                    to_update_to_returning.push((ant_entity, target_entity));
-                }
+            if distance_sq < ARRIVAL_DISTANCE_SQUARED
+                && ant_state == AntState::Foraging
+                && world.get::<&FoodSource>(target_entity).is_ok()
+            {
+                to_update_to_returning.push((ant_entity, target_entity));
             }
         }
     }
@@ -70,12 +69,11 @@ pub fn ant_arrival_at_nest_system(world: &mut World) {
             let distance_sq =
                 (ant_pos.x - target_pos.x).powi(2) + (ant_pos.y - target_pos.y).powi(2);
 
-            if distance_sq < ARRIVAL_DISTANCE_SQUARED {
-                if ant_state == AntState::ReturningToNest
-                    && world.get::<&Nest>(target_entity).is_ok()
-                {
-                    to_update_to_wandering.push(ant_entity);
-                }
+            if distance_sq < ARRIVAL_DISTANCE_SQUARED
+                && ant_state == AntState::ReturningToNest
+                && world.get::<&Nest>(target_entity).is_ok()
+            {
+                to_update_to_wandering.push(ant_entity);
             }
         }
     }
