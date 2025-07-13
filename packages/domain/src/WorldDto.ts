@@ -3,10 +3,4 @@ import type { AntDto } from "./AntDto";
 import type { FoodSourceDto } from "./FoodSourceDto";
 import type { NestDto } from "./NestDto";
 
-export type WorldDto = {
-  nest: NestDto;
-  foodSources: Array<FoodSourceDto>;
-  ants: Array<AntDto>;
-  width: number;
-  height: number;
-};
+export type WorldDto = { nest: NestDto, foodSources: Array<FoodSourceDto>, ants: Array<AntDto>, width: number, height: number, };

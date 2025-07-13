@@ -6,11 +6,13 @@ use crate::systems::{
     wandering_system,
 };
 use hecs::World;
-use rand::Rng;
+use rand::{Rng, SeedableRng};
+use rand_pcg::Pcg64;
 use wasm_bindgen::prelude::*;
 
 #[wasm_bindgen]
 pub struct Simulation {
+    #[wasm_bindgen(skip)]
     world: World,
     width: f32,
     height: f32,
@@ -23,7 +25,7 @@ fn get_world_state_dto(simulation: &Simulation) -> Result<WorldDto, &'static str
         .iter()
         .next()
         .map(|(_, (pos, _))| NestDto { x: pos.x, y: pos.y })
-        .ok_or("World should have a nest")?;
+        .ok_or("Could not find nest in world")?;
 
     let ants = simulation
         .world
@@ -59,7 +61,7 @@ impl Simulation {
     #[wasm_bindgen(constructor)]
     pub fn new() -> Self {
         let mut world = World::new();
-        let mut rng = rand::thread_rng();
+        let mut rng = Pcg64::from_rng(&mut rand::rng());
 
         let width = 1000.0;
         let height = 600.0;
@@ -83,8 +85,8 @@ impl Simulation {
             let mut y;
             // Loop until a valid position is found
             loop {
-                x = rng.gen_range(0.0..width);
-                y = rng.gen_range(0.0..height);
+                x = rng.random_range(0.0..width);
+                y = rng.random_range(0.0..height);
                 let distance_sq = (nest_pos_x - x).powi(2) + (nest_pos_y - y).powi(2);
                 // Ensure the food source is not too close to the nest
                 if distance_sq > 50.0_f32.powi(2) {
@@ -96,8 +98,8 @@ impl Simulation {
 
         // Spawn ants
         for _ in 0..100 {
-            let dx = rng.gen_range(-1.0..1.0);
-            let dy = rng.gen_range(-1.0..1.0);
+            let dx = rng.random_range(-1.0..1.0);
+            let dy = rng.random_range(-1.0..1.0);
             world.spawn((
                 Position {
                     x: START_X,
@@ -133,7 +135,7 @@ impl Simulation {
     }
 
     pub fn get_world_state(&self) -> Result<JsValue, JsValue> {
-        let dto = get_world_state_dto(self);
+        let dto = get_world_state_dto(self).map_err(JsValue::from_str)?;
         serde_wasm_bindgen::to_value(&dto).map_err(|e| JsValue::from_str(&e.to_string()))
     }
 }

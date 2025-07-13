@@ -6,7 +6,8 @@
       "packages/domain/src/**/*.ts",
       "packages/web/src/**/*.ts",
       "packages/web/src/**/*.svelte",
-      "packages/web/src/**/*.css"
+      "packages/web/src/**/*.css",
+      "!packages/domain/src/*Dto.ts"
     ]
   },
   "formatter": {

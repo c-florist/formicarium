@@ -1,6 +1,7 @@
 use crate::components::{Ant, AntState, FoodPayload, FoodSource, Nest, Position, Target, Velocity};
 use hecs::{Entity, World};
-use rand::Rng;
+use rand::{Rng, SeedableRng};
+use rand_pcg::Pcg64;
 
 pub fn ant_arrival_at_food_system(world: &mut World) {
     let mut to_update_to_returning = Vec::new();
@@ -124,13 +125,13 @@ pub fn apply_velocity_system(world: &mut World) {
 }
 
 pub fn wandering_system(world: &mut World) {
-    let mut rng = rand::thread_rng();
+    let mut rng = Pcg64::from_rng(&mut rand::rng());
     const WANDER_PROBABILITY: f64 = 0.05;
 
     for (_entity, (vel, state, _)) in world.query_mut::<(&mut Velocity, &mut AntState, &Ant)>() {
-        if *state == AntState::Wandering && rng.gen_bool(WANDER_PROBABILITY) {
-            let new_dx: f32 = rng.gen_range(-1.0..1.0);
-            let new_dy: f32 = rng.gen_range(-1.0..1.0);
+        if *state == AntState::Wandering && rng.random_bool(WANDER_PROBABILITY) {
+            let new_dx: f32 = rng.random_range(-1.0..1.0);
+            let new_dy: f32 = rng.random_range(-1.0..1.0);
             let magnitude = (new_dx * new_dx + new_dy * new_dy).sqrt();
             if magnitude > 1e-6 {
                 vel.dx = new_dx / magnitude;
