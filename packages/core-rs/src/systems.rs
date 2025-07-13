@@ -8,7 +8,7 @@ pub fn ant_arrival_at_food_system(world: &mut World) {
     const ARRIVAL_DISTANCE_SQUARED: f32 = 5.0;
     const FOOD_PAYLOAD_AMOUNT: u32 = 10;
 
-    // Find the nest entity first. Assumes one nest.
+    // Find the nest entity first, assumes one nest
     let nest_entity = world
         .query::<&Nest>()
         .iter()
@@ -29,7 +29,6 @@ pub fn ant_arrival_at_food_system(world: &mut World) {
                 (ant_pos.x - target_pos.x).powi(2) + (ant_pos.y - target_pos.y).powi(2);
 
             if distance_sq < ARRIVAL_DISTANCE_SQUARED {
-                // Case 1: Ant is foraging and has reached food.
                 if ant_state == AntState::Foraging
                     && world.get::<&FoodSource>(target_entity).is_ok()
                 {
@@ -74,7 +73,6 @@ pub fn ant_arrival_at_nest_system(world: &mut World) {
                 (ant_pos.x - target_pos.x).powi(2) + (ant_pos.y - target_pos.y).powi(2);
 
             if distance_sq < ARRIVAL_DISTANCE_SQUARED {
-                // Case 2: Ant is returning and has reached the nest.
                 if ant_state == AntState::ReturningToNest
                     && world.get::<&Nest>(target_entity).is_ok()
                 {

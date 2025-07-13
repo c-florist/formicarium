@@ -1,5 +1,6 @@
 use hecs::Entity;
 
+// Movement related components
 #[derive(Debug, PartialEq, Clone, Copy)]
 pub struct Position {
     pub x: f32,
@@ -13,15 +14,11 @@ pub struct Velocity {
 }
 
 #[derive(Debug, PartialEq)]
+pub struct Target(pub Entity);
+
+// Ant components
+#[derive(Debug, PartialEq)]
 pub struct Ant;
-
-#[derive(Debug, PartialEq)]
-pub struct Nest;
-
-#[derive(Debug, PartialEq)]
-pub struct FoodSource {
-    pub amount: u32,
-}
 
 #[derive(Debug, PartialEq, Clone, Copy)]
 pub enum AntState {
@@ -31,7 +28,24 @@ pub enum AntState {
 }
 
 #[derive(Debug, PartialEq)]
-pub struct Target(pub Entity);
+pub struct FoodPayload(pub u32);
+
+#[derive(Debug, PartialEq, Clone, Copy)]
+pub enum PheromoneType {
+    ToFood,
+}
 
 #[derive(Debug, PartialEq)]
-pub struct FoodPayload(pub u32);
+pub struct Pheromone {
+    pub phero_type: PheromoneType,
+    pub strength: f32,
+}
+
+// Static world components
+#[derive(Debug, PartialEq)]
+pub struct Nest;
+
+#[derive(Debug, PartialEq)]
+pub struct FoodSource {
+    pub amount: u32,
+}
