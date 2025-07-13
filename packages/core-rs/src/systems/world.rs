@@ -1,7 +1,5 @@
-use crate::components::{Ant, AntState, FoodPayload, FoodSource, Nest, Position, Target, Velocity};
-use hecs::{Entity, World};
-use rand::{Rng, SeedableRng};
-use rand_pcg::Pcg64;
+use crate::components::{FoodSource, Position, Velocity};
+use hecs::World;
 
 pub fn enforce_bounds_system(world: &mut World, width: f32, height: f32) {
     for (_entity, (pos, vel)) in world.query_mut::<(&mut Position, &mut Velocity)>() {
@@ -41,7 +39,7 @@ pub fn despawn_food_system(world: &mut World) {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::components::{AntState, FoodPayload, FoodSource, Nest, Position, Target, Velocity};
+    use crate::components::{FoodSource, Position, Velocity};
     use hecs::World;
 
     #[test]

@@ -1,5 +1,5 @@
-use crate::components::{Ant, AntState, FoodPayload, FoodSource, Nest, Position, Target, Velocity};
-use hecs::{Entity, World};
+use crate::components::{Ant, AntState, Position, Target, Velocity};
+use hecs::World;
 use rand::{Rng, SeedableRng};
 use rand_pcg::Pcg64;
 
@@ -52,7 +52,7 @@ pub fn wandering_system(world: &mut World) {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::components::{AntState, FoodPayload, FoodSource, Nest, Position, Target, Velocity};
+    use crate::components::{FoodSource, Position, Target, Velocity};
     use hecs::World;
 
     #[test]

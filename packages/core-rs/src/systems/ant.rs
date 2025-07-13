@@ -1,7 +1,5 @@
-use crate::components::{Ant, AntState, FoodPayload, FoodSource, Nest, Position, Target, Velocity};
+use crate::components::{Ant, AntState, FoodPayload, FoodSource, Nest, Position, Target};
 use hecs::{Entity, World};
-use rand::{Rng, SeedableRng};
-use rand_pcg::Pcg64;
 
 pub fn ant_arrival_at_food_system(world: &mut World) {
     let mut to_update_to_returning = Vec::new();
