@@ -25,10 +25,8 @@ pub fn pheromone_emission_system(world: &mut World, rng: &mut impl Rng) {
                     x: position.x,
                     y: position.y,
                 },
-                Pheromone {
-                    strength: 40.0,
-                    phero_type: PheromoneType::ToFood,
-                },
+                Pheromone { strength: 40.0 },
+                PheromoneType::ToFood,
             ));
         }
     }
@@ -69,11 +67,11 @@ mod tests {
         }
 
         // 3. Assertion
-        let mut query = world.query::<(&Pheromone, &Position)>();
-        let (_entity, (pheromone, position)) = query.iter().next().unwrap();
+        let mut query = world.query::<(&Pheromone, &PheromoneType, &Position)>();
+        let (_entity, (pheromone, p_type, position)) = query.iter().next().unwrap();
 
         assert_eq!(pheromone.strength, 40.0);
-        assert_eq!(pheromone.phero_type, PheromoneType::ToFood);
+        assert_eq!(*p_type, PheromoneType::ToFood);
         assert_eq!(position.x, 36.0);
         assert_eq!(position.y, 48.0);
     }
@@ -82,20 +80,20 @@ mod tests {
     fn test_pheromone_decay_system_decrements_pheromone_strength() {
         // 1. Setup
         let mut world = World::new();
-        let pheromone_entity = world.spawn((
-            Pheromone {
-                phero_type: PheromoneType::ToFood,
-                strength: 100.0,
-            },
+        world.spawn((
             Position { x: 0.0, y: 0.0 },
+            Pheromone { strength: 100.0 },
+            PheromoneType::ToFood,
         ));
 
         // 2. Action
         pheromone_decay_system(&mut world);
 
         // 3. Assertion
-        let pheromone_to_food = world.get::<&Pheromone>(pheromone_entity).unwrap();
-        assert_eq!(pheromone_to_food.phero_type, PheromoneType::ToFood);
-        assert_eq!(pheromone_to_food.strength, 99.0);
+        let mut query = world.query::<(&Pheromone, &PheromoneType, &Position)>();
+        let (_entity, (pheromone, p_type, _)) = query.iter().next().unwrap();
+
+        assert_eq!(*p_type, PheromoneType::ToFood);
+        assert_eq!(pheromone.strength, 99.0);
     }
 }

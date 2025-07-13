@@ -30,6 +30,7 @@ pub enum AntState {
 #[derive(Debug, PartialEq)]
 pub struct FoodPayload(pub u32);
 
+// TODO: Consider making PheromoneTypes their own tag components
 #[derive(Debug, PartialEq, Clone, Copy)]
 pub enum PheromoneType {
     ToFood,
@@ -37,7 +38,6 @@ pub enum PheromoneType {
 
 #[derive(Debug, PartialEq)]
 pub struct Pheromone {
-    pub phero_type: PheromoneType,
     pub strength: f32,
 }
 

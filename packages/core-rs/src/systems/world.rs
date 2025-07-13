@@ -100,11 +100,9 @@ mod tests {
         // 1. Setup
         let mut world = World::new();
         let pheromone_entity = world.spawn((
-            Pheromone {
-                phero_type: PheromoneType::ToFood,
-                strength: 0.0,
-            },
             Position { x: 10.0, y: 10.0 },
+            Pheromone { strength: 0.0 },
+            PheromoneType::ToFood,
         ));
 
         // 2. Action
