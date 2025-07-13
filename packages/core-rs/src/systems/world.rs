@@ -43,20 +43,7 @@ mod tests {
     use hecs::World;
 
     #[test]
-    fn test_despawn_food_system() {
-        // 1. Setup
-        let mut world = World::new();
-        let food_entity = world.spawn((Position { x: 10.0, y: 10.0 }, FoodSource { amount: 0 }));
-
-        // 2. Action
-        despawn_food_system(&mut world);
-
-        // 3. Assertion
-        assert!(world.get::<&FoodSource>(food_entity).is_err());
-    }
-
-    #[test]
-    fn test_enforce_bounds_system() {
+    fn test_enforce_bounds_system_clamps_bounds_and_inverts_velocity() {
         // 1. Setup
         let mut world = World::new();
         let width = 100.0;
@@ -82,5 +69,18 @@ mod tests {
         // Velocity should be inverted
         assert_eq!(vel.dx, 1.0);
         assert_eq!(vel.dy, -1.0);
+    }
+
+    #[test]
+    fn test_despawn_food_system_removes_food_sources() {
+        // 1. Setup
+        let mut world = World::new();
+        let food_entity = world.spawn((Position { x: 10.0, y: 10.0 }, FoodSource { amount: 0 }));
+
+        // 2. Action
+        despawn_food_system(&mut world);
+
+        // 3. Assertion
+        assert!(world.get::<&FoodSource>(food_entity).is_err());
     }
 }

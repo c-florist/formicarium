@@ -141,7 +141,7 @@ mod tests {
     use hecs::World;
 
     #[test]
-    fn test_ant_arrival_at_nest_system() {
+    fn test_ant_arrival_at_nest_system_updates_ant_components() {
         // 1. Setup
         let mut world = World::new();
         let nest_entity = world.spawn((Position { x: 0.0, y: 0.0 }, Nest));
@@ -166,7 +166,7 @@ mod tests {
     }
 
     #[test]
-    fn test_ant_arrival_at_food_system() {
+    fn test_ant_arrival_at_food_system_updates_ant_components_and_depletes_food_source() {
         // 1. Setup
         let mut world = World::new();
         let nest_entity = world.spawn((Position { x: 0.0, y: 0.0 }, Nest));
@@ -196,7 +196,7 @@ mod tests {
     }
 
     #[test]
-    fn test_food_discovery_system() {
+    fn test_food_discovery_system_updates_ant_components() {
         // 1. Setup
         let mut world = World::new();
         let ant_entity = world.spawn((

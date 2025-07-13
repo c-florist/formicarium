@@ -56,7 +56,7 @@ mod tests {
     use hecs::World;
 
     #[test]
-    fn test_movement_system_moves_towards_target() {
+    fn test_target_movement_system_moves_towards_target() {
         // 1. Setup
         let mut world = World::new();
         let food_entity = world.spawn((Position { x: 10.0, y: 10.0 }, FoodSource { amount: 100 }));
@@ -79,7 +79,7 @@ mod tests {
     }
 
     #[test]
-    fn test_apply_velocity_system() {
+    fn test_apply_velocity_system_updates_positions() {
         // 1. Setup
         let mut world = World::new();
         let entity = world.spawn((

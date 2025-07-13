@@ -146,7 +146,7 @@ mod tests {
     use crate::components::{Position, Velocity};
 
     #[test]
-    fn simulation_tick_updates_position() {
+    fn test_simulation_tick_updates_position() {
         // 1. Setup
         let mut simulation = Simulation::new();
         let entity = simulation.world.spawn((
@@ -164,7 +164,7 @@ mod tests {
     }
 
     #[test]
-    fn simulation_new_spawns_correct_entities() {
+    fn test_simulation_new_spawns_correct_entities() {
         // 1. Action
         let simulation = Simulation::new();
         let ants = simulation.world.query::<(&Position, &Ant)>().iter().count();
@@ -186,7 +186,7 @@ mod tests {
     }
 
     #[test]
-    fn test_get_world_state_dto_includes_all_entities() {
+    fn test_get_world_state_dto_includes_all_entities_and_dimensions() {
         // 1. Setup
         let simulation = Simulation::new();
 
@@ -194,6 +194,8 @@ mod tests {
         let dto = get_world_state_dto(&simulation).unwrap();
 
         // 3. Assertion
+        assert_eq!(dto.width, 1000.0);
+        assert_eq!(dto.height, 600.0);
         assert_eq!(dto.nest, NestDto { x: 475.0, y: 275.0 });
         assert_eq!(dto.food_sources.len(), 10);
         assert_eq!(dto.ants.len(), 100);
