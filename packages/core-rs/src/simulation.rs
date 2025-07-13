@@ -1,9 +1,8 @@
 use crate::components::{Ant, AntState, FoodSource, Nest, Position, Velocity};
 use crate::dto::{AntDto, FoodSourceDto, NestDto, WorldDto};
 use crate::systems::{
-    ant_arrival_at_food_system, ant_arrival_at_nest_system, apply_velocity_system,
-    despawn_food_system, enforce_bounds_system, food_discovery_system, target_movement_system,
-    wandering_system,
+    ant_arrival_at_food_system, ant_arrival_at_nest_system, apply_velocity_system, despawn_system,
+    enforce_bounds_system, food_discovery_system, target_movement_system, wandering_system,
 };
 use hecs::World;
 use rand::{Rng, SeedableRng};
@@ -123,7 +122,7 @@ impl Simulation {
         food_discovery_system(&mut self.world);
         ant_arrival_at_food_system(&mut self.world);
         ant_arrival_at_nest_system(&mut self.world);
-        despawn_food_system(&mut self.world);
+        despawn_system(&mut self.world);
 
         // Systems that execute movement based on the current state.
         wandering_system(&mut self.world);

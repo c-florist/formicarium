@@ -1,4 +1,4 @@
-use crate::components::{FoodSource, Position, Velocity};
+use crate::components::{FoodSource, Pheromone, Position, Velocity};
 use hecs::World;
 
 pub fn enforce_bounds_system(world: &mut World, width: f32, height: f32) {
@@ -21,10 +21,21 @@ pub fn enforce_bounds_system(world: &mut World, width: f32, height: f32) {
     }
 }
 
-pub fn despawn_food_system(world: &mut World) {
+pub fn despawn_system(world: &mut World) {
     let mut to_despawn = Vec::new();
-    for (entity, (food_source, _)) in world.query::<(&FoodSource, &Position)>().iter() {
-        if food_source.amount == 0 {
+    for (entity, (_, food_entity, pheromone_entity)) in world
+        .query::<(&Position, Option<&FoodSource>, Option<&Pheromone>)>()
+        .iter()
+    {
+        if let Some(food_source) = food_entity
+            && food_source.amount == 0
+        {
+            to_despawn.push(entity);
+        }
+
+        if let Some(pheromone) = pheromone_entity
+            && pheromone.strength == 0.0
+        {
             to_despawn.push(entity);
         }
     }
@@ -39,7 +50,7 @@ pub fn despawn_food_system(world: &mut World) {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::components::{FoodSource, Position, Velocity};
+    use crate::components::{FoodSource, Pheromone, PheromoneType, Position, Velocity};
     use hecs::World;
 
     #[test]
@@ -72,15 +83,34 @@ mod tests {
     }
 
     #[test]
-    fn test_despawn_food_system_removes_food_sources() {
+    fn test_despawn_system_removes_depleted_food_sources() {
         // 1. Setup
         let mut world = World::new();
         let food_entity = world.spawn((Position { x: 10.0, y: 10.0 }, FoodSource { amount: 0 }));
 
         // 2. Action
-        despawn_food_system(&mut world);
+        despawn_system(&mut world);
 
         // 3. Assertion
         assert!(world.get::<&FoodSource>(food_entity).is_err());
+    }
+
+    #[test]
+    fn test_despawn_system_removes_decayed_pheromones() {
+        // 1. Setup
+        let mut world = World::new();
+        let pheromone_entity = world.spawn((
+            Pheromone {
+                phero_type: PheromoneType::ToFood,
+                strength: 0.0,
+            },
+            Position { x: 10.0, y: 10.0 },
+        ));
+
+        // 2. Action
+        despawn_system(&mut world);
+
+        // 3. Assertion
+        assert!(world.get::<&Pheromone>(pheromone_entity).is_err());
     }
 }
