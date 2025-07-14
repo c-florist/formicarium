@@ -30,16 +30,17 @@ pub enum AntState {
 #[derive(Debug, PartialEq)]
 pub struct FoodPayload(pub u32);
 
-// TODO: Consider making PheromoneTypes their own tag components
-#[derive(Debug, PartialEq, Clone, Copy)]
-pub enum PheromoneType {
-    ToFood,
+// Pheromone system components
+#[derive(Debug, PartialEq)]
+pub struct PheromoneDeposit {
+    pub strength: f32,
 }
 
 #[derive(Debug, PartialEq)]
-pub struct Pheromone {
-    pub strength: f32,
-}
+pub struct PheromoneToFood;
+
+#[derive(Debug, PartialEq)]
+pub struct PheromoneToNest;
 
 // Static world components
 #[derive(Debug, PartialEq)]

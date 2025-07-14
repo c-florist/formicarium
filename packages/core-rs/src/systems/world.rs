@@ -1,4 +1,4 @@
-use crate::components::{FoodSource, Pheromone, Position, Velocity};
+use crate::components::{FoodSource, PheromoneDeposit, Position, Velocity};
 use hecs::World;
 
 pub fn enforce_bounds_system(world: &mut World, width: f32, height: f32) {
@@ -24,7 +24,7 @@ pub fn enforce_bounds_system(world: &mut World, width: f32, height: f32) {
 pub fn despawn_system(world: &mut World) {
     let mut to_despawn = Vec::new();
     for (entity, (_, food_entity, pheromone_entity)) in world
-        .query::<(&Position, Option<&FoodSource>, Option<&Pheromone>)>()
+        .query::<(&Position, Option<&FoodSource>, Option<&PheromoneDeposit>)>()
         .iter()
     {
         if let Some(food_source) = food_entity
@@ -50,7 +50,7 @@ pub fn despawn_system(world: &mut World) {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::components::{FoodSource, Pheromone, PheromoneType, Position, Velocity};
+    use crate::components::{FoodSource, PheromoneDeposit, PheromoneToFood, Position, Velocity};
     use hecs::World;
 
     #[test]
@@ -101,14 +101,14 @@ mod tests {
         let mut world = World::new();
         let pheromone_entity = world.spawn((
             Position { x: 10.0, y: 10.0 },
-            Pheromone { strength: 0.0 },
-            PheromoneType::ToFood,
+            PheromoneDeposit { strength: 0.0 },
+            PheromoneToFood,
         ));
 
         // 2. Action
         despawn_system(&mut world);
 
         // 3. Assertion
-        assert!(world.get::<&Pheromone>(pheromone_entity).is_err());
+        assert!(world.get::<&PheromoneDeposit>(pheromone_entity).is_err());
     }
 }

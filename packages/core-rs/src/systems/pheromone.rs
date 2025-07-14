@@ -1,4 +1,4 @@
-use crate::components::{Ant, AntState, FoodPayload, Pheromone, PheromoneType, Position};
+use crate::components::{Ant, AntState, FoodPayload, PheromoneDeposit, PheromoneToFood, Position};
 use hecs::World;
 use rand::Rng;
 
@@ -6,6 +6,7 @@ pub fn pheromone_emission_system(world: &mut World, rng: &mut impl Rng) {
     // TODO: Determine strength of pheromones based on distance from food source / to nest
     const EMIT_CHANCE: f64 = 0.25;
 
+    // TODO: Currently only emits to_food pheromones
     let ants_returning_to_nest: Vec<Position> = world
         .query::<(&Position, &AntState, &FoodPayload, &Ant)>()
         .iter()
@@ -25,8 +26,8 @@ pub fn pheromone_emission_system(world: &mut World, rng: &mut impl Rng) {
                     x: position.x,
                     y: position.y,
                 },
-                Pheromone { strength: 50.0 },
-                PheromoneType::ToFood,
+                PheromoneDeposit { strength: 50.0 },
+                PheromoneToFood,
             ));
         }
     }
@@ -34,7 +35,7 @@ pub fn pheromone_emission_system(world: &mut World, rng: &mut impl Rng) {
 
 pub fn pheromone_decay_system(world: &mut World) {
     // TODO: Different pheromones should decay at different rates
-    for (_entity, (pheromone, _)) in world.query_mut::<(&mut Pheromone, &Position)>() {
+    for (_entity, (pheromone, _)) in world.query_mut::<(&mut PheromoneDeposit, &Position)>() {
         pheromone.strength -= 1.0;
     }
 }
@@ -42,7 +43,7 @@ pub fn pheromone_decay_system(world: &mut World) {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::components::{Ant, AntState, FoodPayload, Nest, Pheromone, PheromoneType};
+    use crate::components::{Ant, AntState, FoodPayload, Nest, PheromoneDeposit, PheromoneToFood};
     use hecs::World;
     use rand::SeedableRng;
     use rand::rngs::StdRng;
@@ -67,11 +68,10 @@ mod tests {
         }
 
         // 3. Assertion
-        let mut query = world.query::<(&Pheromone, &PheromoneType, &Position)>();
-        let (_entity, (pheromone, p_type, position)) = query.iter().next().unwrap();
+        let mut query = world.query::<(&PheromoneDeposit, &PheromoneToFood, &Position)>();
+        let (_entity, (pheromone, _, position)) = query.iter().next().unwrap();
 
         assert_eq!(pheromone.strength, 50.0);
-        assert_eq!(*p_type, PheromoneType::ToFood);
         assert_eq!(position.x, 36.0);
         assert_eq!(position.y, 48.0);
     }
@@ -82,18 +82,17 @@ mod tests {
         let mut world = World::new();
         world.spawn((
             Position { x: 0.0, y: 0.0 },
-            Pheromone { strength: 100.0 },
-            PheromoneType::ToFood,
+            PheromoneDeposit { strength: 100.0 },
+            PheromoneToFood,
         ));
 
         // 2. Action
         pheromone_decay_system(&mut world);
 
         // 3. Assertion
-        let mut query = world.query::<(&Pheromone, &PheromoneType, &Position)>();
-        let (_entity, (pheromone, p_type, _)) = query.iter().next().unwrap();
+        let mut query = world.query::<(&PheromoneDeposit, &PheromoneToFood, &Position)>();
+        let (_entity, (pheromone, _, _)) = query.iter().next().unwrap();
 
-        assert_eq!(*p_type, PheromoneType::ToFood);
         assert_eq!(pheromone.strength, 99.0);
     }
 }
