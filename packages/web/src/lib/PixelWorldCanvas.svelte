@@ -16,38 +16,36 @@ type AntSprite = {
   animationFrame: number;
 };
 
-const WORKER_ANT_SPRITESHEET = "/worker-ant-spritesheet.json";
 const ANT_SCALE = 1.4;
 const ANT_STARTING_FRAME = "ant-down-0";
-
-const BACKGROUND_TILE_SIZE = 16;
 
 let canvasContainer: HTMLDivElement;
 let app: Application;
 let antSprites: Map<number, AntSprite> = new Map();
 let spritesheet: UnresolvedAsset;
 
-onMount(async () => {
+const initialise = async () => {
   app = new Application();
-
   await app.init({
     width: 1200,
     height: 700,
     backgroundColor: 0xfef3c7,
   });
-
   canvasContainer.appendChild(app.canvas);
+};
 
-  spritesheet = await Assets.load(WORKER_ANT_SPRITESHEET);
+const loadGlobalAssets = async () => {
+  spritesheet = await Assets.load("/worker-ant-spritesheet.json");
+};
 
-  // Add background
+const createBackground = async () => {
+  const backgroundTileSize = 16;
+  const backgroundContainer = new Container();
   const forestTileset = await Assets.load("/forest-terrain.json");
   const tileNames = ["grass-plain", "grass-1", "grass-2", "grass-3"];
 
-  const tilesX = Math.ceil(app.screen.width / BACKGROUND_TILE_SIZE);
-  const tilesY = Math.ceil(app.screen.height / BACKGROUND_TILE_SIZE);
-
-  const backgroundContainer = new Container();
+  const tilesX = Math.ceil(app.screen.width / backgroundTileSize);
+  const tilesY = Math.ceil(app.screen.height / backgroundTileSize);
 
   // Generate random tiles
   for (let y = 0; y < tilesY; y++) {
@@ -58,40 +56,48 @@ onMount(async () => {
       const tileSprite = new Sprite(forestTileset.textures[randomTileName]);
 
       // Position the tile
-      tileSprite.x = x * BACKGROUND_TILE_SIZE;
-      tileSprite.y = y * BACKGROUND_TILE_SIZE;
+      tileSprite.x = x * backgroundTileSize;
+      tileSprite.y = y * backgroundTileSize;
 
       backgroundContainer.addChild(tileSprite);
     }
   }
 
   app.stage.addChildAt(backgroundContainer, 0);
+};
+
+const createBoulders = async () => {
+  const boulderContainer = new Container();
+  const boulderCount = 4;
 
   const boulder1Texture = await Assets.load("/boulder-1.png");
   const boulder2Texture = await Assets.load("/boulder-2.png");
   const boulderTextures = [boulder1Texture, boulder2Texture];
 
-  const boulderContainer = new Container();
-  const BOULDER_COUNT = 4; // Adjust number of boulders
-
-  for (let i = 0; i < BOULDER_COUNT; i++) {
+  for (let i = 0; i < boulderCount; i++) {
     // Pick random boulder texture
     const randomTexture =
       boulderTextures[Math.floor(Math.random() * boulderTextures.length)];
     const boulderSprite = new Sprite(randomTexture);
 
-    // Random position
     boulderSprite.x = Math.random() * app.screen.width;
     boulderSprite.y = Math.random() * app.screen.height;
 
-    // Optional: scale boulders
-    boulderSprite.scale.set(0.8 + Math.random() * 0.4); // Random scale 0.8-1.2
+    // Scale boulders
+    boulderSprite.scale.set(0.8 + Math.random() * 0.4);
 
     boulderContainer.addChild(boulderSprite);
   }
 
   // Add boulders above background but below ants
   app.stage.addChildAt(boulderContainer, 1);
+};
+
+onMount(async () => {
+  await initialise();
+  await loadGlobalAssets();
+  await createBackground();
+  await createBoulders();
 
   setInterval(() => {
     // Update all ant sprites with their individual frame counters
