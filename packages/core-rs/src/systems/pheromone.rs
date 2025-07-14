@@ -25,7 +25,7 @@ pub fn pheromone_emission_system(world: &mut World, rng: &mut impl Rng) {
                     x: position.x,
                     y: position.y,
                 },
-                Pheromone { strength: 40.0 },
+                Pheromone { strength: 50.0 },
                 PheromoneType::ToFood,
             ));
         }
@@ -70,7 +70,7 @@ mod tests {
         let mut query = world.query::<(&Pheromone, &PheromoneType, &Position)>();
         let (_entity, (pheromone, p_type, position)) = query.iter().next().unwrap();
 
-        assert_eq!(pheromone.strength, 40.0);
+        assert_eq!(pheromone.strength, 50.0);
         assert_eq!(*p_type, PheromoneType::ToFood);
         assert_eq!(position.x, 36.0);
         assert_eq!(position.y, 48.0);

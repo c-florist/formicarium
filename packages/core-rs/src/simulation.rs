@@ -1,5 +1,6 @@
 use crate::components::{Ant, AntState, FoodSource, Nest, Position, Velocity};
 use crate::dto::{AntDto, FoodSourceDto, NestDto, WorldDto};
+use crate::maths::target_distance_sq;
 use crate::systems::{
     ant_arrival_at_food_system, ant_arrival_at_nest_system, apply_velocity_system, despawn_system,
     enforce_bounds_system, food_discovery_system, target_movement_system, wandering_system,
@@ -86,7 +87,7 @@ impl Simulation {
             loop {
                 x = rng.random_range(0.0..width);
                 y = rng.random_range(0.0..height);
-                let distance_sq = (nest_pos_x - x).powi(2) + (nest_pos_y - y).powi(2);
+                let distance_sq = target_distance_sq(nest_pos_x, nest_pos_y, x, y);
                 // Ensure the food source is not too close to the nest
                 if distance_sq > 50.0_f32.powi(2) {
                     break;

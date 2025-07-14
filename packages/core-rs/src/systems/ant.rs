@@ -1,4 +1,5 @@
 use crate::components::{Ant, AntState, FoodPayload, FoodSource, Nest, Position, Target};
+use crate::maths::target_distance_sq;
 use hecs::{Entity, World};
 
 pub fn ant_arrival_at_food_system(world: &mut World) {
@@ -23,8 +24,7 @@ pub fn ant_arrival_at_food_system(world: &mut World) {
 
     for (ant_entity, ant_pos, ant_state, target_entity) in ants_with_targets {
         if let Ok(target_pos) = world.get::<&Position>(target_entity) {
-            let distance_sq =
-                (ant_pos.x - target_pos.x).powi(2) + (ant_pos.y - target_pos.y).powi(2);
+            let distance_sq = target_distance_sq(ant_pos.x, ant_pos.y, target_pos.x, target_pos.y);
 
             if distance_sq < ARRIVAL_DISTANCE_SQUARED
                 && ant_state == AntState::Foraging
@@ -66,8 +66,7 @@ pub fn ant_arrival_at_nest_system(world: &mut World) {
 
     for (ant_entity, ant_pos, ant_state, target_entity) in ants_with_targets {
         if let Ok(target_pos) = world.get::<&Position>(target_entity) {
-            let distance_sq =
-                (ant_pos.x - target_pos.x).powi(2) + (ant_pos.y - target_pos.y).powi(2);
+            let distance_sq = target_distance_sq(ant_pos.x, ant_pos.y, target_pos.x, target_pos.y);
 
             if distance_sq < ARRIVAL_DISTANCE_SQUARED
                 && ant_state == AntState::ReturningToNest
@@ -104,9 +103,7 @@ pub fn food_discovery_system(world: &mut World) {
         let mut closest_food: Option<(Entity, f32)> = None;
 
         for (food_entity, (food_pos, _)) in world.query::<(&Position, &FoodSource)>().iter() {
-            let dx = ant_pos.x - food_pos.x;
-            let dy = ant_pos.y - food_pos.y;
-            let distance_sq = dx * dx + dy * dy;
+            let distance_sq = target_distance_sq(ant_pos.x, ant_pos.y, food_pos.x, food_pos.y);
 
             if distance_sq < DISCOVERY_RADIUS_SQUARED {
                 if let Some((_, closest_dist_sq)) = closest_food {
