@@ -73,7 +73,7 @@ fn find_nearest_food_source(ant_pos: Position, food_sources: &[Position]) -> Opt
 }
 
 pub fn pheromone_following_system(world: &mut World, rng: &mut impl Rng) {
-    const PHEROMONE_DETECTION_RANGE_SQ: f32 = 20.0 * 20.0;
+    const PHEROMONE_DETECTION_RANGE_SQ: f32 = 300.0;
 
     // Get all food sources
     let food_sources: Vec<Position> = world
@@ -111,7 +111,7 @@ pub fn pheromone_following_system(world: &mut World, rng: &mut impl Rng) {
                 }
             }
 
-            if let Some((_pheromone_pos, _)) = best_pheromone {
+            if best_pheromone.is_some() {
                 // Find the nearest food source and steer toward it
                 let nearest_food = find_nearest_food_source(*pos, &food_sources);
                 if let Some(food_pos) = nearest_food {
@@ -221,7 +221,9 @@ mod tests {
             PheromoneToFood,
         ));
 
-        pheromone_following_system(&mut world, &mut rng);
+        for _ in 0..10 {
+            pheromone_following_system(&mut world, &mut rng);
+        }
 
         let vel = world.get::<&Velocity>(ant_entity).unwrap();
         // Should still steer toward food direction, not get stuck on the nearby pheromone

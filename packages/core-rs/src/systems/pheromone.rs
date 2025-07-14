@@ -36,7 +36,7 @@ pub fn pheromone_emission_system(world: &mut World, rng: &mut impl Rng) {
 pub fn pheromone_decay_system(world: &mut World) {
     // TODO: Different pheromones should decay at different rates
     for (_entity, (pheromone, _)) in world.query_mut::<(&mut PheromoneDeposit, &Position)>() {
-        pheromone.strength -= 1.0;
+        pheromone.strength -= 5.0;
     }
 }
 
