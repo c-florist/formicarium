@@ -3,7 +3,8 @@ use crate::dto::{AntDto, FoodSourceDto, NestDto, WorldDto};
 use crate::maths::target_distance_sq;
 use crate::systems::{
     ant_arrival_at_food_system, ant_arrival_at_nest_system, apply_velocity_system, despawn_system,
-    enforce_bounds_system, food_discovery_system, target_movement_system,
+    enforce_bounds_system, food_discovery_system, pheromone_decay_system,
+    pheromone_emission_system, pheromone_following_system, target_movement_system,
 };
 use hecs::World;
 use rand::{Rng, SeedableRng};
@@ -125,10 +126,16 @@ impl Simulation {
         food_discovery_system(&mut self.world);
         ant_arrival_at_food_system(&mut self.world);
         ant_arrival_at_nest_system(&mut self.world);
+
+        // Pheromone systems that modify the world state.
+        pheromone_emission_system(&mut self.world, &mut self.rng);
+        pheromone_decay_system(&mut self.world);
+
+        // Clean up systems that remove entities.
         despawn_system(&mut self.world);
 
         // Systems that execute movement based on the current state.
-        // wandering_system(&mut self.world, &mut self.rng);
+        pheromone_following_system(&mut self.world, &mut self.rng);
         target_movement_system(&mut self.world);
 
         // Simulation-wide systems.
