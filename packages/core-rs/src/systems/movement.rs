@@ -1,7 +1,6 @@
 use crate::components::{Ant, AntState, Position, Target, Velocity};
 use hecs::World;
-use rand::{Rng, SeedableRng};
-use rand_pcg::Pcg64;
+use rand::Rng;
 
 pub fn target_movement_system(world: &mut World) {
     let mut updates = Vec::new();
@@ -32,8 +31,7 @@ pub fn apply_velocity_system(world: &mut World) {
     }
 }
 
-pub fn wandering_system(world: &mut World) {
-    let mut rng = Pcg64::from_rng(&mut rand::rng());
+pub fn wandering_system(world: &mut World, rng: &mut impl Rng) {
     const WANDER_PROBABILITY: f64 = 0.05;
 
     for (_entity, (vel, state, _)) in world.query_mut::<(&mut Velocity, &mut AntState, &Ant)>() {

@@ -12,10 +12,11 @@ use wasm_bindgen::prelude::*;
 
 #[wasm_bindgen]
 pub struct Simulation {
-    #[wasm_bindgen(skip)]
     world: World,
     width: f32,
     height: f32,
+    #[wasm_bindgen(skip)]
+    rng: Pcg64,
 }
 
 fn get_world_state_dto(simulation: &Simulation) -> Result<WorldDto, &'static str> {
@@ -115,6 +116,7 @@ impl Simulation {
             world,
             width,
             height,
+            rng,
         }
     }
 
@@ -126,7 +128,7 @@ impl Simulation {
         despawn_system(&mut self.world);
 
         // Systems that execute movement based on the current state.
-        wandering_system(&mut self.world);
+        wandering_system(&mut self.world, &mut self.rng);
         target_movement_system(&mut self.world);
 
         // Simulation-wide systems.
