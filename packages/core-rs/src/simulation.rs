@@ -33,7 +33,8 @@ fn get_world_state_dto(simulation: &Simulation) -> Result<WorldDto, &'static str
         .world
         .query::<(&Position, &Ant)>()
         .iter()
-        .map(|(_entity, (position, _))| AntDto {
+        .map(|(entity, (position, _))| AntDto {
+            id: entity.id(),
             x: position.x,
             y: position.y,
         })
