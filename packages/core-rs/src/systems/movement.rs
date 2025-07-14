@@ -173,9 +173,9 @@ mod tests {
     }
 
     #[test]
-    fn test_pheromone_following_system_no_pheromones() {
+    fn test_pheromone_following_system_no_pheromones_fallback_to_wandering() {
         let mut world = World::new();
-        let mut rng = StdRng::seed_from_u64(42);
+        let mut rng = StdRng::seed_from_u64(123);
 
         let ant_entity = world.spawn((
             Position { x: 0.0, y: 0.0 },
@@ -184,10 +184,12 @@ mod tests {
             Ant,
         ));
 
-        pheromone_following_system(&mut world, &mut rng);
+        for _ in 0..100 {
+            pheromone_following_system(&mut world, &mut rng);
+        }
 
         let vel = world.get::<&Velocity>(ant_entity).unwrap();
-        assert_eq!(vel.dx, 0.0);
-        assert_eq!(vel.dy, 0.0);
+        let magnitude = (vel.dx * vel.dx + vel.dy * vel.dy).sqrt();
+        assert!(magnitude > 0.0);
     }
 }
