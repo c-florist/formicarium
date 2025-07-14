@@ -1,4 +1,7 @@
-use crate::components::{Ant, AntState, Position, Target, Velocity};
+use crate::components::{
+    Ant, AntState, PheromoneDeposit, PheromoneToFood, Position, Target, Velocity,
+};
+use crate::maths::{calculate_attraction_strength, normalise_vector, target_distance_sq};
 use hecs::World;
 use rand::Rng;
 
@@ -9,9 +12,8 @@ pub fn target_movement_system(world: &mut World) {
         if let Ok(target_pos) = world.get::<&Position>(target.0) {
             let dir_x = target_pos.x - pos.x;
             let dir_y = target_pos.y - pos.y;
-            let magnitude = (dir_x * dir_x + dir_y * dir_y).sqrt();
-            if magnitude > 1e-6 {
-                updates.push((entity, (dir_x / magnitude, dir_y / magnitude)));
+            if let Some((dx, dy)) = normalise_vector(dir_x, dir_y) {
+                updates.push((entity, (dx, dy)))
             }
         }
     }
@@ -31,17 +33,64 @@ pub fn apply_velocity_system(world: &mut World) {
     }
 }
 
-pub fn wandering_system(world: &mut World, rng: &mut impl Rng) {
+fn set_ant_wandering(ant_vel: &mut Velocity, rng: &mut impl Rng) {
     const WANDER_PROBABILITY: f64 = 0.05;
 
-    for (_entity, (vel, state, _)) in world.query_mut::<(&mut Velocity, &mut AntState, &Ant)>() {
-        if *state == AntState::Wandering && rng.random_bool(WANDER_PROBABILITY) {
-            let new_dx: f32 = rng.random_range(-1.0..1.0);
-            let new_dy: f32 = rng.random_range(-1.0..1.0);
-            let magnitude = (new_dx * new_dx + new_dy * new_dy).sqrt();
-            if magnitude > 1e-6 {
-                vel.dx = new_dx / magnitude;
-                vel.dy = new_dy / magnitude;
+    if rng.random_bool(WANDER_PROBABILITY) {
+        let new_dx: f32 = rng.random_range(-1.0..1.0);
+        let new_dy: f32 = rng.random_range(-1.0..1.0);
+        if let Some((dx, dy)) = normalise_vector(new_dx, new_dy) {
+            ant_vel.dx = dx;
+            ant_vel.dy = dy;
+        }
+    }
+}
+
+fn steer_ant_towards_position(ant_pos: Position, target_pos: Position, vel: &mut Velocity) {
+    let dir_x = target_pos.x - ant_pos.x;
+    let dir_y = target_pos.y - ant_pos.y;
+    if let Some((dx, dy)) = normalise_vector(dir_x, dir_y) {
+        vel.dx = dx;
+        vel.dy = dy;
+    }
+}
+
+pub fn pheromone_following_system(world: &mut World, rng: &mut impl Rng) {
+    const PHEROMONE_DETECTION_RANGE_SQ: f32 = 20.0 * 20.0;
+
+    // TODO: Only supports to_food pheromones currently
+    let to_food_pheromones: Vec<(Position, f32)> = world
+        .query::<(&Position, &PheromoneDeposit, &PheromoneToFood)>()
+        .iter()
+        .map(|(_, (pos, deposit, _))| (*pos, deposit.strength))
+        .collect();
+
+    for (_entity, (pos, vel, state, _)) in
+        world.query_mut::<(&Position, &mut Velocity, &AntState, &Ant)>()
+    {
+        if *state == AntState::Wandering {
+            let mut best_pheromone: Option<(Position, f32)> = None;
+
+            // Iterate over to_food pheromones and find the strongest and closest one
+            for (pheromone_pos, strength) in &to_food_pheromones {
+                let distance_sq =
+                    target_distance_sq(pos.x, pos.y, pheromone_pos.x, pheromone_pos.y);
+                if distance_sq <= PHEROMONE_DETECTION_RANGE_SQ {
+                    let attraction = calculate_attraction_strength(distance_sq, *strength);
+                    if let Some((_, best_attraction)) = best_pheromone {
+                        if attraction > best_attraction {
+                            best_pheromone = Some((*pheromone_pos, attraction));
+                        }
+                    } else {
+                        best_pheromone = Some((*pheromone_pos, attraction));
+                    }
+                }
+            }
+
+            if let Some((best_pheromone_pos, _)) = best_pheromone {
+                steer_ant_towards_position(*pos, best_pheromone_pos, vel);
+            } else {
+                set_ant_wandering(vel, rng);
             }
         }
     }
@@ -50,8 +99,12 @@ pub fn wandering_system(world: &mut World, rng: &mut impl Rng) {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::components::{FoodSource, Position, Target, Velocity};
+    use crate::components::{
+        FoodSource, PheromoneDeposit, PheromoneToFood, Position, Target, Velocity,
+    };
     use hecs::World;
+    use rand::SeedableRng;
+    use rand::rngs::StdRng;
 
     #[test]
     fn test_target_movement_system_moves_towards_target() {
@@ -95,7 +148,46 @@ mod tests {
     }
 
     #[test]
-    fn test_wandering_system() {
-        // TODO: Figure out how to test the wandering system when it uses RNG
+    fn test_pheromone_following_system_steers_ant() {
+        let mut world = World::new();
+        let mut rng = StdRng::seed_from_u64(42);
+
+        let ant_entity = world.spawn((
+            Position { x: 0.0, y: 0.0 },
+            Velocity { dx: 0.0, dy: 0.0 },
+            AntState::Wandering,
+            Ant,
+        ));
+
+        world.spawn((
+            Position { x: 10.0, y: 0.0 },
+            PheromoneDeposit { strength: 50.0 },
+            PheromoneToFood,
+        ));
+
+        pheromone_following_system(&mut world, &mut rng);
+
+        let vel = world.get::<&Velocity>(ant_entity).unwrap();
+        assert!(vel.dx > 0.0);
+        assert_eq!(vel.dy, 0.0);
+    }
+
+    #[test]
+    fn test_pheromone_following_system_no_pheromones() {
+        let mut world = World::new();
+        let mut rng = StdRng::seed_from_u64(42);
+
+        let ant_entity = world.spawn((
+            Position { x: 0.0, y: 0.0 },
+            Velocity { dx: 0.0, dy: 0.0 },
+            AntState::Wandering,
+            Ant,
+        ));
+
+        pheromone_following_system(&mut world, &mut rng);
+
+        let vel = world.get::<&Velocity>(ant_entity).unwrap();
+        assert_eq!(vel.dx, 0.0);
+        assert_eq!(vel.dy, 0.0);
     }
 }

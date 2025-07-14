@@ -6,7 +6,7 @@ pub fn calculate_attraction_strength(distance_sq: f32, pheromone_strength: f32) 
     pheromone_strength / (distance_sq.sqrt() + 1.0)
 }
 
-pub fn normalize_vector(dx: f32, dy: f32) -> Option<(f32, f32)> {
+pub fn normalise_vector(dx: f32, dy: f32) -> Option<(f32, f32)> {
     let magnitude = (dx * dx + dy * dy).sqrt();
     if magnitude > 1e-6 {
         Some((dx / magnitude, dy / magnitude))
@@ -42,8 +42,8 @@ mod tests {
     }
 
     #[test]
-    fn test_normalize_vector_valid() {
-        let result = normalize_vector(3.0, 4.0);
+    fn test_normalise_vector_valid() {
+        let result = normalise_vector(3.0, 4.0);
         assert!(result.is_some());
         let (dx, dy) = result.unwrap();
         assert!((dx - 0.6).abs() < 1e-6);
@@ -51,14 +51,14 @@ mod tests {
     }
 
     #[test]
-    fn test_normalize_vector_zero() {
-        let result = normalize_vector(0.0, 0.0);
+    fn test_normalise_vector_zero() {
+        let result = normalise_vector(0.0, 0.0);
         assert!(result.is_none());
     }
 
     #[test]
-    fn test_normalize_vector_very_small() {
-        let result = normalize_vector(1e-7, 1e-7);
+    fn test_normalise_vector_very_small() {
+        let result = normalise_vector(1e-7, 1e-7);
         assert!(result.is_none());
     }
 }
