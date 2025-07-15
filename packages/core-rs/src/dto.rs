@@ -9,6 +9,7 @@ pub struct AntDto {
     pub y: f32,
 }
 
+// TODO: Include id && amount here to display in the UI
 #[derive(Serialize, Deserialize, TS, PartialEq, Debug)]
 #[ts(export, export_to = "../../domain/src/NestDto.ts")]
 pub struct NestDto {

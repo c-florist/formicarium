@@ -8,6 +8,7 @@ import {
   type UnresolvedAsset,
 } from "pixi.js";
 import { onDestroy, onMount } from "svelte";
+import Page from "../routes/world/+page.svelte";
 import { worldStore } from "./world-store";
 
 type AntSprite = {
@@ -17,12 +18,12 @@ type AntSprite = {
   animationFrame: number;
 };
 
-const ANT_SCALE = 1.2;
+const ANT_SCALE = 0.8;
 
 let canvasContainer: HTMLDivElement;
 let app: Application;
 let antSprites: Map<number, AntSprite> = new Map();
-let spritesheet: UnresolvedAsset;
+let antSpritesheet: UnresolvedAsset;
 
 const initialise = async () => {
   app = new Application();
@@ -35,7 +36,7 @@ const initialise = async () => {
 };
 
 const loadGlobalAssets = async () => {
-  spritesheet = await Assets.load("/characters/worker-ant-spritesheet.json");
+  antSpritesheet = await Assets.load("/characters/worker-ant-spritesheet.json");
 };
 
 const createBackground = async () => {
@@ -119,6 +120,30 @@ const createNest = async (nestDto: NestDto) => {
   app.stage.addChildAt(nestContainer, 1);
 };
 
+const createFoodSources = async (foodSourceDtos: FoodSourceDto[]) => {
+  const foodSourceContainer = new Container();
+  const foodSourceTexture = await Assets.load("/food/food-1.json");
+  const foodTextureNames = ["croissant-0", "croissant-1"];
+
+  for (const foodSource of foodSourceDtos) {
+    const randomTextureName =
+      foodTextureNames[Math.floor(Math.random() * foodTextureNames.length)];
+    const foodSprite = new Sprite(
+      foodSourceTexture.textures[randomTextureName],
+    );
+
+    foodSprite.anchor.set(0);
+    foodSprite.x = foodSource.x;
+    foodSprite.y = foodSource.y;
+
+    foodSprite.scale.set(1);
+
+    foodSourceContainer.addChild(foodSprite);
+  }
+
+  app.stage.addChildAt(foodSourceContainer, 2);
+};
+
 onMount(async () => {
   if (!$worldStore) {
     return;
@@ -131,13 +156,14 @@ onMount(async () => {
   await createBoulders();
 
   await createNest($worldStore.nest);
+  await createFoodSources($worldStore.foodSources);
 
   setInterval(() => {
     // Update all ant sprites with their individual frame counters
     antSprites.forEach((antData) => {
       antData.animationFrame = (antData.animationFrame + 1) % 4;
       const frameName = `ant-${antData.direction}-${antData.animationFrame}`;
-      antData.sprite.texture = spritesheet.textures[frameName];
+      antData.sprite.texture = antSpritesheet.textures[frameName];
 
       // Flip sprite for left direction
       if (antData.direction === "left") {
@@ -150,7 +176,7 @@ onMount(async () => {
 });
 
 $effect(() => {
-  if (!$worldStore || !spritesheet) return;
+  if (!$worldStore || !antSpritesheet) return;
 
   const currentAntIds = new Set($worldStore.ants.map((ant) => ant.id));
 
@@ -162,12 +188,12 @@ $effect(() => {
     }
   }
 
-  // Main sprite update loop
+  // Main ant sprite update loop
   $worldStore.ants.forEach((ant) => {
     let antData = antSprites.get(ant.id);
 
     if (!antData) {
-      const sprite = new Sprite(spritesheet.textures["ant-down-0"]);
+      const sprite = new Sprite(antSpritesheet.textures["ant-down-0"]);
       sprite.anchor.set(0.5, 0);
       sprite.scale.set(ANT_SCALE);
       app.stage.addChild(sprite);
@@ -201,7 +227,7 @@ $effect(() => {
     const distanceToNest = Math.sqrt(
       (ant.x - nestX) ** 2 + (ant.y - nestY) ** 2,
     );
-    const fadeRadius = 37;
+    const fadeRadius = 30;
 
     antData.sprite.alpha = distanceToNest > fadeRadius ? 1 : 0;
 

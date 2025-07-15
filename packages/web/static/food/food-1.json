@@ -1,0 +1,17 @@
+{
+  "frames": {
+    "croissant-0": {
+      "frame": { "x": 64, "y": 64, "w": 16, "h": 16 }
+    },
+    "croissant-1": {
+      "frame": { "x": 64, "y": 64, "w": 16, "h": 16 }
+    }
+  },
+  "meta": {
+    "image": "food-1.png",
+    "format": "RGBA8888",
+    "size": { "w": 80, "h": 128 },
+    "scale": "1",
+    "layers": [{ "name": "Layer", "opacity": 255, "blendMode": "normal" }]
+  }
+}
