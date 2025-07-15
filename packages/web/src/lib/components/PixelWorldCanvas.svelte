@@ -178,7 +178,6 @@ onMount(async () => {
 
   await createNest($worldStore.nest);
 
-  // Store interval ID for cleanup
   animationInterval = setInterval(() => {
     // Update all ant sprites with their individual frame counters
     for (const [_, antData] of antSprites) {
@@ -237,6 +236,12 @@ $effect(() => {
 
     foodSprite.x = foodSource.x;
     foodSprite.y = foodSource.y;
+
+    // Scale sprite based on remaining amount
+    const baseScale = SPRITE_CONFIG.food.scale;
+    const scaleRatio = foodSource.amount / 100; // Assuming max amount is 100
+    const newScale = Math.max(0, baseScale * scaleRatio);
+    foodSprite.scale.set(newScale);
   }
 
   // Main ant sprite update loop
@@ -275,7 +280,7 @@ $effect(() => {
       ant.x,
       ant.y,
       $worldStore.nest.x,
-      $worldStore.nest.x,
+      $worldStore.nest.y,
     );
 
     antData.previousPosition = { x: ant.x, y: ant.y };

@@ -13,13 +13,13 @@ export const DEFAULT_ANT_TEXTURE = "ant-down-0";
 
 export const SPRITE_CONFIG = {
   ant: { scale: 1, anchor: { x: 0.5, y: 0 } },
-  food: { scale: 1.25, anchor: { x: 0.5, y: 0 } },
+  food: { scale: 1.5, anchor: { x: 0.5, y: 0.5 } },
   nest: { scale: 1.8, anchor: { x: 0.5, y: 0.5 } },
 };
 export type SpriteConfig = (typeof SPRITE_CONFIG)[keyof typeof SPRITE_CONFIG];
 
 export const ANIMATION_CONFIG = {
-  antFrameRate: 150,
+  antFrameRate: 125,
   antFrameCount: 4,
   hideSpriteRadius: 30,
 };

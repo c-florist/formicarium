@@ -1,5 +1,5 @@
 <script lang="ts">
-import { worldStore } from "./world-store";
+import { worldStore } from "../world/world-store";
 
 let canvas: HTMLCanvasElement;
 
