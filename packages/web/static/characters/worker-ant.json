@@ -1,0 +1,34 @@
+{
+  "frames": {
+    "ant-down-0": { "frame": { "x": 0, "y": 96, "w": 32, "h": 32 } },
+    "ant-down-1": { "frame": { "x": 32, "y": 96, "w": 32, "h": 32 } },
+    "ant-down-2": { "frame": { "x": 64, "y": 96, "w": 32, "h": 24 } },
+    "ant-down-3": { "frame": { "x": 96, "y": 96, "w": 32, "h": 24 } },
+    "ant-up-0": { "frame": { "x": 0, "y": 160, "w": 32, "h": 32 } },
+    "ant-up-1": { "frame": { "x": 32, "y": 160, "w": 32, "h": 32 } },
+    "ant-up-2": { "frame": { "x": 64, "y": 160, "w": 32, "h": 24 } },
+    "ant-up-3": { "frame": { "x": 96, "y": 160, "w": 32, "h": 24 } },
+    "ant-right-0": { "frame": { "x": 0, "y": 128, "w": 32, "h": 32 } },
+    "ant-right-1": { "frame": { "x": 32, "y": 128, "w": 32, "h": 32 } },
+    "ant-right-2": { "frame": { "x": 64, "y": 128, "w": 32, "h": 24 } },
+    "ant-right-3": { "frame": { "x": 96, "y": 128, "w": 32, "h": 24 } },
+    "ant-left-0": { "frame": { "x": 0, "y": 128, "w": 32, "h": 32 } },
+    "ant-left-1": { "frame": { "x": 32, "y": 128, "w": 32, "h": 32 } },
+    "ant-left-2": { "frame": { "x": 64, "y": 128, "w": 32, "h": 24 } },
+    "ant-left-3": { "frame": { "x": 96, "y": 128, "w": 32, "h": 24 } }
+  },
+  "meta": {
+    "image": "worker-ant.png",
+    "format": "RGBA8888",
+    "size": { "w": 128, "h": 384 },
+    "scale": "1",
+    "layers": [
+      {
+        "name": "Character",
+        "opacity": 255,
+        "blendMode": "normal",
+        "color": "#ad99acff"
+      }
+    ]
+  }
+}

@@ -1,6 +1,6 @@
 <script lang="ts">
-import PixelWorldCanvas from "$lib/PixelWorldCanvas.svelte";
-import { worldStore } from "$lib/world-store";
+import PixelWorldCanvas from "$lib/components/PixelWorldCanvas.svelte";
+import { worldStore } from "$lib/world/world-store";
 </script>
 
 <main class="flex items-center justify-center w-full h-screen p-4 bg-amber-50">
