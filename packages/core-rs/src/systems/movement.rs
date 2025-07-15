@@ -73,7 +73,7 @@ fn find_nearest_food_source(ant_pos: Position, food_sources: &[Position]) -> Opt
 }
 
 pub fn pheromone_following_system(world: &mut World, rng: &mut impl Rng) {
-    const PHEROMONE_DETECTION_RANGE_SQ: f32 = 300.0;
+    const PHEROMONE_DETECTION_RANGE_SQ: f32 = 400.0;
 
     // Get all food sources
     let food_sources: Vec<Position> = world

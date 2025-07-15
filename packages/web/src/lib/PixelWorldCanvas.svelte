@@ -8,7 +8,6 @@ import {
   type UnresolvedAsset,
 } from "pixi.js";
 import { onDestroy, onMount } from "svelte";
-import Page from "../routes/world/+page.svelte";
 import { worldStore } from "./world-store";
 
 type AntSprite = {
@@ -18,12 +17,14 @@ type AntSprite = {
   animationFrame: number;
 };
 
-const ANT_SCALE = 0.8;
+const ANT_SCALE = 1;
 
 let canvasContainer: HTMLDivElement;
 let app: Application;
 let antSprites: Map<number, AntSprite> = new Map();
 let antSpritesheet: UnresolvedAsset;
+let foodSourceSpritesheet: UnresolvedAsset;
+let foodSourceSprites: Map<number, Sprite> = new Map();
 
 const initialise = async () => {
   app = new Application();
@@ -37,6 +38,7 @@ const initialise = async () => {
 
 const loadGlobalAssets = async () => {
   antSpritesheet = await Assets.load("/characters/worker-ant-spritesheet.json");
+  foodSourceSpritesheet = await Assets.load("/food/food-1.json");
 };
 
 const createBackground = async () => {
@@ -120,30 +122,6 @@ const createNest = async (nestDto: NestDto) => {
   app.stage.addChildAt(nestContainer, 1);
 };
 
-const createFoodSources = async (foodSourceDtos: FoodSourceDto[]) => {
-  const foodSourceContainer = new Container();
-  const foodSourceTexture = await Assets.load("/food/food-1.json");
-  const foodTextureNames = ["croissant-0", "croissant-1"];
-
-  for (const foodSource of foodSourceDtos) {
-    const randomTextureName =
-      foodTextureNames[Math.floor(Math.random() * foodTextureNames.length)];
-    const foodSprite = new Sprite(
-      foodSourceTexture.textures[randomTextureName],
-    );
-
-    foodSprite.anchor.set(0);
-    foodSprite.x = foodSource.x;
-    foodSprite.y = foodSource.y;
-
-    foodSprite.scale.set(1);
-
-    foodSourceContainer.addChild(foodSprite);
-  }
-
-  app.stage.addChildAt(foodSourceContainer, 2);
-};
-
 onMount(async () => {
   if (!$worldStore) {
     return;
@@ -156,7 +134,6 @@ onMount(async () => {
   await createBoulders();
 
   await createNest($worldStore.nest);
-  await createFoodSources($worldStore.foodSources);
 
   setInterval(() => {
     // Update all ant sprites with their individual frame counters
@@ -176,16 +153,45 @@ onMount(async () => {
 });
 
 $effect(() => {
-  if (!$worldStore || !antSpritesheet) return;
+  if (!$worldStore || !antSpritesheet || !foodSourceSpritesheet) return;
 
   const currentAntIds = new Set($worldStore.ants.map((ant) => ant.id));
+  const currentFoodSourceIds = new Set(
+    $worldStore.foodSources.map((foodSource) => foodSource.id),
+  );
 
-  // Remove sprites for ants that no longer exist
   for (const [antId, antData] of antSprites) {
     if (!currentAntIds.has(antId)) {
       app.stage.removeChild(antData.sprite);
       antSprites.delete(antId);
     }
+  }
+
+  for (const [foodSourceId, foodSprite] of foodSourceSprites) {
+    if (!currentFoodSourceIds.has(foodSourceId)) {
+      app.stage.removeChild(foodSprite);
+      foodSourceSprites.delete(foodSourceId);
+    }
+  }
+
+  // Food source update loop
+  for (const foodSource of $worldStore.foodSources) {
+    let foodSprite = foodSourceSprites.get(foodSource.id);
+
+    if (!foodSprite) {
+      const textureNames = Object.keys(foodSourceSpritesheet.textures);
+      const deterministicTextureIndex = foodSource.id % textureNames.length;
+      const textureName = textureNames[deterministicTextureIndex];
+      foodSprite = new Sprite(foodSourceSpritesheet.textures[textureName]);
+      foodSprite.anchor.set(0.5, 0);
+      foodSprite.scale.set(1.25);
+      app.stage.addChild(foodSprite);
+
+      foodSourceSprites.set(foodSource.id, foodSprite);
+    }
+
+    foodSprite.x = foodSource.x;
+    foodSprite.y = foodSource.y;
   }
 
   // Main ant sprite update loop

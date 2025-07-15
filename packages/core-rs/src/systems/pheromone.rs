@@ -4,7 +4,7 @@ use rand::Rng;
 
 pub fn pheromone_emission_system(world: &mut World, rng: &mut impl Rng) {
     // TODO: Determine strength of pheromones based on distance from food source / to nest
-    const EMIT_CHANCE: f64 = 0.25;
+    const EMIT_CHANCE: f64 = 0.5;
 
     // TODO: Currently only emits to_food pheromones
     let ants_returning_to_nest: Vec<Position> = world
@@ -26,7 +26,7 @@ pub fn pheromone_emission_system(world: &mut World, rng: &mut impl Rng) {
                     x: position.x,
                     y: position.y,
                 },
-                PheromoneDeposit { strength: 50.0 },
+                PheromoneDeposit { strength: 100.0 },
                 PheromoneToFood,
             ));
         }
@@ -71,7 +71,7 @@ mod tests {
         let mut query = world.query::<(&PheromoneDeposit, &PheromoneToFood, &Position)>();
         let (_entity, (pheromone, _, position)) = query.iter().next().unwrap();
 
-        assert_eq!(pheromone.strength, 50.0);
+        assert_eq!(pheromone.strength, 75.0);
         assert_eq!(position.x, 36.0);
         assert_eq!(position.y, 48.0);
     }

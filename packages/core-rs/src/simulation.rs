@@ -68,8 +68,8 @@ impl Simulation {
         let mut world = World::new();
         let mut rng = Pcg64::from_rng(&mut rand::rng());
 
-        let width = 1000.0;
-        let height = 600.0;
+        let width = 1200.0;
+        let height = 800.0;
 
         const START_X: f32 = 500.0;
         const START_Y: f32 = 300.0;
@@ -85,7 +85,7 @@ impl Simulation {
         ));
 
         // Spawn food sources
-        for _ in 0..10 {
+        for _ in 0..15 {
             let mut x;
             let mut y;
             // Loop until a valid position is found
@@ -102,7 +102,7 @@ impl Simulation {
         }
 
         // Spawn ants
-        for _ in 0..100 {
+        for _ in 0..50 {
             let dx = rng.random_range(-1.0..1.0);
             let dy = rng.random_range(-1.0..1.0);
             world.spawn((
