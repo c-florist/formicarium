@@ -1,8 +1,8 @@
 import type { NestDto } from "@formicarium/domain";
 import {
-  type Application,
   Assets,
   Container,
+  type Renderer,
   RenderTexture,
   Sprite,
   TilingSprite,
@@ -12,7 +12,6 @@ import {
   BACKGROUND_CONFIG,
   BOULDER_CONFIG,
   FOREST_TILESET,
-  LAYERS,
   NEST_SPRITESHEET,
   NEST_TEXTURES,
   SPRITE_CONFIG,
@@ -30,20 +29,26 @@ const getRandomGrassTile = () => {
   return grassTiles[0];
 };
 
-const createRandomisedTileTexture = async (
-  app: Application,
-  width: number,
-  height: number,
+export const createRandomisedTileTexture = async (
+  renderer: Renderer,
+  canvasWidth: number,
+  canvasHeight: number,
 ) => {
+  const textureWidth = canvasWidth * 2;
+  const textureHeight = canvasHeight * 2;
+
   const forestTileset = await Assets.load(FOREST_TILESET);
   const { tileSize } = BACKGROUND_CONFIG;
 
-  const renderTexture = RenderTexture.create({ width, height });
+  const renderTexture = RenderTexture.create({
+    width: textureWidth,
+    height: textureHeight,
+  });
 
   const tileContainer = new Container();
 
-  const tilesX = Math.ceil(app.screen.width / tileSize);
-  const tilesY = Math.ceil(app.screen.height / tileSize);
+  const tilesX = Math.ceil(canvasWidth / tileSize);
+  const tilesY = Math.ceil(canvasHeight / tileSize);
 
   // Generate random tiles
   for (let y = 0; y < tilesY; y++) {
@@ -59,7 +64,7 @@ const createRandomisedTileTexture = async (
     }
   }
 
-  app.renderer.render({
+  renderer.render({
     container: tileContainer,
     target: renderTexture,
   });
@@ -67,26 +72,24 @@ const createRandomisedTileTexture = async (
   return renderTexture;
 };
 
-export const createBackground = async (app: Application) => {
-  const textureWidth = app.canvas.width * 2;
-  const textureHeight = app.canvas.height * 2;
-
-  const randomisedTexture = await createRandomisedTileTexture(
-    app,
-    textureWidth,
-    textureHeight,
-  );
-
+export const createBackgroundContainer = async (
+  texture: RenderTexture,
+  canvasWidth: number,
+  canvasHeight: number,
+) => {
   const bgTileSprite = new TilingSprite({
-    texture: randomisedTexture,
-    width: app.canvas.width,
-    height: app.canvas.height,
+    texture: texture,
+    width: canvasWidth,
+    height: canvasHeight,
   });
 
-  app.stage.addChildAt(bgTileSprite, LAYERS.BACKGROUND);
+  return bgTileSprite;
 };
 
-export const createBoulders = async (app: Application) => {
+export const createBoulderContainer = async (
+  canvasWidth: number,
+  canvasHeight: number,
+) => {
   const boulderContainer = new Container();
 
   // Load boulder textures in parallel
@@ -98,8 +101,8 @@ export const createBoulders = async (app: Application) => {
     const textureIndex = Math.floor(seededRandom(i) * boulderTextures.length);
     const boulderSprite = new Sprite(boulderTextures[textureIndex]);
 
-    boulderSprite.x = seededRandom(i + 10) * app.screen.width;
-    boulderSprite.y = seededRandom(i + 20) * app.screen.height;
+    boulderSprite.x = seededRandom(i + 10) * canvasWidth;
+    boulderSprite.y = seededRandom(i + 20) * canvasHeight;
 
     const scaleRange = BOULDER_CONFIG.maxScale - BOULDER_CONFIG.minScale;
     boulderSprite.scale.set(
@@ -109,10 +112,10 @@ export const createBoulders = async (app: Application) => {
     boulderContainer.addChild(boulderSprite);
   }
 
-  app.stage.addChildAt(boulderContainer, LAYERS.DECORATION);
+  return boulderContainer;
 };
 
-export const createNest = async (app: Application, nestDto: NestDto) => {
+export const createNestContainer = async (nestDto: NestDto) => {
   const nestContainer = new Container();
   const nestTexture = await Assets.load(NEST_SPRITESHEET);
   const nestSprite = new Sprite(nestTexture.textures[NEST_TEXTURES.TREE]);
@@ -124,5 +127,6 @@ export const createNest = async (app: Application, nestDto: NestDto) => {
   nestSprite.scale.set(scale);
 
   nestContainer.addChild(nestSprite);
-  app.stage.addChildAt(nestContainer, LAYERS.DECORATION);
+
+  return nestContainer;
 };

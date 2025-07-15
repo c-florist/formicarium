@@ -2,7 +2,12 @@
 import { Application, Assets, Sprite, type UnresolvedAsset } from "pixi.js";
 import { onDestroy, onMount } from "svelte";
 import { calculateMovementDirection } from "../utils/maths";
-import { createBackground, createBoulders, createNest } from "../world/render";
+import {
+  createBackgroundContainer,
+  createBoulderContainer,
+  createNestContainer,
+  createRandomisedTileTexture,
+} from "../world/render";
 import {
   ANIMATION_CONFIG,
   ANT_SPRITESHEET,
@@ -10,6 +15,7 @@ import {
   DEFAULT_ANT_TEXTURE,
   FOOD_SOURCE_CONFIG,
   FOOD_SPRITESHEET,
+  LAYERS,
   SPRITE_CONFIG,
 } from "../world/schema";
 import { createSpriteWithConfig } from "../world/sprite";
@@ -61,10 +67,26 @@ onMount(async () => {
   await initialise();
   await loadGlobalAssets();
 
-  await createBackground(app);
-  await createBoulders(app);
+  const backgroundTexture = await createRandomisedTileTexture(
+    app.renderer,
+    app.canvas.width,
+    app.canvas.height,
+  );
+  const backgroundContainer = await createBackgroundContainer(
+    backgroundTexture,
+    app.canvas.width,
+    app.canvas.height,
+  );
+  app.stage.addChildAt(backgroundContainer, LAYERS.BACKGROUND);
 
-  await createNest(app, $worldStore.nest);
+  const boulderContainer = await createBoulderContainer(
+    app.canvas.width,
+    app.canvas.height,
+  );
+  app.stage.addChildAt(boulderContainer, LAYERS.DECORATION);
+
+  const nestContainer = await createNestContainer($worldStore.nest);
+  app.stage.addChildAt(nestContainer, LAYERS.DECORATION);
 
   animationInterval = setInterval(() => {
     // Update all ant sprites with their individual frame counters
