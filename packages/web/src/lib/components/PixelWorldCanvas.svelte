@@ -4,8 +4,10 @@ import {
   Application,
   Assets,
   Container,
+  RenderTexture,
   Sprite,
   type Texture,
+  TilingSprite,
   type UnresolvedAsset,
 } from "pixi.js";
 import { onDestroy, onMount } from "svelte";
@@ -17,6 +19,7 @@ import {
   BACKGROUND_CONFIG,
   BOULDER_CONFIG,
   DEFAULT_ANT_TEXTURE,
+  FOOD_SOURCE_CONFIG,
   FOOD_SPRITESHEET,
   FOREST_TILESET,
   LAYERS,
@@ -67,35 +70,55 @@ const getRandomGrassTile = () => {
   return grassTiles[0];
 };
 
-const createTileSprite = (texture: Texture, x: number, y: number) => {
-  const sprite = new Sprite(texture);
-  sprite.tint = BACKGROUND_CONFIG.tint;
-  sprite.x = x * BACKGROUND_CONFIG.tileSize;
-  sprite.y = y * BACKGROUND_CONFIG.tileSize;
-  return sprite;
-};
-
-const createBackground = async () => {
-  const backgroundContainer = new Container();
+const createRandomisedTileTexture = async (width: number, height: number) => {
   const forestTileset = await Assets.load(FOREST_TILESET);
+  const { tileSize } = BACKGROUND_CONFIG;
 
-  const tilesX = Math.ceil(app.screen.width / BACKGROUND_CONFIG.tileSize);
-  const tilesY = Math.ceil(app.screen.height / BACKGROUND_CONFIG.tileSize);
+  const renderTexture = RenderTexture.create({ width, height });
+
+  const tileContainer = new Container();
+
+  const tilesX = Math.ceil(app.screen.width / tileSize);
+  const tilesY = Math.ceil(app.screen.height / tileSize);
 
   // Generate random tiles
   for (let y = 0; y < tilesY; y++) {
     for (let x = 0; x < tilesX; x++) {
       const randomTile = getRandomGrassTile();
-      const tileSprite = createTileSprite(
-        forestTileset.textures[randomTile],
-        x,
-        y,
-      );
-      backgroundContainer.addChild(tileSprite);
+      const tileSprite = new Sprite(forestTileset.textures[randomTile]);
+
+      tileSprite.tint = BACKGROUND_CONFIG.tint;
+      tileSprite.x = x * BACKGROUND_CONFIG.tileSize;
+      tileSprite.y = y * BACKGROUND_CONFIG.tileSize;
+
+      tileContainer.addChild(tileSprite);
     }
   }
 
-  app.stage.addChildAt(backgroundContainer, LAYERS.BACKGROUND);
+  app.renderer.render({
+    container: tileContainer,
+    target: renderTexture,
+  });
+
+  return renderTexture;
+};
+
+const createBackground = async () => {
+  const textureWidth = app.canvas.width * 2;
+  const textureHeight = app.canvas.height * 2;
+
+  const randomisedTexture = await createRandomisedTileTexture(
+    textureWidth,
+    textureHeight,
+  );
+
+  const bgTileSprite = new TilingSprite({
+    texture: randomisedTexture,
+    width: app.canvas.width,
+    height: app.canvas.height,
+  });
+
+  app.stage.addChildAt(bgTileSprite, LAYERS.BACKGROUND);
 };
 
 const createBoulders = async () => {
@@ -239,12 +262,12 @@ $effect(() => {
 
     // Scale sprite based on remaining amount
     const baseScale = SPRITE_CONFIG.food.scale;
-    const scaleRatio = foodSource.amount / 100; // Assuming max amount is 100
+    const scaleRatio = foodSource.amount / FOOD_SOURCE_CONFIG.maxAmount;
     const newScale = Math.max(0, baseScale * scaleRatio);
     foodSprite.scale.set(newScale);
   }
 
-  // Main ant sprite update loop
+  // Ant sprite update loop
   for (const ant of $worldStore.ants) {
     let antData = antSprites.get(ant.id);
 

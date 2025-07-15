@@ -15,34 +15,38 @@ export const SPRITE_CONFIG = {
   ant: { scale: 1, anchor: { x: 0.5, y: 0 } },
   food: { scale: 1.5, anchor: { x: 0.5, y: 0.5 } },
   nest: { scale: 1.8, anchor: { x: 0.5, y: 0.5 } },
-};
+} as const;
 export type SpriteConfig = (typeof SPRITE_CONFIG)[keyof typeof SPRITE_CONFIG];
 
 export const ANIMATION_CONFIG = {
   antFrameRate: 125,
   antFrameCount: 4,
   hideSpriteRadius: 30,
-};
+} as const;
 
 export const BACKGROUND_CONFIG = {
   tileSize: 16,
   tint: 0x9caf88,
   grassTiles: ["grass-plain", "grass-2", "grass-1", "grass-3"],
   grassWeights: [0.75, 0.85, 0.95, 1.0],
-};
+} as const;
 
 export const BOULDER_CONFIG = {
   count: 6,
   textures: ["/background/boulder-1.png", "/background/boulder-2.png"],
   minScale: 0.4,
   maxScale: 0.8,
-};
+} as const;
+
+export const FOOD_SOURCE_CONFIG = {
+  maxAmount: 100,
+} as const;
 
 export const LAYERS = {
   BACKGROUND: 0,
   DECORATION: 1,
   ENTITIES: 2,
-};
+} as const;
 
 export type AntSprite = {
   sprite: Sprite;
