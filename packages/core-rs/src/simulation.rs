@@ -44,9 +44,11 @@ fn get_world_state_dto(simulation: &Simulation) -> Result<WorldDto, &'static str
         .world
         .query::<(&Position, &FoodSource)>()
         .iter()
-        .map(|(_entity, (position, _))| FoodSourceDto {
+        .map(|(entity, (position, food_source))| FoodSourceDto {
+            id: entity.id(),
             x: position.x,
             y: position.y,
+            amount: food_source.amount,
         })
         .collect();
 
