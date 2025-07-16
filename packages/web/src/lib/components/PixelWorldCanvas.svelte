@@ -92,6 +92,10 @@ onMount(async () => {
   await initialise();
   await loadGlobalAssets();
 
+  if (!app || !worldContainer) {
+    return;
+  }
+
   const backgroundTexture = await createRandomisedTileTexture(
     app.renderer,
     app.canvas.width,
@@ -133,7 +137,14 @@ onMount(async () => {
 });
 
 $effect(() => {
-  if (!app || !$worldStore || !antSpritesheet || !foodSourceSpritesheet) return;
+  if (
+    !app ||
+    !worldContainer ||
+    !$worldStore ||
+    !antSpritesheet ||
+    !foodSourceSpritesheet
+  )
+    return;
 
   const currentAntIds = new Set($worldStore.ants.map((ant) => ant.id));
   const currentFoodSourceIds = new Set(
@@ -238,4 +249,3 @@ onDestroy(() => {
     {@render children(uiContainer)}
   {/if}
 </div>
-
