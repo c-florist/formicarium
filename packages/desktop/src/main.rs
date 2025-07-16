@@ -12,7 +12,7 @@ use simulation::Simulation;
 use std::sync::{Arc, Mutex};
 use std::thread;
 use std::time::Duration;
-use tauri::Emitter;
+use tauri::{Emitter, Manager};
 
 pub struct AppState {
     simulation: Arc<Mutex<Simulation>>,

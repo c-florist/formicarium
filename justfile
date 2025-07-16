@@ -5,6 +5,10 @@ set dotenv-load := true
 _default:
     @just --list
 
+# Run the full stack in dev mode
+dev:
+    pnpm tauri dev
+
 # Run linting and fix issues
 tidy *flags:
     cargo fmt --manifest-path packages/desktop/Cargo.toml

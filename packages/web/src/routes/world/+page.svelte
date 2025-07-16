@@ -1,21 +1,11 @@
 <script lang="ts">
-import { goto } from "$app/navigation";
 import PixelWorldCanvas from "$lib/components/PixelWorldCanvas.svelte";
-import ExitButton from "$lib/components/ui/ExitButton.svelte";
 import { worldStore } from "$lib/world/world-store";
-
-const handleExitButtonClick = () => {
-  goto("/");
-};
 </script>
 
 <main class="relative w-screen h-screen">
   {#if $worldStore}
-    <PixelWorldCanvas>
-      {#snippet children(container)}
-        <ExitButton {container} onClick={handleExitButtonClick} x={16} y={16} scale={1.2} />
-      {/snippet}
-    </PixelWorldCanvas>
+    <PixelWorldCanvas />
   {:else}
     <div class="flex items-center justify-center h-full">
       <div class="text-center">

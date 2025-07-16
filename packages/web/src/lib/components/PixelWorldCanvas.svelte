@@ -27,9 +27,6 @@ import {
 import { createSpriteWithConfig } from "../world/sprite";
 import { worldStore } from "../world/world-store";
 
-let { children } = $props<{
-  children?: (container: Container) => SvelteComponent;
-}>();
 let app = $state<Application>();
 let worldContainer = $state<Container>();
 let uiContainer = $state<Container>();
@@ -252,8 +249,4 @@ onDestroy(() => {
 });
 </script>
 
-<div class="relative" bind:this={canvasContainer}>
-  {#if uiContainer && children}
-    {@render children(uiContainer)}
-  {/if}
-</div>
+<div class="relative" bind:this={canvasContainer}></div>
