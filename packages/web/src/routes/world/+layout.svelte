@@ -1,6 +1,6 @@
 <script lang="ts">
-import Navbar from "$lib/components/Navbar.svelte";
-import StatsDashboard from "$lib/components/StatsDashboard.svelte";
+import Navbar from "$lib/components/ui/Navbar.svelte";
+import StatsDashboard from "$lib/components/ui/StatsDashboard.svelte";
 import { sineInOut } from "svelte/easing";
 import { slide } from "svelte/transition";
 

@@ -6,7 +6,7 @@ import {
   Sprite,
   type UnresolvedAsset,
 } from "pixi.js";
-import { onDestroy, onMount, type SvelteComponent } from "svelte";
+import { onDestroy, onMount } from "svelte";
 import { calculateMovementDirection } from "../utils/maths";
 import {
   createBackgroundContainer,
@@ -242,4 +242,3 @@ onDestroy(() => {
 </script>
 
 <div class="relative w-full h-full" bind:this={canvasContainer}></div>
-

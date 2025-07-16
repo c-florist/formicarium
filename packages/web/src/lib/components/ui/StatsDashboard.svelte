@@ -1,4 +1,6 @@
 <script lang="ts">
+import { worldStore } from "$lib/world/world-store";
+
 let {
   class: className = "",
   onclose,
@@ -9,7 +11,7 @@ let {
 </script>
 
 <div
-  class={`relative bg-stone-800 text-white border-4 border-stone-900 p-4 ${className}`}
+  class={`relative bg-stone-800 text-white border-t border-4 border-stone-900 p-4 ${className}`}
 >
   <button
     onclick={onclose}
@@ -32,5 +34,6 @@ let {
     </svg>
   </button>
   <h2 class="text-xl font-bold mb-4">World statistics</h2>
-  <p>Dashboard content goes here.</p>
+  <h4 class="text-md font-bold mr-4">Alive ants: <span class="font-normal">{$worldStore?.stats.antCount}</span></h4>
+  <h4 class="text-md font-bold mr-4">Food sources: <span class="font-normal">{$worldStore?.stats.foodSourceCount}</span></h4>
 </div>
