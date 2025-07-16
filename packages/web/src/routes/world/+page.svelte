@@ -1,19 +1,31 @@
 <script lang="ts">
+import { goto } from "$app/navigation";
 import PixelWorldCanvas from "$lib/components/PixelWorldCanvas.svelte";
+import SmallButton from "$lib/components/ui/SmallButton.svelte";
 import { worldStore } from "$lib/world/world-store";
+
+const handleExitButtonClick = () => {
+  goto("/");
+};
 </script>
 
-<main class="flex items-center justify-center w-full h-screen p-4 bg-amber-50">
+<main class="relative w-screen h-screen">
   {#if $worldStore}
-    <PixelWorldCanvas />
+    <PixelWorldCanvas>
+      {#snippet children(container)}
+        <SmallButton {container} text="Exit" onClick={handleExitButtonClick} x={40} y={40} />
+      {/snippet}
+    </PixelWorldCanvas>
   {:else}
-    <div class="text-center">
-      <h2 class="text-2xl font-semibold text-stone-700 mb-2">
-        Connecting<span class="animated-ellipsis"></span>
-      </h2>
-      <p class="text-stone-500">
-        Do simulated ants dream of electric sheep?
-      </p>
+    <div class="flex items-center justify-center h-full">
+      <div class="text-center">
+        <h2 class="text-2xl font-semibold text-stone-700 mb-2">
+          Connecting<span class="animated-ellipsis"></span>
+        </h2>
+        <p class="text-stone-500">
+          Do simulated ants dream of electric sheep?
+        </p>
+      </div>
     </div>
   {/if}
 </main>
