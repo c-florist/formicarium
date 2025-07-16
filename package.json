@@ -5,16 +5,13 @@
   "scripts": {
     "tidy": "biome check --write .",
     "tidy:check": "biome check",
-    "typecheck": "pnpm --filter @formicarium/domain run build && pnpm --filter @formicarium/api run check && pnpm --filter @formicarium/web run check",
-    "dev:api": "pnpm --filter \"@formicarium/api\" dev",
-    "dev:web": "pnpm --filter \"@formicarium/web\" dev"
+    "typecheck": "pnpm --filter domain run build && pnpm --filter web run check"
   },
   "devDependencies": {
     "@biomejs/biome": "^2.0.6",
     "@tauri-apps/cli": "^2.6.2",
     "@types/node": "^20.14.2",
     "typescript": "^5.8.3",
-    "vite": "^6.3.5",
-    "vitest": "^3.2.4"
+    "vite": "^6.3.5"
   }
 }
