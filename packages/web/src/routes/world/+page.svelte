@@ -3,7 +3,7 @@ import PixelWorldCanvas from "$lib/components/PixelWorldCanvas.svelte";
 import { worldStore } from "$lib/world/world-store";
 </script>
 
-<main class="relative w-screen h-screen">
+<div class="relative w-full h-full">
   {#if $worldStore}
     <PixelWorldCanvas />
   {:else}
@@ -18,7 +18,7 @@ import { worldStore } from "$lib/world/world-store";
       </div>
     </div>
   {/if}
-</main>
+</div>
 
 <style>
   .animated-ellipsis::after {

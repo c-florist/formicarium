@@ -28,7 +28,7 @@ function toggleStatsDashboard() {
 
   {#if isStatsDashboardOpen}
     <div
-      class="absolute top-0 right-0 w-96 h-full z-10"
+      class="absolute top-0 right-0 w-96 bottom-0 z-10"
       transition:slide={{ duration: 300, easing: sineInOut, axis: "x" }}
     >
       <StatsDashboard class="h-full" onclose={toggleStatsDashboard} />

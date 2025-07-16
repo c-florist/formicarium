@@ -41,8 +41,7 @@ let animationInterval: NodeJS.Timeout;
 const initialise = async () => {
   app = new Application();
   await app.init({
-    width: window.innerWidth,
-    height: window.innerHeight,
+    resizeTo: canvasContainer,
     roundPixels: true,
   });
   canvasContainer.appendChild(app.canvas);
@@ -242,4 +241,5 @@ onDestroy(() => {
 });
 </script>
 
-<div class="relative" bind:this={canvasContainer}></div>
+<div class="relative w-full h-full" bind:this={canvasContainer}></div>
+
