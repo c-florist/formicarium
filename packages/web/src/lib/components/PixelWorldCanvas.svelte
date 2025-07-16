@@ -80,6 +80,14 @@ const loadGlobalAssets = async () => {
     Assets.load(FOOD_SPRITESHEET),
   ]);
 
+  // Set scale mode for all loaded simulation assets
+  for (const key in antSheet.textures) {
+    antSheet.textures[key].source.scaleMode = "nearest";
+  }
+  for (const key in foodSheet.textures) {
+    foodSheet.textures[key].source.scaleMode = "nearest";
+  }
+
   antSpritesheet = antSheet;
   foodSourceSpritesheet = foodSheet;
 };
@@ -126,7 +134,7 @@ onMount(async () => {
       antData.sprite.texture = antSpritesheet.textures[frameName];
 
       // Flip sprite for left direction
-      const scale = SPRITE_CONFIG.ant.scale;
+      const scale = SPRITE_CONFIG.ANT.scale;
       if (antData.direction === "left") {
         antData.sprite.scale.x = -scale;
       } else {
@@ -175,7 +183,7 @@ $effect(() => {
       const textureName = textureNames[deterministicTextureIndex];
       const texture = foodSourceSpritesheet.textures[textureName];
 
-      foodSprite = createSpriteWithConfig(texture, SPRITE_CONFIG.food);
+      foodSprite = createSpriteWithConfig(texture, SPRITE_CONFIG.FOOD);
       worldContainer.addChild(foodSprite);
       foodSourceSprites.set(foodSource.id, foodSprite);
     }
@@ -184,7 +192,7 @@ $effect(() => {
     foodSprite.y = foodSource.y;
 
     // Scale sprite based on remaining amount
-    const baseScale = SPRITE_CONFIG.food.scale;
+    const baseScale = SPRITE_CONFIG.FOOD.scale;
     const scaleRatio = foodSource.amount / FOOD_SOURCE_CONFIG.maxAmount;
     const newScale = Math.max(0, baseScale * scaleRatio);
     foodSprite.scale.set(newScale);
@@ -197,7 +205,7 @@ $effect(() => {
     if (!antData) {
       const sprite = createSpriteWithConfig(
         antSpritesheet.textures[DEFAULT_ANT_TEXTURE],
-        SPRITE_CONFIG.ant,
+        SPRITE_CONFIG.ANT,
       );
       worldContainer.addChild(sprite);
 

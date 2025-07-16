@@ -117,10 +117,12 @@ export const createBoulderContainer = async (
 
 export const createNestContainer = async (nestDto: NestDto) => {
   const nestContainer = new Container();
-  const nestTexture = await Assets.load(NEST_SPRITESHEET);
-  const nestSprite = new Sprite(nestTexture.textures[NEST_TEXTURES.TREE]);
+  const nestTextures = await Assets.load(NEST_SPRITESHEET);
 
-  const { anchor, scale } = SPRITE_CONFIG.nest;
+  nestTextures.textures[NEST_TEXTURES.TREE].source.scaleMode = "nearest";
+  const nestSprite = new Sprite(nestTextures.textures[NEST_TEXTURES.TREE]);
+
+  const { anchor, scale } = SPRITE_CONFIG.NEST;
   nestSprite.anchor.set(anchor.x, anchor.y);
   nestSprite.x = nestDto.x;
   nestSprite.y = nestDto.y;

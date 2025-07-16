@@ -12,16 +12,16 @@ export const NEST_TEXTURES = {
 export const DEFAULT_ANT_TEXTURE = "ant-down-0";
 
 export const SPRITE_CONFIG = {
-  ant: { scale: 1.4, anchor: { x: 0.5, y: 0 } },
-  food: { scale: 2, anchor: { x: 0.5, y: 0.5 } },
-  nest: { scale: 2.5, anchor: { x: 0.5, y: 0.5 } },
+  ANT: { scale: 1.8, anchor: { x: 0.5, y: 0 } },
+  FOOD: { scale: 2.5, anchor: { x: 0.2, y: 0.2 } },
+  NEST: { scale: 3.5, anchor: { x: 0.5, y: 0.5 } },
 } as const;
 export type SpriteConfig = (typeof SPRITE_CONFIG)[keyof typeof SPRITE_CONFIG];
 
 export const ANIMATION_CONFIG = {
   antFrameRate: 125,
   antFrameCount: 4,
-  hideSpriteRadius: 30,
+  hideSpriteRadius: 60,
 } as const;
 
 export const BACKGROUND_CONFIG = {

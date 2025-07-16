@@ -12,17 +12,21 @@ let { container, onClick, x, y, scale } = $props<{
 }>();
 
 let buttonContainer: Container;
+const BTN_SMALL_SPRITE = "/ui/button-small/button-small-2.png";
+const RED_CROSS_ICON_SPRITE = "/ui/icons/red-cross.png";
 
 onMount(async () => {
   const btnAssets = await Assets.load([
-    "/ui/button-small/button-small-2.png",
-    "/ui/icons/red-cross.png",
+    BTN_SMALL_SPRITE,
+    RED_CROSS_ICON_SPRITE,
   ]);
 
+  btnAssets[BTN_SMALL_SPRITE].source.scaleMode = "nearest";
+
   const button = new FancyButton({
-    icon: btnAssets["/ui/icons/red-cross.png"],
+    icon: btnAssets[RED_CROSS_ICON_SPRITE],
     defaultIconAnchor: { x: 0.5, y: 0.5 },
-    defaultView: btnAssets["/ui/button-small/button-small-2.png"],
+    defaultView: btnAssets[BTN_SMALL_SPRITE],
     animations: {
       pressed: {
         props: { x: 0, y: 2 },
