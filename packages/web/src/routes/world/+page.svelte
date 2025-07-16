@@ -13,7 +13,7 @@ const handleExitButtonClick = () => {
   {#if $worldStore}
     <PixelWorldCanvas>
       {#snippet children(container)}
-        <SmallButton {container} text="Exit" onClick={handleExitButtonClick} x={40} y={40} />
+        <SmallButton {container} text="Exit" onClick={handleExitButtonClick} x={16} y={16} />
       {/snippet}
     </PixelWorldCanvas>
   {:else}
