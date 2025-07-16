@@ -1,4 +1,4 @@
-use crate::components::dto::{AntDto, FoodSourceDto, NestDto, WorldDto};
+use crate::components::dto::{AntDto, FoodSourceDto, NestDto, StatsDto, WorldDto};
 use crate::components::world::{Ant, AntState, FoodSource, Nest, Position, Velocity};
 use crate::systems::{
     ant_arrival_at_food_system, ant_arrival_at_nest_system, apply_velocity_system, despawn_system,
@@ -109,28 +109,31 @@ impl Simulation {
             .map(|(_, (pos, _))| NestDto { x: pos.x, y: pos.y })
             .ok_or("Could not find nest in world")?;
 
-        let ants = self
-            .world
-            .query::<(&Position, &Ant)>()
-            .iter()
-            .map(|(entity, (position, _))| AntDto {
+        let mut ants = Vec::new();
+        for (entity, (position, _)) in self.world.query::<(&Position, &Ant)>().iter() {
+            ants.push(AntDto {
                 id: entity.id(),
                 x: position.x,
                 y: position.y,
-            })
-            .collect();
+            });
+        }
 
-        let food_sources = self
-            .world
-            .query::<(&Position, &FoodSource)>()
-            .iter()
-            .map(|(entity, (position, food_source))| FoodSourceDto {
+        let mut food_sources = Vec::new();
+        for (entity, (position, food_source)) in
+            self.world.query::<(&Position, &FoodSource)>().iter()
+        {
+            food_sources.push(FoodSourceDto {
                 id: entity.id(),
                 x: position.x,
                 y: position.y,
                 amount: food_source.amount,
             })
-            .collect();
+        }
+
+        let stats = StatsDto {
+            ant_count: ants.len() as u32,
+            food_source_count: food_sources.len() as u32,
+        };
 
         Ok(WorldDto {
             nest,
@@ -138,6 +141,7 @@ impl Simulation {
             ants,
             width: self.width,
             height: self.height,
+            stats,
         })
     }
 }
