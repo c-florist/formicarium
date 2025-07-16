@@ -52,13 +52,6 @@ const initialise = async () => {
 
   uiContainer = new Container();
   app.stage.addChild(uiContainer);
-
-  app.renderer.events.cursorStyles.default =
-    "url('/ui/cursor/cursor-default.png'),auto";
-  app.renderer.events.cursorStyles.hover =
-    "url('/ui/cursor/cursor-hover.png'),auto";
-  app.renderer.events.cursorStyles.drag =
-    "url('/ui/cursor/cursor-drag.png'),auto";
 };
 
 const calculateIfHiddenInNest = (

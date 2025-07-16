@@ -14,5 +14,6 @@
 
   body {
     @apply font-mono;
+    cursor: url("/ui/cursor/cursor-default.png"), auto;
   }
 }
