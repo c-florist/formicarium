@@ -2,7 +2,7 @@
   "$schema": "../node_modules/@tauri-apps/cli/config.schema.json",
   "productName": "formicarium",
   "version": "0.1.0",
-  "identifier": "com.tauri.dev",
+  "identifier": "com.formicarium.app",
   "build": {
     "frontendDist": "../web",
     "devUrl": "http://localhost:5173",
