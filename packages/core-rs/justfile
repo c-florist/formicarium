@@ -1,6 +1,0 @@
-_default:
-    @just --list
-
-# Build the WASM pkg
-build-wasm:
-    RUSTFLAGS='--cfg getrandom_backend="wasm_js"' wasm-pack build --target nodejs
