@@ -6,8 +6,8 @@
   "build": {
     "frontendDist": "../web",
     "devUrl": "http://localhost:5173",
-    "beforeDevCommand": "pnpm --filter @formicarium/web dev",
-    "beforeBuildCommand": "pnpm --filter @formicarium/web build"
+    "beforeDevCommand": "pnpm --filter web dev",
+    "beforeBuildCommand": "pnpm --filter web build"
   },
   "app": {
     "windows": [

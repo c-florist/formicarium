@@ -1,17 +1,15 @@
 [package]
-name = "app"
+name = "formicarium"
 version = "0.1.0"
-description = "A Tauri App"
-authors = ["you"]
+description = "[noun]: an ant's nest, especially one in an artificial container for purposes of study."
+authors = ["Connor Flowers"]
 license = ""
-repository = ""
-edition = "2021"
-rust-version = "1.77.2"
-
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+repository = "https://github.com/kyoh-dev/formicarium"
+edition = "2024"
+rust-version = "1.88.0"
 
 [lib]
-name = "app_lib"
+name = "formicarium_lib"
 crate-type = ["staticlib", "cdylib", "rlib"]
 
 [build-dependencies]
