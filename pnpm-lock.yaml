@@ -1133,13 +1133,6 @@ snapshots:
       pixi.js: 8.11.0
       tweedle.js: 2.1.0
       typed-signals: 2.5.0
-<<<<<<< HEAD
-
-  '@polka/url@1.0.0-next.29': {}
-||||||| 2e5248d
-  '@polka/url@1.0.0-next.29': {}
-=======
->>>>>>> 62036bbff6974380c6fe7ab5f1ea56d33d091e6c
 
   '@polka/url@1.0.0-next.29': {}
 
@@ -1686,10 +1679,6 @@ snapshots:
     optionalDependencies:
       fsevents: 2.3.3
     optional: true
-
-  tweedle.js@2.1.0: {}
-
-  typed-signals@2.5.0: {}
 
   tweedle.js@2.1.0: {}
 
