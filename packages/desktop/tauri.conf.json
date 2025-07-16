@@ -4,7 +4,7 @@
   "version": "0.1.0",
   "identifier": "com.formicarium.app",
   "build": {
-    "frontendDist": "../web",
+    "frontendDist": "../web/build",
     "devUrl": "http://localhost:5173",
     "beforeDevCommand": "pnpm --filter web dev",
     "beforeBuildCommand": "pnpm --filter web build"
