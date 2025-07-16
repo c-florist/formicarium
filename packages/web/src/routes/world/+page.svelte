@@ -1,7 +1,7 @@
 <script lang="ts">
 import { goto } from "$app/navigation";
 import PixelWorldCanvas from "$lib/components/PixelWorldCanvas.svelte";
-import SmallButton from "$lib/components/ui/SmallButton.svelte";
+import ExitButton from "$lib/components/ui/ExitButton.svelte";
 import { worldStore } from "$lib/world/world-store";
 
 const handleExitButtonClick = () => {
@@ -13,7 +13,7 @@ const handleExitButtonClick = () => {
   {#if $worldStore}
     <PixelWorldCanvas>
       {#snippet children(container)}
-        <SmallButton {container} text="Exit" onClick={handleExitButtonClick} x={16} y={16} />
+        <ExitButton {container} onClick={handleExitButtonClick} x={16} y={16} scale={1.2} />
       {/snippet}
     </PixelWorldCanvas>
   {:else}
