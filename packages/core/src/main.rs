@@ -3,12 +3,12 @@
 
 mod components;
 mod dto;
-mod simulation;
+mod engine;
 mod systems;
 mod utils;
 
 use dto::WorldDto;
-use simulation::Simulation;
+use engine::simulation::Simulation;
 use std::sync::{Arc, Mutex};
 use std::thread;
 use std::time::Duration;
