@@ -5,18 +5,18 @@ repos:
         name: 'TS Tidy'
         language: system
         entry: pnpm run tidy
-        exclude: ^packages/desktop/
+        exclude: ^packages/core/
 
       - id: cargo-check
         name: 'Cargo Check'
         language: system
-        entry: cargo check --manifest-path packages/desktop/Cargo.toml
-        files: ^packages/desktop/
+        entry: cargo check --manifest-path packages/core/Cargo.toml
+        files: ^packages/core/
         pass_filenames: false
 
       - id: rustfmt
         name: 'Rustfmt'
         language: system
-        entry: cargo fmt --manifest-path packages/desktop/Cargo.toml
-        files: ^packages/desktop/
+        entry: cargo fmt --manifest-path packages/core/Cargo.toml
+        files: ^packages/core/
         pass_filenames: false

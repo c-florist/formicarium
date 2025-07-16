@@ -11,14 +11,14 @@ dev:
 
 # Run linting and fix issues
 tidy *flags:
-    cargo fmt --manifest-path packages/desktop/Cargo.toml
+    cargo fmt --manifest-path packages/core/Cargo.toml
     pnpm run tidy {{flags}}
 
 # Run type checking
 typecheck:
     pnpm run typecheck
-    cargo check --manifest-path packages/desktop/Cargo.toml
+    cargo check --manifest-path packages/core/Cargo.toml
 
 # Run tests
 test:
-    cargo test --manifest-path packages/desktop/Cargo.toml
+    cargo test --manifest-path packages/core/Cargo.toml

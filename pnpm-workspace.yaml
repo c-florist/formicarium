@@ -1,4 +1,4 @@
 packages:
-  - "packages/desktop"
+  - "packages/core"
   - "packages/domain"
   - "packages/web"

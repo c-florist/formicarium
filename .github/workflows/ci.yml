@@ -40,7 +40,7 @@ jobs:
         run: pnpm run tidy:check
 
       - name: Run rustfmt check
-        run: cargo fmt --manifest-path packages/desktop/Cargo.toml -- --check
+        run: cargo fmt --manifest-path packages/core/Cargo.toml -- --check
 
   test:
     name: Test
@@ -71,7 +71,7 @@ jobs:
         uses: Swatinem/rust-cache@98c8021b550208e191a6a3145459bfc9fb29c4c0
 
       - name: Run Rust unit tests
-        run: cargo test --manifest-path packages/desktop/Cargo.toml
+        run: cargo test --manifest-path packages/core/Cargo.toml
 
   typecheck:
     name: Typecheck
