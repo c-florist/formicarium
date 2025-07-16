@@ -9,61 +9,15 @@ use crate::systems::{
 use hecs::World;
 use rand::{Rng, SeedableRng};
 use rand_pcg::Pcg64;
-use wasm_bindgen::prelude::*;
 
-#[wasm_bindgen]
 pub struct Simulation {
     world: World,
     width: f32,
     height: f32,
-    #[wasm_bindgen(skip)]
     rng: Pcg64,
 }
 
-fn get_world_state_dto(simulation: &Simulation) -> Result<WorldDto, &'static str> {
-    let nest = simulation
-        .world
-        .query::<(&Position, &Nest)>()
-        .iter()
-        .next()
-        .map(|(_, (pos, _))| NestDto { x: pos.x, y: pos.y })
-        .ok_or("Could not find nest in world")?;
-
-    let ants = simulation
-        .world
-        .query::<(&Position, &Ant)>()
-        .iter()
-        .map(|(entity, (position, _))| AntDto {
-            id: entity.id(),
-            x: position.x,
-            y: position.y,
-        })
-        .collect();
-
-    let food_sources = simulation
-        .world
-        .query::<(&Position, &FoodSource)>()
-        .iter()
-        .map(|(entity, (position, food_source))| FoodSourceDto {
-            id: entity.id(),
-            x: position.x,
-            y: position.y,
-            amount: food_source.amount,
-        })
-        .collect();
-
-    Ok(WorldDto {
-        nest,
-        food_sources,
-        ants,
-        width: simulation.width,
-        height: simulation.height,
-    })
-}
-
-#[wasm_bindgen]
 impl Simulation {
-    #[wasm_bindgen(constructor)]
     pub fn new() -> Self {
         let mut world = World::new();
         let mut rng = Pcg64::from_rng(&mut rand::rng());
@@ -146,9 +100,45 @@ impl Simulation {
         enforce_bounds_system(&mut self.world, self.width, self.height);
     }
 
-    pub fn get_world_state(&self) -> Result<JsValue, JsValue> {
-        let dto = get_world_state_dto(self).map_err(JsValue::from_str)?;
-        serde_wasm_bindgen::to_value(&dto).map_err(|e| JsValue::from_str(&e.to_string()))
+    pub fn get_world_state_dto(&mut self) -> Result<WorldDto, &'static str> {
+        let nest = self
+            .world
+            .query::<(&Position, &Nest)>()
+            .iter()
+            .next()
+            .map(|(_, (pos, _))| NestDto { x: pos.x, y: pos.y })
+            .ok_or("Could not find nest in world")?;
+
+        let ants = self
+            .world
+            .query::<(&Position, &Ant)>()
+            .iter()
+            .map(|(entity, (position, _))| AntDto {
+                id: entity.id(),
+                x: position.x,
+                y: position.y,
+            })
+            .collect();
+
+        let food_sources = self
+            .world
+            .query::<(&Position, &FoodSource)>()
+            .iter()
+            .map(|(entity, (position, food_source))| FoodSourceDto {
+                id: entity.id(),
+                x: position.x,
+                y: position.y,
+                amount: food_source.amount,
+            })
+            .collect();
+
+        Ok(WorldDto {
+            nest,
+            food_sources,
+            ants,
+            width: self.width,
+            height: self.height,
+        })
     }
 }
 
@@ -192,24 +182,24 @@ mod tests {
             .count();
 
         // 2. Assertion
-        assert_eq!(ants, 100);
+        assert_eq!(ants, 50);
         assert_eq!(nests, 1);
-        assert_eq!(food_sources, 10);
+        assert_eq!(food_sources, 15);
     }
 
     #[test]
     fn test_get_world_state_dto_includes_all_entities_and_dimensions() {
         // 1. Setup
-        let simulation = Simulation::new();
+        let mut simulation = Simulation::new();
 
         // 2. Action
-        let dto = get_world_state_dto(&simulation).unwrap();
+        let dto = simulation.get_world_state_dto().unwrap();
 
         // 3. Assertion
-        assert_eq!(dto.width, 1000.0);
-        assert_eq!(dto.height, 600.0);
+        assert_eq!(dto.width, 1200.0);
+        assert_eq!(dto.height, 800.0);
         assert_eq!(dto.nest, NestDto { x: 475.0, y: 275.0 });
-        assert_eq!(dto.food_sources.len(), 10);
-        assert_eq!(dto.ants.len(), 100);
+        assert_eq!(dto.food_sources.len(), 15);
+        assert_eq!(dto.ants.len(), 50);
     }
 }

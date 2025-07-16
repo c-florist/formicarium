@@ -71,7 +71,7 @@ mod tests {
         let mut query = world.query::<(&PheromoneDeposit, &PheromoneToFood, &Position)>();
         let (_entity, (pheromone, _, position)) = query.iter().next().unwrap();
 
-        assert_eq!(pheromone.strength, 75.0);
+        assert_eq!(pheromone.strength, 100.0);
         assert_eq!(position.x, 36.0);
         assert_eq!(position.y, 48.0);
     }

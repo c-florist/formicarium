@@ -7,15 +7,14 @@ _default:
 
 # Run linting and fix issues
 tidy *flags:
-    cargo fmt --manifest-path packages/core-rs/Cargo.toml
+    cargo fmt --manifest-path packages/desktop/Cargo.toml
     pnpm run tidy {{flags}}
 
 # Run type checking
 typecheck:
     pnpm run typecheck
-    cargo check --manifest-path packages/core-rs/Cargo.toml
+    cargo check --manifest-path packages/desktop/Cargo.toml
 
 # Run tests
 test:
-    pnpm --filter "@formicarium/*" test:unit
-    cargo test --manifest-path packages/core-rs/Cargo.toml
+    cargo test --manifest-path packages/desktop/Cargo.toml

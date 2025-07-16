@@ -1,7 +1,6 @@
 {
   "extends": "./.svelte-kit/tsconfig.json",
   "compilerOptions": {
-    "outDir": "dist",
     "lib": ["DOM", "DOM.Iterable", "ES2022"],
     "types": ["svelte"],
     "isolatedModules": true,

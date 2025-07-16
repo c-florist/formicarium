@@ -1,3 +1,4 @@
 packages:
-  - "packages/*"
-  - "!packages/core-rs"
+  - "packages/desktop"
+  - "packages/domain"
+  - "packages/web"
