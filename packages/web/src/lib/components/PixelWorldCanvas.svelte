@@ -1,6 +1,12 @@
 <script lang="ts">
-import { Application, Assets, Sprite, type UnresolvedAsset } from "pixi.js";
-import { onDestroy, onMount } from "svelte";
+import {
+  Application,
+  Assets,
+  Container,
+  Sprite,
+  type UnresolvedAsset,
+} from "pixi.js";
+import { onDestroy, onMount, type SvelteComponent } from "svelte";
 import { calculateMovementDirection } from "../utils/maths";
 import {
   createBackgroundContainer,
@@ -21,8 +27,14 @@ import {
 import { createSpriteWithConfig } from "../world/sprite";
 import { worldStore } from "../world/world-store";
 
+let { children } = $props<{
+  children?: (container: Container) => SvelteComponent;
+}>();
+let app = $state<Application>();
+let worldContainer = $state<Container>();
+let uiContainer = $state<Container>();
+
 let canvasContainer: HTMLDivElement;
-let app: Application;
 let antSprites: Map<number, AntSprite> = new Map();
 let antSpritesheet: UnresolvedAsset;
 let foodSourceSpritesheet: UnresolvedAsset;
@@ -32,11 +44,24 @@ let animationInterval: NodeJS.Timeout;
 const initialise = async () => {
   app = new Application();
   await app.init({
-    width: window.innerWidth - 50,
-    height: window.innerHeight - 50,
+    width: window.innerWidth,
+    height: window.innerHeight,
     roundPixels: true,
   });
   canvasContainer.appendChild(app.canvas);
+
+  worldContainer = new Container();
+  app.stage.addChild(worldContainer);
+
+  uiContainer = new Container();
+  app.stage.addChild(uiContainer);
+
+  app.renderer.events.cursorStyles.default =
+    "url('/ui/cursor/cursor-default.png'),auto";
+  app.renderer.events.cursorStyles.hover =
+    "url('/ui/cursor/cursor-hover.png'),auto";
+  app.renderer.events.cursorStyles.drag =
+    "url('/ui/cursor/cursor-drag.png'),auto";
 };
 
 const calculateIfHiddenInNest = (
@@ -55,6 +80,14 @@ const loadGlobalAssets = async () => {
     Assets.load(FOOD_SPRITESHEET),
   ]);
 
+  // Set scale mode for all loaded simulation assets
+  for (const key in antSheet.textures) {
+    antSheet.textures[key].source.scaleMode = "nearest";
+  }
+  for (const key in foodSheet.textures) {
+    foodSheet.textures[key].source.scaleMode = "nearest";
+  }
+
   antSpritesheet = antSheet;
   foodSourceSpritesheet = foodSheet;
 };
@@ -67,6 +100,10 @@ onMount(async () => {
   await initialise();
   await loadGlobalAssets();
 
+  if (!app || !worldContainer) {
+    return;
+  }
+
   const backgroundTexture = await createRandomisedTileTexture(
     app.renderer,
     app.canvas.width,
@@ -77,16 +114,16 @@ onMount(async () => {
     app.canvas.width,
     app.canvas.height,
   );
-  app.stage.addChildAt(backgroundContainer, LAYERS.BACKGROUND);
+  worldContainer.addChildAt(backgroundContainer, LAYERS.BACKGROUND);
 
   const boulderContainer = await createBoulderContainer(
     app.canvas.width,
     app.canvas.height,
   );
-  app.stage.addChildAt(boulderContainer, LAYERS.DECORATION);
+  worldContainer.addChildAt(boulderContainer, LAYERS.DECORATION);
 
   const nestContainer = await createNestContainer($worldStore.nest);
-  app.stage.addChildAt(nestContainer, LAYERS.DECORATION);
+  worldContainer.addChildAt(nestContainer, LAYERS.DECORATION);
 
   animationInterval = setInterval(() => {
     // Update all ant sprites with their individual frame counters
@@ -97,7 +134,7 @@ onMount(async () => {
       antData.sprite.texture = antSpritesheet.textures[frameName];
 
       // Flip sprite for left direction
-      const scale = SPRITE_CONFIG.ant.scale;
+      const scale = SPRITE_CONFIG.ANT.scale;
       if (antData.direction === "left") {
         antData.sprite.scale.x = -scale;
       } else {
@@ -108,7 +145,14 @@ onMount(async () => {
 });
 
 $effect(() => {
-  if (!$worldStore || !antSpritesheet || !foodSourceSpritesheet) return;
+  if (
+    !app ||
+    !worldContainer ||
+    !$worldStore ||
+    !antSpritesheet ||
+    !foodSourceSpritesheet
+  )
+    return;
 
   const currentAntIds = new Set($worldStore.ants.map((ant) => ant.id));
   const currentFoodSourceIds = new Set(
@@ -117,14 +161,14 @@ $effect(() => {
 
   for (const [antId, antData] of antSprites) {
     if (!currentAntIds.has(antId)) {
-      app.stage.removeChild(antData.sprite);
+      worldContainer.removeChild(antData.sprite);
       antSprites.delete(antId);
     }
   }
 
   for (const [foodSourceId, foodSprite] of foodSourceSprites) {
     if (!currentFoodSourceIds.has(foodSourceId)) {
-      app.stage.removeChild(foodSprite);
+      worldContainer.removeChild(foodSprite);
       foodSourceSprites.delete(foodSourceId);
     }
   }
@@ -139,8 +183,8 @@ $effect(() => {
       const textureName = textureNames[deterministicTextureIndex];
       const texture = foodSourceSpritesheet.textures[textureName];
 
-      foodSprite = createSpriteWithConfig(texture, SPRITE_CONFIG.food);
-      app.stage.addChild(foodSprite);
+      foodSprite = createSpriteWithConfig(texture, SPRITE_CONFIG.FOOD);
+      worldContainer.addChild(foodSprite);
       foodSourceSprites.set(foodSource.id, foodSprite);
     }
 
@@ -148,7 +192,7 @@ $effect(() => {
     foodSprite.y = foodSource.y;
 
     // Scale sprite based on remaining amount
-    const baseScale = SPRITE_CONFIG.food.scale;
+    const baseScale = SPRITE_CONFIG.FOOD.scale;
     const scaleRatio = foodSource.amount / FOOD_SOURCE_CONFIG.maxAmount;
     const newScale = Math.max(0, baseScale * scaleRatio);
     foodSprite.scale.set(newScale);
@@ -161,9 +205,9 @@ $effect(() => {
     if (!antData) {
       const sprite = createSpriteWithConfig(
         antSpritesheet.textures[DEFAULT_ANT_TEXTURE],
-        SPRITE_CONFIG.ant,
+        SPRITE_CONFIG.ANT,
       );
-      app.stage.addChild(sprite);
+      worldContainer.addChild(sprite);
 
       antData = {
         sprite,
@@ -208,4 +252,8 @@ onDestroy(() => {
 });
 </script>
 
-<div bind:this={canvasContainer}></div>
+<div class="relative" bind:this={canvasContainer}>
+  {#if uiContainer && children}
+    {@render children(uiContainer)}
+  {/if}
+</div>

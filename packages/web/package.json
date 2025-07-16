@@ -11,12 +11,15 @@
   },
   "dependencies": {
     "@formicarium/domain": "workspace:*",
+    "@pixi/ui": "^2.2.4",
     "@tailwindcss/vite": "^4.1.11",
+    "@tauri-apps/api": "^2.6.0",
     "pixi.js": "^8.11.0",
     "tailwindcss": "^4.1.11"
   },
   "devDependencies": {
     "@sveltejs/adapter-auto": "^6.0.1",
+    "@sveltejs/adapter-static": "^3.0.8",
     "@sveltejs/kit": "^2.22.2",
     "@sveltejs/vite-plugin-svelte": "^5.1.0",
     "svelte": "^5.35.4",

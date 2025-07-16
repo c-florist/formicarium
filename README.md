@@ -4,3 +4,23 @@
 > noun: formicarium
 >
 > an ant's nest, especially one in an artificial container for purposes of study.
+
+## TODO
+
+### Improvements
+1. Add an info dashboard to the UI with dynamic world statistics.
+1. Add a collision system with obstacles, i.e. boulders.
+1. Improve pheromone following system so it influences direction to specific food source instead of nearest one.
+1. Add `to_nest` pheromones.
+1. Visualise pheromone trails.
+1. Dynamic ant population: Ants should spawn and die on X ticks.
+1. Make the procedural world generation more interesting: More obstacles, more interesting background textures.
+1. Add user interaction with world: Allow for creating new food sources and obstacles with limits (e.g. only 14 obstacles allowed at a time).
+
+### Proposed features
+1. Introduce different ant types: `Solder`, `Queen`, `Worker`.
+1. Distinguish between `outside` and `inside` worlds and allow ants to go inside a nest and dig tunnels, lay eggs, feed the queen.
+1. Introduce predators and design a system of interaction with them.
+1. Make world size configurable: Allow the world to be larger than the screen canvas and support viewing via mouse click-and-drag.
+1. World creation per-user: Instead of one world allow users to create their own, specifying parameters (world size, how many ants, how many obstacles/nests etc.).
+1. Support multiple ant colonies per world: Allow for up to X number of colonies per world, design interactions between them (often ants kill other ant colonies when discovered).
