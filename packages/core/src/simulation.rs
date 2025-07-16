@@ -1,11 +1,11 @@
 use crate::components::{Ant, AntState, FoodSource, Nest, Position, Velocity};
 use crate::dto::{AntDto, FoodSourceDto, NestDto, WorldDto};
-use crate::maths::target_distance_sq;
 use crate::systems::{
     ant_arrival_at_food_system, ant_arrival_at_nest_system, apply_velocity_system, despawn_system,
     enforce_bounds_system, food_discovery_system, pheromone_decay_system,
     pheromone_emission_system, pheromone_following_system, target_movement_system,
 };
+use crate::utils::maths::target_distance_sq;
 use hecs::World;
 use rand::{Rng, SeedableRng};
 use rand_pcg::Pcg64;

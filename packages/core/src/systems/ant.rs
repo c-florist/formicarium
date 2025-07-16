@@ -1,5 +1,5 @@
 use crate::components::{Ant, AntState, FoodPayload, FoodSource, Nest, Position, Target};
-use crate::maths::target_distance_sq;
+use crate::utils::maths::target_distance_sq;
 use hecs::{Entity, World};
 
 pub fn ant_arrival_at_food_system(world: &mut World) {

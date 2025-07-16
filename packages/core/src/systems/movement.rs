@@ -1,7 +1,7 @@
 use crate::components::{
     Ant, AntState, FoodSource, PheromoneDeposit, PheromoneToFood, Position, Target, Velocity,
 };
-use crate::maths::{calculate_attraction_strength, normalise_vector, target_distance_sq};
+use crate::utils::maths::{calculate_attraction_strength, normalise_vector, target_distance_sq};
 use hecs::World;
 use rand::Rng;
 

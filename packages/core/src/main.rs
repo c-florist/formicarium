@@ -3,9 +3,9 @@
 
 mod components;
 mod dto;
-mod maths;
 mod simulation;
 mod systems;
+mod utils;
 
 use dto::WorldDto;
 use simulation::Simulation;
