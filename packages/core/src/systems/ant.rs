@@ -1,4 +1,4 @@
-use crate::components::{Ant, AntState, FoodPayload, FoodSource, Nest, Position, Target};
+use crate::components::world::{Ant, AntState, FoodPayload, FoodSource, Nest, Position, Target};
 use crate::utils::maths::target_distance_sq;
 use hecs::{Entity, World};
 
@@ -132,7 +132,9 @@ pub fn food_discovery_system(world: &mut World) {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::components::{AntState, FoodPayload, FoodSource, Nest, Position, Target, Velocity};
+    use crate::components::world::{
+        AntState, FoodPayload, FoodSource, Nest, Position, Target, Velocity,
+    };
     use hecs::World;
 
     #[test]

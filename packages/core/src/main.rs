@@ -2,12 +2,11 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
 mod components;
-mod dto;
 mod engine;
 mod systems;
 mod utils;
 
-use dto::WorldDto;
+use components::dto::WorldDto;
 use engine::simulation::Simulation;
 use std::sync::{Arc, Mutex};
 use std::thread;

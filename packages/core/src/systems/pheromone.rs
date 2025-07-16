@@ -1,4 +1,6 @@
-use crate::components::{Ant, AntState, FoodPayload, PheromoneDeposit, PheromoneToFood, Position};
+use crate::components::world::{
+    Ant, AntState, FoodPayload, PheromoneDeposit, PheromoneToFood, Position,
+};
 use hecs::World;
 use rand::Rng;
 
@@ -43,7 +45,9 @@ pub fn pheromone_decay_system(world: &mut World) {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::components::{Ant, AntState, FoodPayload, Nest, PheromoneDeposit, PheromoneToFood};
+    use crate::components::world::{
+        Ant, AntState, FoodPayload, Nest, PheromoneDeposit, PheromoneToFood,
+    };
     use hecs::World;
     use rand::SeedableRng;
     use rand::rngs::StdRng;

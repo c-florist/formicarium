@@ -1,5 +1,5 @@
-use crate::components::{Ant, AntState, FoodSource, Nest, Position, Velocity};
-use crate::dto::{AntDto, FoodSourceDto, NestDto, WorldDto};
+use crate::components::dto::{AntDto, FoodSourceDto, NestDto, WorldDto};
+use crate::components::world::{Ant, AntState, FoodSource, Nest, Position, Velocity};
 use crate::systems::{
     ant_arrival_at_food_system, ant_arrival_at_nest_system, apply_velocity_system, despawn_system,
     enforce_bounds_system, food_discovery_system, pheromone_decay_system,
@@ -145,7 +145,7 @@ impl Simulation {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::components::{Position, Velocity};
+    use crate::components::world::{Position, Velocity};
 
     #[test]
     fn test_simulation_tick_updates_position() {
