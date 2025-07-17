@@ -39,7 +39,7 @@ impl Simulation {
         ));
 
         // Spawn food sources
-        for _ in 0..15 {
+        for _ in 0..150 {
             let mut x;
             let mut y;
             // Loop until a valid position is found
@@ -56,7 +56,7 @@ impl Simulation {
         }
 
         // Spawn ants
-        for _ in 0..50 {
+        for _ in 0..200 {
             let dx = rng.random_range(-1.0..1.0);
             let dy = rng.random_range(-1.0..1.0);
             world.spawn((

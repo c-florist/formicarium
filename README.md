@@ -13,12 +13,12 @@
 1. Improve pheromone following system so it influences direction to specific food source instead of nearest one.
 1. Add `to_nest` pheromones.
 1. Visualise pheromone trails.
-1. Dynamic ant population: Ants should spawn and die on X ticks.
+1. Dynamic ant population: Ants should spawn and die on X ticks. Track amount of food in nest, and when it reaches X amount spawn new ants.
 1. Make the procedural world generation more interesting: More obstacles, more interesting background textures.
-1. Add user interaction with world: Allow for creating new food sources and obstacles with limits (e.g. only 14 obstacles allowed at a time).
 
 ### Proposed features
 1. Introduce different ant types: `Solder`, `Queen`, `Worker`.
+1. Add user interaction with world: Allow for creating new food sources and obstacles with limits (e.g. only 14 obstacles allowed at a time).
 1. Distinguish between `outside` and `inside` worlds and allow ants to go inside a nest and dig tunnels, lay eggs, feed the queen.
 1. Introduce predators and design a system of interaction with them.
 1. Make world size configurable: Allow the world to be larger than the screen canvas and support viewing via mouse click-and-drag.
