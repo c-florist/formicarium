@@ -3,7 +3,7 @@ use serde::{Deserialize, Serialize};
 use ts_rs::TS;
 
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, TS)]
-#[ts(export, export_to = "../../domain/src/AntStateDto.ts")]
+#[ts(export, export_to = "../../domain/src/types/AntStateDto.ts")]
 #[serde(tag = "type", content = "ticks", rename_all = "camelCase")]
 pub enum AntStateDto {
     Wandering,
@@ -24,7 +24,7 @@ impl From<&AntState> for AntStateDto {
 }
 
 #[derive(Serialize, Deserialize, TS, PartialEq, Debug)]
-#[ts(export, export_to = "../../domain/src/AntDto.ts")]
+#[ts(export, export_to = "../../domain/src/types/AntDto.ts")]
 pub struct AntDto {
     pub id: u32,
     pub x: f32,
@@ -34,14 +34,14 @@ pub struct AntDto {
 }
 
 #[derive(Serialize, Deserialize, TS, PartialEq, Debug)]
-#[ts(export, export_to = "../../domain/src/NestDto.ts")]
+#[ts(export, export_to = "../../domain/src/types/NestDto.ts")]
 pub struct NestDto {
     pub x: f32,
     pub y: f32,
 }
 
 #[derive(Serialize, Deserialize, TS, PartialEq, Debug)]
-#[ts(export, export_to = "../../domain/src/FoodSourceDto.ts")]
+#[ts(export, export_to = "../../domain/src/types/FoodSourceDto.ts")]
 pub struct FoodSourceDto {
     pub id: u32,
     pub x: f32,
@@ -51,7 +51,7 @@ pub struct FoodSourceDto {
 
 #[derive(Serialize, Deserialize, TS, PartialEq, Debug)]
 #[serde(rename_all = "camelCase")]
-#[ts(export, export_to = "../../domain/src/StatsDto.ts")]
+#[ts(export, export_to = "../../domain/src/types/StatsDto.ts")]
 pub struct StatsDto {
     pub ant_count: u32,
     pub food_source_count: u32,
@@ -59,7 +59,7 @@ pub struct StatsDto {
 
 #[derive(Serialize, Deserialize, TS, PartialEq, Debug)]
 #[serde(rename_all = "camelCase")]
-#[ts(export, export_to = "../../domain/src/WorldDto.ts")]
+#[ts(export, export_to = "../../domain/src/types/WorldDto.ts")]
 pub struct WorldDto {
     pub nest: NestDto,
     pub food_sources: Vec<FoodSourceDto>,

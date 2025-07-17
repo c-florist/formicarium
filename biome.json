@@ -3,7 +3,7 @@
   "files": {
     "includes": [
       "packages/domain/src/**/*.ts",
-      "!packages/domain/src/*Dto.ts",
+      "!packages/domain/src/types/*.ts",
       "packages/web/src/**/*.ts",
       "packages/web/src/**/*.svelte",
       "packages/web/src/**/*.json",

@@ -1,0 +1,32 @@
+{
+  "_description": "This file contains configuration settings that need to shared across the frontend and backend.",
+  "simulation": {
+    "tickRate": 100
+  },
+  "world": {
+    "maxFoodSources": 100,
+    "foodSpawnChance": 0.01,
+    "foodSpawnMinDistanceToNest": 50.0
+  },
+  "ant": {
+    "arrivalDistance": 10.0,
+    "foodPayloadAmount": 10,
+    "discoveryRadius": 31.6,
+    "reproductionChance": 0.05,
+    "minHealth": 500,
+    "maxHealth": 1000,
+    "deathAnimationTicks": 60
+  },
+  "pheromone": {
+    "emitChance": 0.5,
+    "initialStrength": 100.0,
+    "decayAmount": 5.0,
+    "detectionRadius": 20.0
+  },
+  "movement": {
+    "wanderProbability": 0.05
+  },
+  "rendering": {
+    "animationSpeed": 8
+  }
+}
