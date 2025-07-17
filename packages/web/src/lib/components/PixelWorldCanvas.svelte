@@ -29,6 +29,7 @@ import {
   type UnresolvedAsset,
 } from "pixi.js";
 import { onDestroy, onMount } from "svelte";
+import config from "../../../../domain/src/systemConfig.json";
 
 const viewport = new Container();
 
@@ -187,7 +188,7 @@ $effect(() => {
     });
 
     let frameCounter = 0;
-    const animationSpeed = 8;
+    const animationSpeed = config.rendering.animationSpeed;
 
     app.ticker.add(() => {
       frameCounter++;
@@ -305,7 +306,7 @@ $effect(() => {
 
     // Stop moving ants that are dying
     if (ant.state.type === "dying") {
-      const maxTicks = 60; // Should match DEATH_ANIMATION_TICKS on backend
+      const maxTicks = config.ant.deathAnimationTicks;
       antData.sprite.alpha = ant.state.ticks / maxTicks;
     } else {
       // Calculate movement direction
