@@ -1,5 +1,5 @@
 {
-  "_description": "This file contains configuration settings that need to shared across the frontend and backend.",
+  "_description": "This file contains configuration settings that need to be shared across the frontend and backend.",
   "simulation": {
     "tickRate": 100
   },
