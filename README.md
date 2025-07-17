@@ -7,12 +7,15 @@
 
 ## TODO
 
+### Currently working on
+1. Dynamic ant population: Ants should spawn and die on X ticks. Track amount of food in nest, and when it reaches X amount spawn new ants.
+1. World creation with parameters: Allow user to specify parameters (starting number of ants, starting number of food sources, number of obstacles, ant spawn rate, max food sources).
+
 ### Improvements
 1. Add a collision system with obstacles, i.e. boulders.
 1. Improve pheromone following system so it influences direction to specific food source instead of nearest one.
 1. Add `to_nest` pheromones.
 1. Visualise pheromone trails.
-1. Dynamic ant population: Ants should spawn and die on X ticks. Track amount of food in nest, and when it reaches X amount spawn new ants.
 1. Make the procedural world generation more interesting: More obstacles, more interesting background textures.
 
 ### Proposed features
@@ -21,5 +24,4 @@
 1. Distinguish between `outside` and `inside` worlds and allow ants to go inside a nest and dig tunnels, lay eggs, feed the queen.
 1. Introduce predators and design a system of interaction with them.
 1. Make world size configurable: Allow the world to be larger than the screen canvas and support viewing via mouse click-and-drag.
-1. World creation per-user: Instead of one world allow users to create their own, specifying parameters (world size, how many ants, how many obstacles/nests etc.).
 1. Support multiple ant colonies per world: Allow for up to X number of colonies per world, design interactions between them (often ants kill other ant colonies when discovered).

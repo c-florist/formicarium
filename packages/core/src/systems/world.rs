@@ -29,7 +29,8 @@ pub fn food_spawn_system(
     world_height: f32,
     rng: &mut impl Rng,
 ) {
-    const FOOD_SPAWN_CHANCE: f64 = 0.05;
+    const MAX_FOOD_SOURCES: usize = 100;
+    const FOOD_SPAWN_CHANCE: f64 = 0.01;
 
     let nest_pos = world
         .query::<(&Position, &Nest)>()
@@ -38,7 +39,9 @@ pub fn food_spawn_system(
         .map(|(_, (pos, _))| *pos)
         .expect("No nest found when spawing food in food_spawn_system");
 
-    if rng.random_bool(FOOD_SPAWN_CHANCE) {
+    let food_source_count = world.query::<(&Position, &FoodSource)>().iter().count();
+
+    if food_source_count < MAX_FOOD_SOURCES && rng.random_bool(FOOD_SPAWN_CHANCE) {
         let mut x;
         let mut y;
         loop {
@@ -140,7 +143,7 @@ mod tests {
         world.spawn((Position { x: 0.0, y: 0.0 }, Nest));
 
         // 2. Action
-        for _ in 0..100 {
+        for _ in 0..500 {
             food_spawn_system(&mut world, 100.0, 100.0, &mut rng);
         }
 
