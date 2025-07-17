@@ -95,7 +95,13 @@ onMount(async () => {
     const width = canvasContainer.clientWidth;
     const height = canvasContainer.clientHeight;
 
-    await invoke("initialise_simulation", { width, height });
+    console.log("[PixelWorldCanvas] Initialising simulation");
+    await invoke("initialise_simulation", {
+      deviceWidth: width,
+      deviceHeight: height,
+    });
+
+    console.log("[PixelWorldCanvas] Simulation initialised");
 
     isSimulationInitialised = true;
     startWorldUpdates();

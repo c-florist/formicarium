@@ -14,11 +14,15 @@ export const startWorldUpdates = () => {
   const fetchWorldState = async () => {
     try {
       const worldData = await invoke<WorldDto | null>("get_world_state");
+      console.log(
+        "[world-store] Received data from get_world_state",
+        worldData,
+      );
       if (worldData) {
         worldStore.set(worldData);
       }
     } catch (error) {
-      console.error("Failed to get world state:", error);
+      console.error("[world-store] Failed to get world state:", error);
     }
   };
 
