@@ -216,4 +216,17 @@ mod tests {
         assert_eq!(dto.food_sources.len(), 15);
         assert_eq!(dto.ants.len(), 50);
     }
+
+    #[test]
+    fn test_get_world_statistics_includes_all_expected_stats() {
+        // 1. Setup
+        let mut simulation = Simulation::new();
+
+        // 2. Action
+        let dto = simulation.get_world_statistics().unwrap();
+
+        // 3. Assertion
+        assert_eq!(dto.ant_count, 50);
+        assert_eq!(dto.food_source_count, 15);
+    }
 }

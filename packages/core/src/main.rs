@@ -6,7 +6,7 @@ mod engine;
 mod systems;
 mod utils;
 
-use components::dto::WorldDto;
+use components::dto::{StatsDto, WorldDto};
 use engine::simulation::Simulation;
 use std::sync::{Arc, Mutex};
 use std::thread;
@@ -36,7 +36,10 @@ fn main() {
             });
             Ok(())
         })
-        .invoke_handler(tauri::generate_handler![get_world_state])
+        .invoke_handler(tauri::generate_handler![
+            get_world_state,
+            get_world_statistics
+        ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }
@@ -48,5 +51,15 @@ fn get_world_state(state: tauri::State<AppState>) -> Result<WorldDto, String> {
         .lock()
         .unwrap()
         .get_world_state_dto()
+        .map_err(|e| e.to_string())
+}
+
+#[tauri::command]
+fn get_world_statistics(state: tauri::State<AppState>) -> Result<StatsDto, String> {
+    state
+        .simulation
+        .lock()
+        .unwrap()
+        .get_world_statistics()
         .map_err(|e| e.to_string())
 }
