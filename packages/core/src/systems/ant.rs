@@ -151,7 +151,7 @@ pub fn ant_lifecycle_system(world: &mut World, rng: &mut impl Rng) {
             .map(|(_, (pos, _))| *pos);
         let dx = rng.random_range(-1.0..1.0);
         let dy = rng.random_range(-1.0..1.0);
-        let ant_health = rng.random_range(100..1000);
+        let ant_health = rng.random_range(500..1000);
 
         if let Some(nest_pos) = nest_pos {
             world.spawn((
