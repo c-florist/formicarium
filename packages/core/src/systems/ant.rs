@@ -1,14 +1,14 @@
 use crate::components::world::{
     Ant, AntState, FoodPayload, FoodSource, Nest, Position, Target, Velocity,
 };
+use crate::config::CONFIG;
 use crate::utils::maths::target_distance_sq;
 use hecs::{Entity, World};
 use rand::Rng;
 
 pub fn ant_arrival_at_food_system(world: &mut World) {
     let mut to_update_to_returning = Vec::new();
-    const ARRIVAL_DISTANCE_SQUARED: f32 = 10.0;
-    const FOOD_PAYLOAD_AMOUNT: u32 = 10;
+    let arrival_distance_sq = CONFIG.ant.arrival_distance.powi(2);
 
     // Find the nest entity first, assumes one nest
     let nest_entity = world
@@ -29,7 +29,7 @@ pub fn ant_arrival_at_food_system(world: &mut World) {
         if let Ok(target_pos) = world.get::<&Position>(target_entity) {
             let distance_sq = target_distance_sq(ant_pos.x, ant_pos.y, target_pos.x, target_pos.y);
 
-            if distance_sq < ARRIVAL_DISTANCE_SQUARED
+            if distance_sq < arrival_distance_sq
                 && ant_state == AntState::Foraging
                 && world.get::<&FoodSource>(target_entity).is_ok()
             {
@@ -42,7 +42,7 @@ pub fn ant_arrival_at_food_system(world: &mut World) {
     for (ant_entity, food_entity) in to_update_to_returning {
         if let Ok(food_source) = world.query_one_mut::<&mut FoodSource>(food_entity) {
             if food_source.amount > 0 {
-                food_source.amount -= FOOD_PAYLOAD_AMOUNT;
+                food_source.amount -= CONFIG.ant.food_payload_amount;
             }
 
             if let Ok(state) = world.query_one_mut::<&mut AntState>(ant_entity) {
@@ -51,7 +51,10 @@ pub fn ant_arrival_at_food_system(world: &mut World) {
             world
                 .insert(
                     ant_entity,
-                    (FoodPayload(FOOD_PAYLOAD_AMOUNT), Target(nest_entity)),
+                    (
+                        FoodPayload(CONFIG.ant.food_payload_amount),
+                        Target(nest_entity),
+                    ),
                 )
                 .expect("Failed to update ant state in ant_arrival_at_food_system");
         }
@@ -60,7 +63,7 @@ pub fn ant_arrival_at_food_system(world: &mut World) {
 
 pub fn ant_arrival_at_nest_system(world: &mut World) {
     let mut to_update_to_wandering = Vec::new();
-    const ARRIVAL_DISTANCE_SQUARED: f32 = 10.0;
+    let arrival_distance_sq = CONFIG.ant.arrival_distance.powi(2);
 
     // Collect all ants with targets
     let ants_with_targets: Vec<(Entity, Position, AntState, Entity)> = world
@@ -73,7 +76,7 @@ pub fn ant_arrival_at_nest_system(world: &mut World) {
         if let Ok(target_pos) = world.get::<&Position>(target_entity) {
             let distance_sq = target_distance_sq(ant_pos.x, ant_pos.y, target_pos.x, target_pos.y);
 
-            if distance_sq < ARRIVAL_DISTANCE_SQUARED
+            if distance_sq < arrival_distance_sq
                 && ant_state == AntState::ReturningToNest
                 && world.get::<&Nest>(target_entity).is_ok()
             {
@@ -95,7 +98,7 @@ pub fn ant_arrival_at_nest_system(world: &mut World) {
 
 pub fn food_discovery_system(world: &mut World) {
     let mut updates = Vec::new();
-    const DISCOVERY_RADIUS_SQUARED: f32 = 1000.0;
+    let discovery_radius_sq = CONFIG.ant.discovery_radius.powi(2);
 
     let wandering_ants: Vec<(Entity, Position)> = world
         .query::<(&Position, &AntState, &Ant)>()
@@ -110,7 +113,7 @@ pub fn food_discovery_system(world: &mut World) {
         for (food_entity, (food_pos, _)) in world.query::<(&Position, &FoodSource)>().iter() {
             let distance_sq = target_distance_sq(ant_pos.x, ant_pos.y, food_pos.x, food_pos.y);
 
-            if distance_sq < DISCOVERY_RADIUS_SQUARED {
+            if distance_sq < discovery_radius_sq {
                 if let Some((_, closest_dist_sq)) = closest_food {
                     if distance_sq < closest_dist_sq {
                         closest_food = Some((food_entity, distance_sq));
@@ -135,8 +138,6 @@ pub fn food_discovery_system(world: &mut World) {
 }
 
 pub fn ant_lifecycle_system(world: &mut World, rng: &mut impl Rng) {
-    const ANT_REPRODUCTION_CHANCE: f64 = 0.05;
-
     // Decrease health of all ants
     for (_, ant) in world.query_mut::<&mut Ant>() {
         if ant.health > 0 {
@@ -145,7 +146,7 @@ pub fn ant_lifecycle_system(world: &mut World, rng: &mut impl Rng) {
     }
 
     // Spawn new ants at the nest randomly
-    if rng.random_bool(ANT_REPRODUCTION_CHANCE) {
+    if rng.random_bool(CONFIG.ant.reproduction_chance) {
         let nest_pos = world
             .query::<(&Position, &Nest)>()
             .iter()
@@ -153,7 +154,7 @@ pub fn ant_lifecycle_system(world: &mut World, rng: &mut impl Rng) {
             .map(|(_, (pos, _))| *pos);
         let dx = rng.random_range(-1.0..1.0);
         let dy = rng.random_range(-1.0..1.0);
-        let ant_health = rng.random_range(500..1000);
+        let ant_health = rng.random_range(CONFIG.ant.min_health..CONFIG.ant.max_health);
 
         if let Some(nest_pos) = nest_pos {
             world.spawn((
@@ -167,8 +168,6 @@ pub fn ant_lifecycle_system(world: &mut World, rng: &mut impl Rng) {
 }
 
 pub fn ant_dying_system(world: &mut World) {
-    const DEATH_ANIMATION_TICKS: u32 = 60;
-
     let mut to_update = Vec::new();
 
     // Find all ants with 0 health that are not already dying
@@ -185,7 +184,7 @@ pub fn ant_dying_system(world: &mut World) {
     // Set state to Dying with a countdown timer
     for entity in to_update {
         if let Ok(state) = world.query_one_mut::<&mut AntState>(entity) {
-            *state = AntState::Dying(DEATH_ANIMATION_TICKS);
+            *state = AntState::Dying(CONFIG.ant.death_animation_ticks);
         }
         world.remove_one::<Target>(entity).ok();
     }

@@ -1,6 +1,7 @@
 use crate::components::world::{
     Ant, AntState, FoodSource, PheromoneDeposit, PheromoneToFood, Position, Target, Velocity,
 };
+use crate::config::CONFIG;
 use crate::utils::maths::{calculate_attraction_strength, normalise_vector, target_distance_sq};
 use hecs::World;
 use rand::Rng;
@@ -34,9 +35,7 @@ pub fn apply_velocity_system(world: &mut World) {
 }
 
 fn set_ant_wandering(ant_vel: &mut Velocity, rng: &mut impl Rng) {
-    const WANDER_PROBABILITY: f64 = 0.05;
-
-    if rng.random_bool(WANDER_PROBABILITY) {
+    if rng.random_bool(CONFIG.movement.wander_probability) {
         let new_dx: f32 = rng.random_range(-1.0..1.0);
         let new_dy: f32 = rng.random_range(-1.0..1.0);
         if let Some((dx, dy)) = normalise_vector(new_dx, new_dy) {
@@ -73,7 +72,7 @@ fn find_nearest_food_source(ant_pos: Position, food_sources: &[Position]) -> Opt
 }
 
 pub fn pheromone_following_system(world: &mut World, rng: &mut impl Rng) {
-    const PHEROMONE_DETECTION_RANGE_SQ: f32 = 400.0;
+    let pheromone_detection_radius_sq = CONFIG.pheromone.detection_radius.powi(2);
 
     // Get all food sources
     let food_sources: Vec<Position> = world
@@ -99,7 +98,7 @@ pub fn pheromone_following_system(world: &mut World, rng: &mut impl Rng) {
             for (pheromone_pos, strength) in &to_food_pheromones {
                 let distance_sq =
                     target_distance_sq(pos.x, pos.y, pheromone_pos.x, pheromone_pos.y);
-                if distance_sq <= PHEROMONE_DETECTION_RANGE_SQ {
+                if distance_sq <= pheromone_detection_radius_sq {
                     let attraction = calculate_attraction_strength(distance_sq, *strength);
                     if let Some((_, best_attraction)) = best_pheromone {
                         if attraction > best_attraction {

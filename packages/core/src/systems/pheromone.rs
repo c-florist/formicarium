@@ -1,12 +1,12 @@
 use crate::components::world::{
     Ant, AntState, FoodPayload, PheromoneDeposit, PheromoneToFood, Position,
 };
+use crate::config::CONFIG;
 use hecs::World;
 use rand::Rng;
 
 pub fn pheromone_emission_system(world: &mut World, rng: &mut impl Rng) {
     // TODO: Determine strength of pheromones based on distance from food source / to nest
-    const EMIT_CHANCE: f64 = 0.5;
 
     // TODO: Currently only emits to_food pheromones
     let ants_returning_to_nest: Vec<Position> = world
@@ -22,13 +22,15 @@ pub fn pheromone_emission_system(world: &mut World, rng: &mut impl Rng) {
         .collect();
 
     for position in ants_returning_to_nest {
-        if rng.random_bool(EMIT_CHANCE) {
+        if rng.random_bool(CONFIG.pheromone.emit_chance) {
             world.spawn((
                 Position {
                     x: position.x,
                     y: position.y,
                 },
-                PheromoneDeposit { strength: 100.0 },
+                PheromoneDeposit {
+                    strength: CONFIG.pheromone.initial_strength,
+                },
                 PheromoneToFood,
             ));
         }
@@ -38,7 +40,7 @@ pub fn pheromone_emission_system(world: &mut World, rng: &mut impl Rng) {
 pub fn pheromone_decay_system(world: &mut World) {
     // TODO: Different pheromones should decay at different rates
     for (_entity, (pheromone, _)) in world.query_mut::<(&mut PheromoneDeposit, &Position)>() {
-        pheromone.strength -= 5.0;
+        pheromone.strength -= CONFIG.pheromone.decay_amount;
     }
 }
 

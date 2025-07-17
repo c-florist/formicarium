@@ -1,4 +1,5 @@
 use crate::components::world::{AntState, FoodSource, Nest, PheromoneDeposit, Position, Velocity};
+use crate::config::CONFIG;
 use crate::utils::maths::target_distance_sq;
 use hecs::World;
 use rand::Rng;
@@ -29,9 +30,6 @@ pub fn food_spawn_system(
     world_height: f32,
     rng: &mut impl Rng,
 ) {
-    const MAX_FOOD_SOURCES: usize = 100;
-    const FOOD_SPAWN_CHANCE: f64 = 0.01;
-
     let nest_pos = world
         .query::<(&Position, &Nest)>()
         .iter()
@@ -41,7 +39,9 @@ pub fn food_spawn_system(
 
     let food_source_count = world.query::<(&Position, &FoodSource)>().iter().count();
 
-    if food_source_count < MAX_FOOD_SOURCES && rng.random_bool(FOOD_SPAWN_CHANCE) {
+    if food_source_count < CONFIG.world.max_food_sources
+        && rng.random_bool(CONFIG.world.food_spawn_chance)
+    {
         let mut x;
         let mut y;
         loop {
@@ -49,7 +49,7 @@ pub fn food_spawn_system(
             y = rng.random_range(0.0..world_height);
             let distance_sq = target_distance_sq(nest_pos.x, nest_pos.y, x, y);
             // Ensure the food source is not too close to the nest
-            if distance_sq > 50.0_f32.powi(2) {
+            if distance_sq > CONFIG.world.food_spawn_min_distance_to_nest.powi(2) {
                 break;
             }
         }
