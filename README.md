@@ -26,3 +26,7 @@
 1. Introduce predators and design a system of interaction with them.
 1. Make world size configurable: Allow the world to be larger than the screen canvas and support viewing via mouse click-and-drag.
 1. Support multiple ant colonies per world: Allow for up to X number of colonies per world, design interactions between them (often ants kill other ant colonies when discovered).
+
+## Attributions to include
+
+* App icon by [Freepik - Flaticon](https://www.flaticon.com/authors/freepik)

@@ -1,0 +1,23 @@
+{
+  "frames": {
+    "pixel_rpg_tiles.png": {
+      "frame": { "x": 0, "y": 0, "w": 544, "h": 240 },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": { "x": 0, "y": 0, "w": 544, "h": 240 },
+      "sourceSize": { "w": 544, "h": 240 },
+      "duration": 100
+    }
+  },
+  "meta": {
+    "app": "https://www.aseprite.org/",
+    "version": "1.3.14.3-arm64-trial",
+    "image": "pixel_rpg_tiles-sheet.png",
+    "format": "RGBA8888",
+    "size": { "w": 544, "h": 240 },
+    "scale": "1",
+    "frameTags": [],
+    "layers": [{ "name": "Layer", "opacity": 255, "blendMode": "normal" }],
+    "slices": []
+  }
+}
