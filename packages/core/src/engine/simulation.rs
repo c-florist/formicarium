@@ -56,6 +56,7 @@ impl Simulation {
         for _ in 0..200 {
             let dx = rng.random_range(-1.0..1.0);
             let dy = rng.random_range(-1.0..1.0);
+            let ant_health = rng.random_range(100..1000);
             world.spawn((
                 Position {
                     x: start_x,
@@ -63,7 +64,7 @@ impl Simulation {
                 },
                 Velocity { dx, dy },
                 AntState::Wandering,
-                Ant,
+                Ant { health: ant_health },
             ));
         }
 
@@ -110,10 +111,11 @@ impl Simulation {
             .world
             .query::<(&Position, &Ant)>()
             .iter()
-            .map(|(entity, (position, _))| AntDto {
+            .map(|(entity, (position, ant))| AntDto {
                 id: entity.id(),
                 x: position.x,
                 y: position.y,
+                health: ant.health,
             })
             .collect();
 
@@ -179,7 +181,7 @@ mod tests {
     #[test]
     fn test_simulation_new_spawns_correct_entities() {
         // 1. Action
-        let mut simulation = Simulation::new(100.0, 100.0);
+        let simulation = Simulation::new(100.0, 100.0);
         let ants = simulation.world.query::<(&Position, &Ant)>().iter().count();
         let nests = simulation
             .world

@@ -63,7 +63,7 @@ mod tests {
             Position { x: 36.0, y: 48.0 },
             AntState::ReturningToNest,
             FoodPayload(10),
-            Ant,
+            Ant { health: 100 },
         ));
 
         // 2. Action

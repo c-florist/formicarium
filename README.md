@@ -8,7 +8,6 @@
 ## TODO
 
 ### Improvements
-1. Show stats on mouse-over of entities, i.e. amount for food sources, health for ants.
 1. Add a collision system with obstacles, i.e. boulders.
 1. Improve pheromone following system so it influences direction to specific food source instead of nearest one.
 1. Add `to_nest` pheromones.

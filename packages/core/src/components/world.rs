@@ -18,7 +18,9 @@ pub struct Target(pub Entity);
 
 // Ant components
 #[derive(Debug, PartialEq)]
-pub struct Ant;
+pub struct Ant {
+    pub health: u32,
+}
 
 #[derive(Debug, PartialEq, Clone, Copy)]
 pub enum AntState {

@@ -1,4 +1,4 @@
-use crate::components::world::{FoodSource, PheromoneDeposit, Position, Velocity};
+use crate::components::world::{Ant, FoodSource, PheromoneDeposit, Position, Velocity};
 use hecs::World;
 
 pub fn enforce_bounds_system(world: &mut World, width: f32, height: f32) {
@@ -23,8 +23,14 @@ pub fn enforce_bounds_system(world: &mut World, width: f32, height: f32) {
 
 pub fn despawn_system(world: &mut World) {
     let mut to_despawn = Vec::new();
-    for (entity, (_, food_entity, pheromone_entity)) in world
-        .query::<(&Position, Option<&FoodSource>, Option<&PheromoneDeposit>)>()
+
+    for (entity, (_, food_entity, pheromone_entity, ant_entity)) in world
+        .query::<(
+            &Position,
+            Option<&FoodSource>,
+            Option<&PheromoneDeposit>,
+            Option<&Ant>,
+        )>()
         .iter()
     {
         if let Some(food_source) = food_entity
@@ -35,6 +41,12 @@ pub fn despawn_system(world: &mut World) {
 
         if let Some(pheromone) = pheromone_entity
             && pheromone.strength == 0.0
+        {
+            to_despawn.push(entity);
+        }
+
+        if let Some(ant) = ant_entity
+            && ant.health == 0
         {
             to_despawn.push(entity);
         }

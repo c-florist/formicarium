@@ -7,6 +7,7 @@ pub struct AntDto {
     pub id: u32,
     pub x: f32,
     pub y: f32,
+    pub health: u32,
 }
 
 #[derive(Serialize, Deserialize, TS, PartialEq, Debug)]

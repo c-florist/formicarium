@@ -186,7 +186,7 @@ mod tests {
             Position { x: 0.0, y: 0.0 },
             Velocity { dx: 0.0, dy: 0.0 },
             AntState::Wandering,
-            Ant,
+            Ant { health: 100 },
         ));
 
         for _ in 0..100 {
@@ -208,7 +208,7 @@ mod tests {
             Position { x: 9.9, y: 0.0 },
             Velocity { dx: 0.0, dy: 0.0 },
             AntState::Wandering,
-            Ant,
+            Ant { health: 100 },
         ));
 
         // Food source further away

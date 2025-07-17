@@ -147,7 +147,7 @@ mod tests {
             AntState::ReturningToNest,
             FoodPayload(10),
             Target(nest_entity),
-            Ant,
+            Ant { health: 100 },
         ));
 
         // 2. Action
@@ -172,7 +172,7 @@ mod tests {
             Position { x: 9.9, y: 9.9 },
             AntState::Foraging,
             Target(food_entity),
-            Ant,
+            Ant { health: 100 },
         ));
 
         // 2. Action
@@ -200,7 +200,7 @@ mod tests {
             Position { x: 10.0, y: 10.0 },
             Velocity { dx: 0.0, dy: 0.0 },
             AntState::Wandering,
-            Ant,
+            Ant { health: 100 },
         ));
         let food_entity = world.spawn((Position { x: 12.0, y: 12.0 }, FoodSource { amount: 100 }));
 
