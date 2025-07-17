@@ -9,7 +9,6 @@ mod utils;
 use components::dto::{StatsDto, WorldDto};
 use engine::simulation::Simulation;
 use std::sync::{Arc, Mutex};
-use tauri::{Emitter, Manager};
 
 pub struct AppState(Arc<Mutex<Option<Simulation>>>);
 

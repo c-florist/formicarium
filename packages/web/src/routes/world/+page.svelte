@@ -9,7 +9,7 @@ import { worldStore } from "$lib/stores/world-store";
   {:else}
     <div class="flex items-center justify-center h-full">
       <div class="text-center">
-        <h2 class="text-2xl font-semibold text-stone-700 mb-2">
+        <h2 class="text-2xl font-semibold text-stone-900 mb-2">
           Connecting<span class="animated-ellipsis"></span>
         </h2>
         <p class="text-stone-500">

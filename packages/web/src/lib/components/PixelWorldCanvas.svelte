@@ -1,9 +1,8 @@
 <script lang="ts">
 import { uiStateStore } from "$lib/stores/ui-state-store";
-import { worldStore } from "$lib/stores/world-store";
+import { startWorldUpdates, worldStore } from "$lib/stores/world-store";
 import { calculateMovementDirection } from "$lib/utils/maths";
 import {
-  createBackgroundContainer,
   createBoulderContainer,
   createNestContainer,
   createRandomisedTileTexture,
@@ -20,6 +19,7 @@ import {
   SPRITE_CONFIG,
 } from "$lib/world/schema";
 import { createSpriteWithConfig } from "$lib/world/sprite";
+import { invoke } from "@tauri-apps/api/core";
 import {
   Application,
   Assets,
@@ -36,6 +36,7 @@ let app = $state<Application>(new Application());
 let uiContainer = $state<Container>(new Container());
 let worldContainer = $state<Container>(new Container());
 
+let isSimulationInitialised = $state<boolean>(false);
 let isWorldInitialised = $state<boolean>(false);
 
 let canvasContainer: HTMLDivElement;
@@ -90,6 +91,16 @@ const loadGlobalAssets = async () => {
 };
 
 onMount(async () => {
+  if (!isSimulationInitialised && canvasContainer) {
+    const width = canvasContainer.clientWidth;
+    const height = canvasContainer.clientHeight;
+
+    await invoke("initialise_simulation", { width, height });
+
+    isSimulationInitialised = true;
+    startWorldUpdates();
+  }
+
   await initialise();
   await loadGlobalAssets();
 });
@@ -101,8 +112,9 @@ $effect(() => {
     !$worldStore ||
     !antSpritesheet ||
     !foodSourceSpritesheet
-  )
+  ) {
     return;
+  }
 
   if (!isWorldInitialised) {
     const worldData = $worldStore;
