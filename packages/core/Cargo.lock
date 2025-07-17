@@ -909,6 +909,7 @@ version = "0.1.0"
 dependencies = [
  "hecs",
  "log",
+ "once_cell",
  "rand 0.9.1",
  "rand_pcg 0.9.0",
  "serde",

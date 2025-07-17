@@ -2,6 +2,7 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
 mod components;
+mod config;
 mod engine;
 mod systems;
 mod utils;
