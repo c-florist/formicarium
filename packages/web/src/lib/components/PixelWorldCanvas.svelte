@@ -1,19 +1,12 @@
 <script lang="ts">
-import {
-  Application,
-  Assets,
-  Container,
-  Sprite,
-  type UnresolvedAsset,
-} from "pixi.js";
-import { onDestroy, onMount } from "svelte";
-import { calculateMovementDirection } from "../utils/maths";
+import { worldStore } from "$lib/stores/world-store";
+import { calculateMovementDirection } from "$lib/utils/maths";
 import {
   createBackgroundContainer,
   createBoulderContainer,
   createNestContainer,
   createRandomisedTileTexture,
-} from "../world/render";
+} from "$lib/world/render";
 import {
   ANIMATION_CONFIG,
   ANT_SPRITESHEET,
@@ -23,9 +16,16 @@ import {
   FOOD_SPRITESHEET,
   LAYERS,
   SPRITE_CONFIG,
-} from "../world/schema";
-import { createSpriteWithConfig } from "../world/sprite";
-import { worldStore } from "../world/world-store";
+} from "$lib/world/schema";
+import { createSpriteWithConfig } from "$lib/world/sprite";
+import {
+  Application,
+  Assets,
+  Container,
+  Sprite,
+  type UnresolvedAsset,
+} from "pixi.js";
+import { onDestroy, onMount } from "svelte";
 
 let app = $state<Application>();
 let worldContainer = $state<Container>();

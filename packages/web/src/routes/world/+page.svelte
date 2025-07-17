@@ -1,6 +1,6 @@
 <script lang="ts">
 import PixelWorldCanvas from "$lib/components/PixelWorldCanvas.svelte";
-import { worldStore } from "$lib/world/world-store";
+import { worldStore } from "$lib/stores/world-store";
 </script>
 
 <div class="relative w-full h-full">

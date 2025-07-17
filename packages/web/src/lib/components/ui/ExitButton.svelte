@@ -1,6 +1,6 @@
 <script lang="ts">
 import { FancyButton } from "@pixi/ui";
-import { Assets, BitmapText, Container, Graphics, Text } from "pixi.js";
+import { Assets, Container, Graphics } from "pixi.js";
 import { onDestroy, onMount } from "svelte";
 
 let { container, onClick, x, y, scale } = $props<{

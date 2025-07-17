@@ -1,3 +1,12 @@
+import { seededRandom } from "$lib/utils/maths";
+import {
+  BACKGROUND_CONFIG,
+  BOULDER_CONFIG,
+  FOREST_TILESET,
+  NEST_SPRITESHEET,
+  NEST_TEXTURES,
+  SPRITE_CONFIG,
+} from "$lib/world/schema";
 import type { NestDto } from "@formicarium/domain";
 import {
   Assets,
@@ -7,15 +16,6 @@ import {
   Sprite,
   TilingSprite,
 } from "pixi.js";
-import { seededRandom } from "../utils/maths";
-import {
-  BACKGROUND_CONFIG,
-  BOULDER_CONFIG,
-  FOREST_TILESET,
-  NEST_SPRITESHEET,
-  NEST_TEXTURES,
-  SPRITE_CONFIG,
-} from "../world/schema";
 
 const getRandomGrassTile = () => {
   const rng = Math.random();
