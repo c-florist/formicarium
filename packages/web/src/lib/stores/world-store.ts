@@ -1,26 +1,35 @@
 import type { WorldDto } from "@formicarium/domain";
 import { invoke } from "@tauri-apps/api/core";
-import { listen } from "@tauri-apps/api/event";
 import { writable } from "svelte/store";
 
 export const worldStore = writable<WorldDto | null>(null);
 
-async function setupWorld() {
-  try {
-    const initialState = await invoke<WorldDto>("get_world_state");
-    worldStore.set(initialState);
-  } catch (error) {
-    console.error("Failed to get initial world state:", error);
+let intervalId: NodeJS.Timeout | null = null;
+
+export const startWorldUpdates = () => {
+  if (intervalId) {
+    return;
   }
 
-  await listen("world_update", async () => {
+  const fetchWorldState = async () => {
     try {
-      const updatedState = await invoke<WorldDto>("get_world_state");
-      worldStore.set(updatedState);
+      const worldData = await invoke<WorldDto | null>("get_world_state");
+      if (worldData) {
+        worldStore.set(worldData);
+      }
     } catch (error) {
-      console.error("Failed to get updated world state:", error);
+      console.error("Failed to get world state:", error);
     }
-  });
-}
+  };
 
-setupWorld();
+  fetchWorldState();
+
+  intervalId = setInterval(fetchWorldState, 100);
+};
+
+export const stopWorldUpdates = () => {
+  if (intervalId) {
+    clearInterval(intervalId);
+    intervalId = null;
+  }
+};
