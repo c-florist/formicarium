@@ -2,6 +2,7 @@
 import Button from "$lib/components/ui/Button.svelte";
 import Icon from "$lib/components/ui/Icon.svelte";
 import Navbar from "$lib/components/ui/Navbar.svelte";
+import Popover from "$lib/components/ui/Popover.svelte";
 import StatsDashboard from "$lib/components/ui/StatsDashboard.svelte";
 import { uiStateStore } from "$lib/stores/ui-state-store";
 import { sineInOut } from "svelte/easing";
@@ -25,11 +26,13 @@ const toggleStatsOverlay = () => {
 
 <div class="relative flex flex-col h-screen bg-stone-700">
   <Navbar>
-    <Button
-      onClick={toggleStatsOverlay}
-    >
-      <Icon name="eye" class="w-6 h-6" />
-    </Button>
+    <Popover text="Display entity statistics" position="bottom">
+      <Button
+        onClick={toggleStatsOverlay}
+      >
+        <Icon name="eye" class="w-6 h-6" />
+      </Button>
+    </Popover>
     <Button
       onClick={toggleStatsDashboard}
     >
