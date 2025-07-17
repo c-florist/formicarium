@@ -1,5 +1,7 @@
-use crate::components::world::{Ant, FoodSource, PheromoneDeposit, Position, Velocity};
+use crate::components::world::{Ant, FoodSource, Nest, PheromoneDeposit, Position, Velocity};
+use crate::utils::maths::target_distance_sq;
 use hecs::World;
+use rand::Rng;
 
 pub fn enforce_bounds_system(world: &mut World, width: f32, height: f32) {
     for (_entity, (pos, vel)) in world.query_mut::<(&mut Position, &mut Velocity)>() {
@@ -18,6 +20,37 @@ pub fn enforce_bounds_system(world: &mut World, width: f32, height: f32) {
             pos.y = height;
             vel.dy = -vel.dy;
         }
+    }
+}
+
+pub fn food_spawn_system(
+    world: &mut World,
+    world_width: f32,
+    world_height: f32,
+    rng: &mut impl Rng,
+) {
+    const FOOD_SPAWN_CHANCE: f64 = 0.05;
+
+    let nest_pos = world
+        .query::<(&Position, &Nest)>()
+        .iter()
+        .next()
+        .map(|(_, (pos, _))| *pos)
+        .expect("No nest found when spawing food in food_spawn_system");
+
+    if rng.random_bool(FOOD_SPAWN_CHANCE) {
+        let mut x;
+        let mut y;
+        loop {
+            x = rng.random_range(0.0..world_width);
+            y = rng.random_range(0.0..world_height);
+            let distance_sq = target_distance_sq(nest_pos.x, nest_pos.y, x, y);
+            // Ensure the food source is not too close to the nest
+            if distance_sq > 50.0_f32.powi(2) {
+                break;
+            }
+        }
+        world.spawn((Position { x, y }, FoodSource { amount: 100 }));
     }
 }
 
@@ -66,6 +99,8 @@ mod tests {
         FoodSource, PheromoneDeposit, PheromoneToFood, Position, Velocity,
     };
     use hecs::World;
+    use rand::SeedableRng;
+    use rand::rngs::StdRng;
 
     #[test]
     fn test_enforce_bounds_system_clamps_bounds_and_inverts_velocity() {
@@ -94,6 +129,24 @@ mod tests {
         // Velocity should be inverted
         assert_eq!(vel.dx, 1.0);
         assert_eq!(vel.dy, -1.0);
+    }
+
+    #[test]
+    fn test_food_spawn_system_spawns_food_at_random_positions() {
+        // 1. Setup
+        let mut rng = StdRng::seed_from_u64(42);
+        let mut world = World::new();
+
+        world.spawn((Position { x: 0.0, y: 0.0 }, Nest));
+
+        // 2. Action
+        for _ in 0..100 {
+            food_spawn_system(&mut world, 100.0, 100.0, &mut rng);
+        }
+
+        // 3. Assertion
+        let food_count = world.query::<(&Position, &FoodSource)>().iter().count();
+        assert!(food_count > 1);
     }
 
     #[test]

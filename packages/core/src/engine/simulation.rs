@@ -3,8 +3,8 @@ use crate::components::world::{Ant, AntState, FoodSource, Nest, Position, Veloci
 use crate::systems::{
     ant_arrival_at_food_system, ant_arrival_at_nest_system, ant_lifecycle_system,
     apply_velocity_system, despawn_system, enforce_bounds_system, food_discovery_system,
-    pheromone_decay_system, pheromone_emission_system, pheromone_following_system,
-    target_movement_system,
+    food_spawn_system, pheromone_decay_system, pheromone_emission_system,
+    pheromone_following_system, target_movement_system,
 };
 use crate::utils::maths::target_distance_sq;
 use hecs::World;
@@ -37,7 +37,7 @@ impl Simulation {
         ));
 
         // Spawn food sources
-        for _ in 0..150 {
+        for _ in 0..50 {
             let mut x;
             let mut y;
             // Loop until a valid position is found
@@ -80,6 +80,7 @@ impl Simulation {
     pub fn tick(&mut self) {
         // Systems that spawn entities
         ant_lifecycle_system(&mut self.world, &mut self.rng);
+        food_spawn_system(&mut self.world, self.width, self.height, &mut self.rng);
 
         // Systems that determine decisions and state changes.
         food_discovery_system(&mut self.world);
@@ -201,7 +202,7 @@ mod tests {
         // 2. Assertion
         assert_eq!(ants, 50);
         assert_eq!(nests, 1);
-        assert_eq!(food_sources, 150);
+        assert_eq!(food_sources, 50);
     }
 
     #[test]
@@ -216,7 +217,7 @@ mod tests {
         assert_eq!(dto.width, 100.0);
         assert_eq!(dto.height, 100.0);
         assert_eq!(dto.nest, NestDto { x: 40.0, y: 40.0 });
-        assert_eq!(dto.food_sources.len(), 150);
+        assert_eq!(dto.food_sources.len(), 50);
         assert_eq!(dto.ants.len(), 50);
     }
 
@@ -230,6 +231,6 @@ mod tests {
 
         // 3. Assertion
         assert_eq!(dto.ant_count, 50);
-        assert_eq!(dto.food_source_count, 150);
+        assert_eq!(dto.food_source_count, 50);
     }
 }
