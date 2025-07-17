@@ -109,31 +109,28 @@ impl Simulation {
             .map(|(_, (pos, _))| NestDto { x: pos.x, y: pos.y })
             .ok_or("Could not find nest in world")?;
 
-        let mut ants = Vec::new();
-        for (entity, (position, _)) in self.world.query::<(&Position, &Ant)>().iter() {
-            ants.push(AntDto {
+        let ants = self
+            .world
+            .query::<(&Position, &Ant)>()
+            .iter()
+            .map(|(entity, (position, _))| AntDto {
                 id: entity.id(),
                 x: position.x,
                 y: position.y,
-            });
-        }
+            })
+            .collect();
 
-        let mut food_sources = Vec::new();
-        for (entity, (position, food_source)) in
-            self.world.query::<(&Position, &FoodSource)>().iter()
-        {
-            food_sources.push(FoodSourceDto {
+        let food_sources = self
+            .world
+            .query::<(&Position, &FoodSource)>()
+            .iter()
+            .map(|(entity, (position, food_source))| FoodSourceDto {
                 id: entity.id(),
                 x: position.x,
                 y: position.y,
                 amount: food_source.amount,
             })
-        }
-
-        let stats = StatsDto {
-            ant_count: ants.len() as u32,
-            food_source_count: food_sources.len() as u32,
-        };
+            .collect();
 
         Ok(WorldDto {
             nest,
@@ -141,7 +138,20 @@ impl Simulation {
             ants,
             width: self.width,
             height: self.height,
-            stats,
+        })
+    }
+
+    pub fn get_world_statistics(&mut self) -> Result<StatsDto, &'static str> {
+        let ants = self.world.query::<(&Position, &Ant)>().iter().count();
+        let food_sources = self
+            .world
+            .query::<(&Position, &FoodSource)>()
+            .iter()
+            .count();
+
+        Ok(StatsDto {
+            ant_count: ants as u32,
+            food_source_count: food_sources as u32,
         })
     }
 }
