@@ -41,7 +41,9 @@ pub fn ant_arrival_at_food_system(world: &mut World) {
     // Apply updates for ants that have found food
     for (ant_entity, food_entity) in to_update_to_returning {
         if let Ok(food_source) = world.query_one_mut::<&mut FoodSource>(food_entity) {
-            food_source.amount -= FOOD_PAYLOAD_AMOUNT;
+            if food_source.amount > 0 {
+                food_source.amount -= FOOD_PAYLOAD_AMOUNT;
+            }
 
             if let Ok(state) = world.query_one_mut::<&mut AntState>(ant_entity) {
                 *state = AntState::ReturningToNest;
@@ -133,7 +135,7 @@ pub fn food_discovery_system(world: &mut World) {
 }
 
 pub fn ant_lifecycle_system(world: &mut World, rng: &mut impl Rng) {
-    const ANT_REPRODUCTION_CHANCE: f64 = 0.1;
+    const ANT_REPRODUCTION_CHANCE: f64 = 0.05;
 
     // Decrease health of all ants
     for (_, ant) in world.query_mut::<&mut Ant>() {
