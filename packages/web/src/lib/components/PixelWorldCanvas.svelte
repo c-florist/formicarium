@@ -1,4 +1,5 @@
 <script lang="ts">
+import { uiStateStore } from "$lib/stores/ui-state-store";
 import { worldStore } from "$lib/stores/world-store";
 import { calculateMovementDirection } from "$lib/utils/maths";
 import {
@@ -6,6 +7,7 @@ import {
   createBoulderContainer,
   createNestContainer,
   createRandomisedTileTexture,
+  createStatsBubble,
 } from "$lib/world/render";
 import {
   ANIMATION_CONFIG,
@@ -23,6 +25,7 @@ import {
   Assets,
   Container,
   Sprite,
+  Text,
   type UnresolvedAsset,
 } from "pixi.js";
 import { onDestroy, onMount } from "svelte";
@@ -32,11 +35,14 @@ let worldContainer = $state<Container>();
 let uiContainer = $state<Container>();
 
 let canvasContainer: HTMLDivElement;
+let animationInterval: NodeJS.Timeout;
+
 let antSprites: Map<number, AntSprite> = new Map();
 let antSpritesheet: UnresolvedAsset;
+
 let foodSourceSpritesheet: UnresolvedAsset;
 let foodSourceSprites: Map<number, Sprite> = new Map();
-let animationInterval: NodeJS.Timeout;
+let foodSourceStats: Map<number, Container> = new Map();
 
 const initialise = async () => {
   app = new Application();
@@ -143,6 +149,8 @@ $effect(() => {
   )
     return;
 
+  const showStats = $uiStateStore.showStatsOverlay;
+
   const currentAntIds = new Set($worldStore.ants.map((ant) => ant.id));
   const currentFoodSourceIds = new Set(
     $worldStore.foodSources.map((foodSource) => foodSource.id),
@@ -159,12 +167,28 @@ $effect(() => {
     if (!currentFoodSourceIds.has(foodSourceId)) {
       worldContainer.removeChild(foodSprite);
       foodSourceSprites.delete(foodSourceId);
+
+      const statsBubble = foodSourceStats.get(foodSourceId);
+      if (statsBubble) {
+        worldContainer.removeChild(statsBubble);
+        foodSourceStats.delete(foodSourceId);
+      }
     }
   }
 
   // Food source update loop
   for (const foodSource of $worldStore.foodSources) {
+    let statsBubble = foodSourceStats.get(foodSource.id);
     let foodSprite = foodSourceSprites.get(foodSource.id);
+
+    if (!statsBubble) {
+      statsBubble = createStatsBubble(`Amount: ${foodSource.amount}`);
+      foodSourceStats.set(foodSource.id, statsBubble);
+      worldContainer.addChild(statsBubble);
+    }
+
+    const textObject: Text = statsBubble.getChildAt(1);
+    textObject.text = `Amount: ${foodSource.amount}`;
 
     if (!foodSprite) {
       const textureNames = Object.keys(foodSourceSpritesheet.textures);
@@ -179,6 +203,10 @@ $effect(() => {
 
     foodSprite.x = foodSource.x;
     foodSprite.y = foodSource.y;
+    statsBubble.x = foodSprite.x;
+    statsBubble.y = foodSprite.y;
+
+    statsBubble.visible = showStats;
 
     // Set alpha based on remaining amount
     const alpha = foodSource.amount / FOOD_SOURCE_CONFIG.maxAmount;
