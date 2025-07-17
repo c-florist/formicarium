@@ -17,3 +17,13 @@
     cursor: url("/ui/cursor/cursor-default.png"), auto;
   }
 }
+
+@layer utilities {
+  .cursor-default {
+    cursor: url("/ui/cursor/cursor-default.png"), auto;
+  }
+
+  .cursor-drag {
+    cursor: url("/ui/cursor/cursor-drag.png"), auto;
+  }
+}

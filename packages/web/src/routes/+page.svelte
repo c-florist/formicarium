@@ -13,7 +13,7 @@ const startSimulation = () => {
   <p class="text-xl text-stone-600 mb-8">An ant colony simulator</p>
   <button
     on:click={startSimulation}
-    class="px-6 py-3 bg-green-700 text-white font-semibold rounded-lg shadow-md hover:bg-green-800 transition-colors"
+    class="px-6 py-3 bg-green-700 text-white font-semibold rounded-lg shadow-md hover:bg-green-800 transition-colors cursor-default"
   >
     Start simulation
   </button>
