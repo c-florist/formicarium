@@ -40,7 +40,6 @@ let isSimulationInitialised = $state<boolean>(false);
 let isWorldInitialised = $state<boolean>(false);
 
 let canvasContainer: HTMLDivElement;
-let animationInterval: NodeJS.Timeout;
 
 let antSprites: Map<number, AntSprite> = new Map();
 let antSpritesheet: UnresolvedAsset;
@@ -187,21 +186,30 @@ $effect(() => {
       }
     });
 
-    // Start the animation interval after everything is set up
-    animationInterval = setInterval(() => {
-      for (const [_, antData] of antSprites) {
-        antData.animationFrame =
-          (antData.animationFrame + 1) % ANIMATION_CONFIG.antFrameCount;
-        const frameName = `ant-${antData.direction}-${antData.animationFrame}`;
-        antData.sprite.texture = antSpritesheet.textures[frameName];
-        const scale = SPRITE_CONFIG.ANT.scale;
-        if (antData.direction === "left") {
-          antData.sprite.scale.x = -scale;
-        } else {
-          antData.sprite.scale.x = scale;
+    let frameCounter = 0;
+    const animationSpeed = 8;
+
+    app.ticker.add(() => {
+      frameCounter++;
+      if (frameCounter >= animationSpeed) {
+        frameCounter = 0;
+
+        // Update all ant sprites
+        for (const [_, antData] of antSprites) {
+          antData.animationFrame =
+            (antData.animationFrame + 1) % ANIMATION_CONFIG.antFrameCount;
+          const frameName = `ant-${antData.direction}-${antData.animationFrame}`;
+          antData.sprite.texture = antSpritesheet.textures[frameName];
+
+          const scale = SPRITE_CONFIG.ANT.scale;
+          if (antData.direction === "left") {
+            antData.sprite.scale.x = -scale;
+          } else {
+            antData.sprite.scale.x = scale;
+          }
         }
       }
-    }, ANIMATION_CONFIG.antFrameRate);
+    });
 
     isWorldInitialised = true;
   }
@@ -314,10 +322,6 @@ $effect(() => {
 });
 
 onDestroy(() => {
-  if (animationInterval) {
-    clearInterval(animationInterval);
-  }
-
   if (app) {
     app.destroy(true);
   }
