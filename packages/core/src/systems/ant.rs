@@ -164,6 +164,31 @@ pub fn ant_lifecycle_system(world: &mut World, rng: &mut impl Rng) {
     }
 }
 
+pub fn ant_dying_system(world: &mut World) {
+    const DEATH_ANIMATION_TICKS: u32 = 60;
+
+    let mut to_update = Vec::new();
+
+    // Find all ants with 0 health that are not already dying
+    for (entity, (ant, state)) in world.query::<(&Ant, &AntState)>().iter() {
+        if ant.health == 0 {
+            if let AntState::Dying(_) = state {
+                // Already dying, do nothing
+            } else {
+                to_update.push(entity);
+            }
+        }
+    }
+
+    // Set state to Dying with a countdown timer
+    for entity in to_update {
+        if let Ok(state) = world.query_one_mut::<&mut AntState>(entity) {
+            *state = AntState::Dying(DEATH_ANIMATION_TICKS);
+        }
+        world.remove_one::<Target>(entity).ok();
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;

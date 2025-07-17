@@ -1,4 +1,4 @@
-use crate::components::world::{Ant, FoodSource, Nest, PheromoneDeposit, Position, Velocity};
+use crate::components::world::{AntState, FoodSource, Nest, PheromoneDeposit, Position, Velocity};
 use crate::utils::maths::target_distance_sq;
 use hecs::World;
 use rand::Rng;
@@ -60,13 +60,8 @@ pub fn food_spawn_system(
 pub fn despawn_system(world: &mut World) {
     let mut to_despawn = Vec::new();
 
-    for (entity, (_, food_entity, pheromone_entity, ant_entity)) in world
-        .query::<(
-            &Position,
-            Option<&FoodSource>,
-            Option<&PheromoneDeposit>,
-            Option<&Ant>,
-        )>()
+    for (entity, (_, food_entity, pheromone_entity)) in world
+        .query::<(&Position, Option<&FoodSource>, Option<&PheromoneDeposit>)>()
         .iter()
     {
         if let Some(food_source) = food_entity
@@ -80,11 +75,19 @@ pub fn despawn_system(world: &mut World) {
         {
             to_despawn.push(entity);
         }
+    }
 
-        if let Some(ant) = ant_entity
-            && ant.health == 0
-        {
-            to_despawn.push(entity);
+    // Find all ants in the Dying state
+    for (entity, state) in world.query_mut::<&mut AntState>() {
+        match state {
+            AntState::Dying(ticks) => {
+                *ticks = ticks.saturating_sub(1);
+                if *ticks == 0 {
+                    to_despawn.push(entity);
+                }
+            }
+            // Do nothing for other states
+            _ => {}
         }
     }
 

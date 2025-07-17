@@ -27,6 +27,7 @@ pub enum AntState {
     Wandering,
     Foraging,
     ReturningToNest,
+    Dying(u32),
 }
 
 #[derive(Debug, PartialEq)]

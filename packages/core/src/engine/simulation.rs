@@ -1,7 +1,7 @@
 use crate::components::dto::{AntDto, FoodSourceDto, NestDto, StatsDto, WorldDto};
 use crate::components::world::{Ant, AntState, FoodSource, Nest, Position, Velocity};
 use crate::systems::{
-    ant_arrival_at_food_system, ant_arrival_at_nest_system, ant_lifecycle_system,
+    ant_arrival_at_food_system, ant_arrival_at_nest_system, ant_dying_system, ant_lifecycle_system,
     apply_velocity_system, despawn_system, enforce_bounds_system, food_discovery_system,
     food_spawn_system, pheromone_decay_system, pheromone_emission_system,
     pheromone_following_system, target_movement_system,
@@ -78,8 +78,9 @@ impl Simulation {
     }
 
     pub fn tick(&mut self) {
-        // Systems that spawn entities
+        // Systems that control lifecycle events
         ant_lifecycle_system(&mut self.world, &mut self.rng);
+        ant_dying_system(&mut self.world);
         food_spawn_system(&mut self.world, self.width, self.height, &mut self.rng);
 
         // Systems that determine decisions and state changes.
