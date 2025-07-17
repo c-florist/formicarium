@@ -8,7 +8,7 @@
 ## TODO
 
 ### Currently working on
-1. Dynamic ant population: Ants should spawn and die on X ticks. Track amount of food in nest, and when it reaches X amount spawn new ants.
+1. Ant population dynamics: Instead of spawning new ants randomly, nest should keep track of its current population and food and spawn new ants based on a predefined growth rate and how much food is available. When ants return to nest they should deposit their food in the nest's food storage.
 1. World creation with parameters: Allow user to specify parameters (starting number of ants, starting number of food sources, number of obstacles, ant spawn rate, max food sources).
 
 ### Improvements
