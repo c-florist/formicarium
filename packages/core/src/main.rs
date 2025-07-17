@@ -9,34 +9,17 @@ mod utils;
 use components::dto::{StatsDto, WorldDto};
 use engine::simulation::Simulation;
 use std::sync::{Arc, Mutex};
-use std::thread;
-use std::time::Duration;
 use tauri::{Emitter, Manager};
 
-pub struct AppState {
-    simulation: Arc<Mutex<Simulation>>,
-}
+pub struct AppState(Arc<Mutex<Option<Simulation>>>);
 
 fn main() {
-    let app_state = AppState {
-        simulation: Arc::new(Mutex::new(Simulation::new())),
-    };
-    let sim_for_thread = app_state.simulation.clone();
+    let app_state = AppState(Arc::new(Mutex::new(None)));
 
     tauri::Builder::default()
         .manage(app_state)
-        .setup(|app| {
-            let app_handle = app.handle().clone();
-            thread::spawn(move || {
-                loop {
-                    sim_for_thread.lock().unwrap().tick();
-                    app_handle.emit("world_update", ()).unwrap();
-                    thread::sleep(Duration::from_millis(50));
-                }
-            });
-            Ok(())
-        })
         .invoke_handler(tauri::generate_handler![
+            initialise_simulation,
             get_world_state,
             get_world_statistics
         ])
@@ -45,21 +28,44 @@ fn main() {
 }
 
 #[tauri::command]
-fn get_world_state(state: tauri::State<AppState>) -> Result<WorldDto, String> {
-    state
-        .simulation
-        .lock()
-        .unwrap()
-        .get_world_state_dto()
-        .map_err(|e| e.to_string())
+fn initialise_simulation(device_width: u32, device_height: u32, app_state: tauri::State<AppState>) {
+    let sim_width = device_width as f32 + 500.0;
+    let sim_height = device_height as f32 + 500.0;
+
+    println!("Initialising world with size: {}x{}", sim_width, sim_height);
+
+    let world = Simulation::new(sim_width, sim_height);
+
+    *app_state.0.lock().unwrap() = Some(world);
 }
 
 #[tauri::command]
-fn get_world_statistics(state: tauri::State<AppState>) -> Result<StatsDto, String> {
-    state
-        .simulation
-        .lock()
-        .unwrap()
-        .get_world_statistics()
-        .map_err(|e| e.to_string())
+fn get_world_state(app_state: tauri::State<AppState>) -> Result<Option<WorldDto>, String> {
+    let mut state_guard = app_state.0.lock().unwrap();
+
+    // If the world is initialised, tick it and return the state
+    if let Some(world) = state_guard.as_mut() {
+        world.tick();
+        let world_dto = world
+            .get_world_state_dto()
+            .expect("Failed to get world state DTO");
+        Ok(Some(world_dto))
+    } else {
+        Ok(None)
+    }
+}
+
+#[tauri::command]
+fn get_world_statistics(app_state: tauri::State<AppState>) -> Result<Option<StatsDto>, String> {
+    let mut state_guard = app_state.0.lock().unwrap();
+
+    // If the world is initialised, tick it and return the state
+    if let Some(world) = state_guard.as_mut() {
+        let stats_dto = world
+            .get_world_statistics_dto()
+            .expect("Failed to get statistics DTO");
+        Ok(Some(stats_dto))
+    } else {
+        Ok(None)
+    }
 }

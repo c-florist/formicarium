@@ -18,18 +18,15 @@ pub struct Simulation {
 }
 
 impl Simulation {
-    pub fn new() -> Self {
+    pub fn new(width: f32, height: f32) -> Self {
         let mut world = World::new();
         let mut rng = Pcg64::from_rng(&mut rand::rng());
 
-        let width = 2000.0;
-        let height = 2000.0;
+        let start_x: f32 = width / 2.0;
+        let start_y: f32 = height / 2.0;
 
-        const START_X: f32 = 500.0;
-        const START_Y: f32 = 300.0;
-
-        let nest_pos_x = START_X - 25.0;
-        let nest_pos_y = START_Y - 25.0;
+        let nest_pos_x = start_x - 10.0;
+        let nest_pos_y = start_y - 10.0;
         world.spawn((
             Position {
                 x: nest_pos_x,
@@ -61,8 +58,8 @@ impl Simulation {
             let dy = rng.random_range(-1.0..1.0);
             world.spawn((
                 Position {
-                    x: START_X,
-                    y: START_Y,
+                    x: start_x,
+                    y: start_y,
                 },
                 Velocity { dx, dy },
                 AntState::Wandering,
@@ -141,7 +138,7 @@ impl Simulation {
         })
     }
 
-    pub fn get_world_statistics(&mut self) -> Result<StatsDto, &'static str> {
+    pub fn get_world_statistics_dto(&mut self) -> Result<StatsDto, &'static str> {
         let ants = self.world.query::<(&Position, &Ant)>().iter().count();
         let food_sources = self
             .world
@@ -164,7 +161,7 @@ mod tests {
     #[test]
     fn test_simulation_tick_updates_position() {
         // 1. Setup
-        let mut simulation = Simulation::new();
+        let mut simulation = Simulation::new(100.0, 100.0);
         let entity = simulation.world.spawn((
             Position { x: 10.0, y: 10.0 },
             Velocity { dx: 5.0, dy: -5.0 },
@@ -182,7 +179,7 @@ mod tests {
     #[test]
     fn test_simulation_new_spawns_correct_entities() {
         // 1. Action
-        let simulation = Simulation::new();
+        let mut simulation = Simulation::new(100.0, 100.0);
         let ants = simulation.world.query::<(&Position, &Ant)>().iter().count();
         let nests = simulation
             .world
@@ -196,37 +193,37 @@ mod tests {
             .count();
 
         // 2. Assertion
-        assert_eq!(ants, 50);
+        assert_eq!(ants, 200);
         assert_eq!(nests, 1);
-        assert_eq!(food_sources, 15);
+        assert_eq!(food_sources, 150);
     }
 
     #[test]
     fn test_get_world_state_dto_includes_all_entities_and_dimensions() {
         // 1. Setup
-        let mut simulation = Simulation::new();
+        let mut simulation = Simulation::new(100.0, 100.0);
 
         // 2. Action
         let dto = simulation.get_world_state_dto().unwrap();
 
         // 3. Assertion
-        assert_eq!(dto.width, 1200.0);
-        assert_eq!(dto.height, 800.0);
-        assert_eq!(dto.nest, NestDto { x: 475.0, y: 275.0 });
-        assert_eq!(dto.food_sources.len(), 15);
-        assert_eq!(dto.ants.len(), 50);
+        assert_eq!(dto.width, 100.0);
+        assert_eq!(dto.height, 100.0);
+        assert_eq!(dto.nest, NestDto { x: 40.0, y: 40.0 });
+        assert_eq!(dto.food_sources.len(), 150);
+        assert_eq!(dto.ants.len(), 200);
     }
 
     #[test]
     fn test_get_world_statistics_includes_all_expected_stats() {
         // 1. Setup
-        let mut simulation = Simulation::new();
+        let mut simulation = Simulation::new(100.0, 100.0);
 
         // 2. Action
-        let dto = simulation.get_world_statistics().unwrap();
+        let dto = simulation.get_world_statistics_dto().unwrap();
 
         // 3. Assertion
-        assert_eq!(dto.ant_count, 50);
-        assert_eq!(dto.food_source_count, 15);
+        assert_eq!(dto.ant_count, 200);
+        assert_eq!(dto.food_source_count, 150);
     }
 }
