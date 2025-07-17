@@ -27,6 +27,14 @@ pub struct FoodSourceDto {
 
 #[derive(Serialize, Deserialize, TS, PartialEq, Debug)]
 #[serde(rename_all = "camelCase")]
+#[ts(export, export_to = "../../domain/src/StatsDto.ts")]
+pub struct StatsDto {
+    pub ant_count: u32,
+    pub food_source_count: u32,
+}
+
+#[derive(Serialize, Deserialize, TS, PartialEq, Debug)]
+#[serde(rename_all = "camelCase")]
 #[ts(export, export_to = "../../domain/src/WorldDto.ts")]
 pub struct WorldDto {
     pub nest: NestDto,

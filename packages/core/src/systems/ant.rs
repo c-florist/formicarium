@@ -1,10 +1,10 @@
-use crate::components::{Ant, AntState, FoodPayload, FoodSource, Nest, Position, Target};
-use crate::maths::target_distance_sq;
+use crate::components::world::{Ant, AntState, FoodPayload, FoodSource, Nest, Position, Target};
+use crate::utils::maths::target_distance_sq;
 use hecs::{Entity, World};
 
 pub fn ant_arrival_at_food_system(world: &mut World) {
     let mut to_update_to_returning = Vec::new();
-    const ARRIVAL_DISTANCE_SQUARED: f32 = 5.0;
+    const ARRIVAL_DISTANCE_SQUARED: f32 = 10.0;
     const FOOD_PAYLOAD_AMOUNT: u32 = 10;
 
     // Find the nest entity first, assumes one nest
@@ -55,7 +55,7 @@ pub fn ant_arrival_at_food_system(world: &mut World) {
 
 pub fn ant_arrival_at_nest_system(world: &mut World) {
     let mut to_update_to_wandering = Vec::new();
-    const ARRIVAL_DISTANCE_SQUARED: f32 = 5.0;
+    const ARRIVAL_DISTANCE_SQUARED: f32 = 10.0;
 
     // Collect all ants with targets
     let ants_with_targets: Vec<(Entity, Position, AntState, Entity)> = world
@@ -90,7 +90,7 @@ pub fn ant_arrival_at_nest_system(world: &mut World) {
 
 pub fn food_discovery_system(world: &mut World) {
     let mut updates = Vec::new();
-    const DISCOVERY_RADIUS_SQUARED: f32 = 100.0;
+    const DISCOVERY_RADIUS_SQUARED: f32 = 1000.0;
 
     let wandering_ants: Vec<(Entity, Position)> = world
         .query::<(&Position, &AntState, &Ant)>()
@@ -132,7 +132,9 @@ pub fn food_discovery_system(world: &mut World) {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::components::{AntState, FoodPayload, FoodSource, Nest, Position, Target, Velocity};
+    use crate::components::world::{
+        AntState, FoodPayload, FoodSource, Nest, Position, Target, Velocity,
+    };
     use hecs::World;
 
     #[test]

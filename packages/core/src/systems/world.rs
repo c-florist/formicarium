@@ -1,4 +1,4 @@
-use crate::components::{FoodSource, PheromoneDeposit, Position, Velocity};
+use crate::components::world::{FoodSource, PheromoneDeposit, Position, Velocity};
 use hecs::World;
 
 pub fn enforce_bounds_system(world: &mut World, width: f32, height: f32) {
@@ -50,7 +50,9 @@ pub fn despawn_system(world: &mut World) {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::components::{FoodSource, PheromoneDeposit, PheromoneToFood, Position, Velocity};
+    use crate::components::world::{
+        FoodSource, PheromoneDeposit, PheromoneToFood, Position, Velocity,
+    };
     use hecs::World;
 
     #[test]

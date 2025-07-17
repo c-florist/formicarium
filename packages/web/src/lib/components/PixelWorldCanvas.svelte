@@ -1,19 +1,13 @@
 <script lang="ts">
+import { uiStateStore } from "$lib/stores/ui-state-store";
+import { startWorldUpdates, worldStore } from "$lib/stores/world-store";
+import { calculateMovementDirection } from "$lib/utils/maths";
 import {
-  Application,
-  Assets,
-  Container,
-  Sprite,
-  type UnresolvedAsset,
-} from "pixi.js";
-import { onDestroy, onMount, type SvelteComponent } from "svelte";
-import { calculateMovementDirection } from "../utils/maths";
-import {
-  createBackgroundContainer,
   createBoulderContainer,
   createNestContainer,
   createRandomisedTileTexture,
-} from "../world/render";
+  createStatsBubble,
+} from "$lib/world/render";
 import {
   ANIMATION_CONFIG,
   ANT_SPRITESHEET,
@@ -23,33 +17,47 @@ import {
   FOOD_SPRITESHEET,
   LAYERS,
   SPRITE_CONFIG,
-} from "../world/schema";
-import { createSpriteWithConfig } from "../world/sprite";
-import { worldStore } from "../world/world-store";
+} from "$lib/world/schema";
+import { createSpriteWithConfig } from "$lib/world/sprite";
+import { invoke } from "@tauri-apps/api/core";
+import {
+  Application,
+  Assets,
+  Container,
+  Sprite,
+  Text,
+  type UnresolvedAsset,
+} from "pixi.js";
+import { onDestroy, onMount } from "svelte";
 
-let app = $state<Application>();
-let worldContainer = $state<Container>();
-let uiContainer = $state<Container>();
+const viewport = new Container();
+
+let app = $state<Application>(new Application());
+let uiContainer = $state<Container>(new Container());
+let worldContainer = $state<Container>(new Container());
+
+let isSimulationInitialised = $state<boolean>(false);
+let isWorldInitialised = $state<boolean>(false);
 
 let canvasContainer: HTMLDivElement;
+
 let antSprites: Map<number, AntSprite> = new Map();
 let antSpritesheet: UnresolvedAsset;
+
 let foodSourceSpritesheet: UnresolvedAsset;
 let foodSourceSprites: Map<number, Sprite> = new Map();
-let animationInterval: NodeJS.Timeout;
+let foodSourceStats: Map<number, Container> = new Map();
 
 const initialise = async () => {
-  app = new Application();
   await app.init({
     resizeTo: canvasContainer,
     roundPixels: true,
   });
   canvasContainer.appendChild(app.canvas);
 
-  worldContainer = new Container();
-  app.stage.addChild(worldContainer);
+  viewport.addChild(worldContainer);
 
-  uiContainer = new Container();
+  app.stage.addChild(viewport);
   app.stage.addChild(uiContainer);
 };
 
@@ -82,55 +90,24 @@ const loadGlobalAssets = async () => {
 };
 
 onMount(async () => {
-  if (!$worldStore) {
-    return;
+  if (!isSimulationInitialised && canvasContainer) {
+    const width = canvasContainer.clientWidth;
+    const height = canvasContainer.clientHeight;
+
+    console.log("[PixelWorldCanvas] Initialising simulation");
+    await invoke("initialise_simulation", {
+      deviceWidth: width,
+      deviceHeight: height,
+    });
+
+    console.log("[PixelWorldCanvas] Simulation initialised");
+
+    isSimulationInitialised = true;
+    startWorldUpdates();
   }
 
   await initialise();
   await loadGlobalAssets();
-
-  if (!app || !worldContainer) {
-    return;
-  }
-
-  const backgroundTexture = await createRandomisedTileTexture(
-    app.renderer,
-    app.canvas.width,
-    app.canvas.height,
-  );
-  const backgroundContainer = await createBackgroundContainer(
-    backgroundTexture,
-    app.canvas.width,
-    app.canvas.height,
-  );
-  worldContainer.addChildAt(backgroundContainer, LAYERS.BACKGROUND);
-
-  const boulderContainer = await createBoulderContainer(
-    app.canvas.width,
-    app.canvas.height,
-  );
-  worldContainer.addChildAt(boulderContainer, LAYERS.DECORATION);
-
-  const nestContainer = await createNestContainer($worldStore.nest);
-  worldContainer.addChildAt(nestContainer, LAYERS.DECORATION);
-
-  animationInterval = setInterval(() => {
-    // Update all ant sprites with their individual frame counters
-    for (const [_, antData] of antSprites) {
-      antData.animationFrame =
-        (antData.animationFrame + 1) % ANIMATION_CONFIG.antFrameCount;
-      const frameName = `ant-${antData.direction}-${antData.animationFrame}`;
-      antData.sprite.texture = antSpritesheet.textures[frameName];
-
-      // Flip sprite for left direction
-      const scale = SPRITE_CONFIG.ANT.scale;
-      if (antData.direction === "left") {
-        antData.sprite.scale.x = -scale;
-      } else {
-        antData.sprite.scale.x = scale;
-      }
-    }
-  }, ANIMATION_CONFIG.antFrameRate);
 });
 
 $effect(() => {
@@ -140,8 +117,104 @@ $effect(() => {
     !$worldStore ||
     !antSpritesheet ||
     !foodSourceSpritesheet
-  )
+  ) {
     return;
+  }
+
+  if (!isWorldInitialised) {
+    const worldData = $worldStore;
+
+    // Setup background and static elements based on world size
+    createRandomisedTileTexture(
+      app.renderer,
+      worldData.width,
+      worldData.height,
+    ).then((texture) => {
+      const background = new Container();
+      background.addChild(new Sprite(texture));
+      worldContainer.addChildAt(background, LAYERS.BACKGROUND);
+    });
+    createBoulderContainer(worldData.width, worldData.height).then(
+      (boulders) => {
+        worldContainer.addChildAt(boulders, LAYERS.DECORATION);
+      },
+    );
+    createNestContainer(worldData.nest).then((nest) => {
+      worldContainer.addChildAt(nest, LAYERS.DECORATION);
+    });
+
+    const viewport: Container = app.stage.getChildAt(0);
+
+    // Make the STAGE interactive, not the viewport
+    app.stage.eventMode = "static";
+    app.stage.hitArea = app.screen;
+    app.stage.cursor = "url(/ui/cursor/cursor-default.png),auto";
+
+    let dragging = false;
+    let dragStart = { x: 0, y: 0 };
+
+    app.stage.on("pointerdown", (event) => {
+      dragging = true;
+      dragStart.x = event.global.x - viewport.x;
+      dragStart.y = event.global.y - viewport.y;
+      app.stage.cursor = "url(/ui/cursor/cursor-drag.png),auto";
+    });
+
+    app.stage.on("pointerup", () => {
+      dragging = false;
+      app.stage.cursor = "url(/ui/cursor/cursor-default.png),auto";
+    });
+
+    app.stage.on("pointerupoutside", () => {
+      dragging = false;
+      app.stage.cursor = "url(/ui/cursor/cursor-default.png),auto";
+    });
+
+    app.stage.on("pointermove", (event) => {
+      if (dragging) {
+        const newX = event.global.x - dragStart.x;
+        const newY = event.global.y - dragStart.y;
+
+        // Clamp the viewport's position
+        const worldWidth = $worldStore.width;
+        const worldHeight = $worldStore.height;
+        const screenWidth = app.screen.width;
+        const screenHeight = app.screen.height;
+
+        viewport.x = Math.max(Math.min(newX, 0), screenWidth - worldWidth);
+        viewport.y = Math.max(Math.min(newY, 0), screenHeight - worldHeight);
+      }
+    });
+
+    let frameCounter = 0;
+    const animationSpeed = 8;
+
+    app.ticker.add(() => {
+      frameCounter++;
+      if (frameCounter >= animationSpeed) {
+        frameCounter = 0;
+
+        // Update all ant sprites
+        for (const [_, antData] of antSprites) {
+          antData.animationFrame =
+            (antData.animationFrame + 1) % ANIMATION_CONFIG.antFrameCount;
+          const frameName = `ant-${antData.direction}-${antData.animationFrame}`;
+          antData.sprite.texture = antSpritesheet.textures[frameName];
+
+          const scale = SPRITE_CONFIG.ANT.scale;
+          if (antData.direction === "left") {
+            antData.sprite.scale.x = -scale;
+          } else {
+            antData.sprite.scale.x = scale;
+          }
+        }
+      }
+    });
+
+    isWorldInitialised = true;
+  }
+
+  const showStats = $uiStateStore.showStatsOverlay;
 
   const currentAntIds = new Set($worldStore.ants.map((ant) => ant.id));
   const currentFoodSourceIds = new Set(
@@ -159,12 +232,28 @@ $effect(() => {
     if (!currentFoodSourceIds.has(foodSourceId)) {
       worldContainer.removeChild(foodSprite);
       foodSourceSprites.delete(foodSourceId);
+
+      const statsBubble = foodSourceStats.get(foodSourceId);
+      if (statsBubble) {
+        worldContainer.removeChild(statsBubble);
+        foodSourceStats.delete(foodSourceId);
+      }
     }
   }
 
   // Food source update loop
   for (const foodSource of $worldStore.foodSources) {
+    let statsBubble = foodSourceStats.get(foodSource.id);
     let foodSprite = foodSourceSprites.get(foodSource.id);
+
+    if (!statsBubble) {
+      statsBubble = createStatsBubble(`Amount: ${foodSource.amount}`);
+      foodSourceStats.set(foodSource.id, statsBubble);
+      worldContainer.addChild(statsBubble);
+    }
+
+    const textObject: Text = statsBubble.getChildAt(1);
+    textObject.text = `Amount: ${foodSource.amount}`;
 
     if (!foodSprite) {
       const textureNames = Object.keys(foodSourceSpritesheet.textures);
@@ -179,12 +268,14 @@ $effect(() => {
 
     foodSprite.x = foodSource.x;
     foodSprite.y = foodSource.y;
+    statsBubble.x = foodSprite.x;
+    statsBubble.y = foodSprite.y;
 
-    // Scale sprite based on remaining amount
-    const baseScale = SPRITE_CONFIG.FOOD.scale;
-    const scaleRatio = foodSource.amount / FOOD_SOURCE_CONFIG.maxAmount;
-    const newScale = Math.max(0, baseScale * scaleRatio);
-    foodSprite.scale.set(newScale);
+    statsBubble.visible = showStats;
+
+    // Set alpha based on remaining amount
+    const alpha = foodSource.amount / FOOD_SOURCE_CONFIG.maxAmount;
+    foodSprite.alpha = Math.max(0.15, alpha);
   }
 
   // Ant sprite update loop
@@ -231,10 +322,6 @@ $effect(() => {
 });
 
 onDestroy(() => {
-  if (animationInterval) {
-    clearInterval(animationInterval);
-  }
-
   if (app) {
     app.destroy(true);
   }
@@ -242,4 +329,3 @@ onDestroy(() => {
 </script>
 
 <div class="relative w-full h-full" bind:this={canvasContainer}></div>
-

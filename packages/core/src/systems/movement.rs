@@ -1,7 +1,7 @@
-use crate::components::{
+use crate::components::world::{
     Ant, AntState, FoodSource, PheromoneDeposit, PheromoneToFood, Position, Target, Velocity,
 };
-use crate::maths::{calculate_attraction_strength, normalise_vector, target_distance_sq};
+use crate::utils::maths::{calculate_attraction_strength, normalise_vector, target_distance_sq};
 use hecs::World;
 use rand::Rng;
 
@@ -129,7 +129,7 @@ pub fn pheromone_following_system(world: &mut World, rng: &mut impl Rng) {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::components::{
+    use crate::components::world::{
         FoodSource, PheromoneDeposit, PheromoneToFood, Position, Target, Velocity,
     };
     use hecs::World;
