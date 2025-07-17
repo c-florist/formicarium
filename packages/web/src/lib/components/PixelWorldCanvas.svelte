@@ -196,16 +196,19 @@ $effect(() => {
 
         // Update all ant sprites
         for (const [_, antData] of antSprites) {
-          antData.animationFrame =
-            (antData.animationFrame + 1) % ANIMATION_CONFIG.antFrameCount;
-          const frameName = `ant-${antData.direction}-${antData.animationFrame}`;
-          antData.sprite.texture = antSpritesheet.textures[frameName];
+          // Only animate ants that are not fading out
+          if (antData.sprite.alpha > 0.9) {
+            antData.animationFrame =
+              (antData.animationFrame + 1) % ANIMATION_CONFIG.antFrameCount;
+            const frameName = `ant-${antData.direction}-${antData.animationFrame}`;
+            antData.sprite.texture = antSpritesheet.textures[frameName];
 
-          const scale = SPRITE_CONFIG.ANT.scale;
-          if (antData.direction === "left") {
-            antData.sprite.scale.x = -scale;
-          } else {
-            antData.sprite.scale.x = scale;
+            const scale = SPRITE_CONFIG.ANT.scale;
+            if (antData.direction === "left") {
+              antData.sprite.scale.x = -scale;
+            } else {
+              antData.sprite.scale.x = scale;
+            }
           }
         }
       }
@@ -300,22 +303,28 @@ $effect(() => {
       antSprites.set(ant.id, antData);
     }
 
-    // Calculate movement direction
-    const deltaX = ant.x - antData.previousPosition.x;
-    const deltaY = ant.y - antData.previousPosition.y;
-    antData.direction = calculateMovementDirection(deltaX, deltaY);
+    // Stop moving ants that are dying
+    if (ant.state.type === "dying") {
+      const maxTicks = 60; // Should match DEATH_ANIMATION_TICKS on backend
+      antData.sprite.alpha = ant.state.ticks / maxTicks;
+    } else {
+      // Calculate movement direction
+      const deltaX = ant.x - antData.previousPosition.x;
+      const deltaY = ant.y - antData.previousPosition.y;
+      antData.direction = calculateMovementDirection(deltaX, deltaY);
 
-    // Update position
-    antData.sprite.x = ant.x;
-    antData.sprite.y = ant.y;
+      // Update position
+      antData.sprite.x = ant.x;
+      antData.sprite.y = ant.y;
 
-    // Apply nest fade effect
-    antData.sprite.alpha = calculateIfHiddenInNest(
-      ant.x,
-      ant.y,
-      $worldStore.nest.x,
-      $worldStore.nest.y,
-    );
+      // Apply nest fade effect
+      antData.sprite.alpha = calculateIfHiddenInNest(
+        ant.x,
+        ant.y,
+        $worldStore.nest.x,
+        $worldStore.nest.y,
+      );
+    }
 
     antData.previousPosition = { x: ant.x, y: ant.y };
   }

@@ -139,7 +139,9 @@ pub fn ant_lifecycle_system(world: &mut World, rng: &mut impl Rng) {
 
     // Decrease health of all ants
     for (_, ant) in world.query_mut::<&mut Ant>() {
-        ant.health -= 1;
+        if ant.health > 0 {
+            ant.health -= 1;
+        }
     }
 
     // Spawn new ants at the nest randomly
