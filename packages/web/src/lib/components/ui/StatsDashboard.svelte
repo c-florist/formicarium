@@ -1,5 +1,6 @@
 <script lang="ts">
-import { worldStore } from "$lib/world/world-store";
+import { getWorldStatistics } from "$lib/world/query";
+import type { StatsDto } from "@formicarium/domain";
 
 let {
   class: className = "",
@@ -8,6 +9,20 @@ let {
   class?: string;
   onclose: () => void;
 } = $props();
+
+let worldStats = $state<StatsDto | undefined>(undefined);
+
+$effect(() => {
+  const interval = setInterval(async () => {
+    worldStats = await getWorldStatistics();
+  }, 1000);
+
+  getWorldStatistics().then((stats) => {
+    worldStats = stats;
+  });
+
+  return () => clearInterval(interval);
+});
 </script>
 
 <div
@@ -34,6 +49,14 @@ let {
     </svg>
   </button>
   <h2 class="text-xl font-bold mb-4">World statistics</h2>
-  <h4 class="text-md font-bold mr-4">Alive ants: <span class="font-normal">{$worldStore?.stats.antCount}</span></h4>
-  <h4 class="text-md font-bold mr-4">Food sources: <span class="font-normal">{$worldStore?.stats.foodSourceCount}</span></h4>
+  {#if worldStats}
+    <h4 class="text-md font-bold mr-4">
+      Alive ants: <span class="font-normal">{worldStats.antCount}</span>
+    </h4>
+    <h4 class="text-md font-bold mr-4">
+      Food sources: <span class="font-normal">{worldStats.foodSourceCount}</span>
+    </h4>
+  {:else}
+    <p>Statistics are unavailable, something must have gone wrong ...</p>
+  {/if}
 </div>
