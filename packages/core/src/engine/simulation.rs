@@ -115,12 +115,13 @@ impl Simulation {
 
         let ants = self
             .world
-            .query::<(&Position, &Ant)>()
+            .query::<(&Position, &Ant, &AntState)>()
             .iter()
-            .map(|(entity, (position, ant))| AntDto {
+            .map(|(entity, (position, ant, ant_state))| AntDto {
                 id: entity.id(),
                 x: position.x,
                 y: position.y,
+                state: ant_state.into(),
                 health: ant.health,
             })
             .collect();

@@ -1,5 +1,27 @@
+use crate::components::world::AntState;
 use serde::{Deserialize, Serialize};
 use ts_rs::TS;
+
+#[derive(Serialize, Deserialize, Clone, Debug, PartialEq, TS)]
+#[ts(export, export_to = "../../domain/src/AntStateDto.ts")]
+#[serde(tag = "type", content = "ticks", rename_all = "camelCase")]
+pub enum AntStateDto {
+    Wandering,
+    Foraging,
+    ReturningToNest,
+    Dying(u32),
+}
+
+impl From<&AntState> for AntStateDto {
+    fn from(state: &AntState) -> Self {
+        match state {
+            AntState::Wandering => AntStateDto::Wandering,
+            AntState::Foraging => AntStateDto::Foraging,
+            AntState::ReturningToNest => AntStateDto::ReturningToNest,
+            AntState::Dying(ticks) => AntStateDto::Dying(*ticks),
+        }
+    }
+}
 
 #[derive(Serialize, Deserialize, TS, PartialEq, Debug)]
 #[ts(export, export_to = "../../domain/src/AntDto.ts")]
@@ -7,6 +29,7 @@ pub struct AntDto {
     pub id: u32,
     pub x: f32,
     pub y: f32,
+    pub state: AntStateDto,
     pub health: u32,
 }
 
