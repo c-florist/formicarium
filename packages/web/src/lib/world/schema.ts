@@ -13,7 +13,7 @@ export const DEFAULT_ANT_TEXTURE = "ant-down-0";
 
 export const SPRITE_CONFIG = {
   ANT: { scale: 1.8, anchor: { x: 0.5, y: 0 } },
-  FOOD: { scale: 2.5, anchor: { x: 0.5, y: -0.5 } },
+  FOOD: { scale: 1.5, anchor: { x: 0.5, y: -1 } },
   NEST: { scale: 3.5, anchor: { x: 0.5, y: 0.5 } },
 } as const;
 export type SpriteConfig = (typeof SPRITE_CONFIG)[keyof typeof SPRITE_CONFIG];

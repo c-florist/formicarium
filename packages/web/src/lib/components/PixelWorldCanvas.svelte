@@ -180,11 +180,9 @@ $effect(() => {
     foodSprite.x = foodSource.x;
     foodSprite.y = foodSource.y;
 
-    // Scale sprite based on remaining amount
-    const baseScale = SPRITE_CONFIG.FOOD.scale;
-    const scaleRatio = foodSource.amount / FOOD_SOURCE_CONFIG.maxAmount;
-    const newScale = Math.max(0, baseScale * scaleRatio);
-    foodSprite.scale.set(newScale);
+    // Set alpha based on remaining amount
+    const alpha = foodSource.amount / FOOD_SOURCE_CONFIG.maxAmount;
+    foodSprite.alpha = Math.max(0.15, alpha);
   }
 
   // Ant sprite update loop
