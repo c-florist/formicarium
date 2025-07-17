@@ -1,6 +1,9 @@
-use crate::components::world::{Ant, AntState, FoodPayload, FoodSource, Nest, Position, Target};
+use crate::components::world::{
+    Ant, AntState, FoodPayload, FoodSource, Nest, Position, Target, Velocity,
+};
 use crate::utils::maths::target_distance_sq;
 use hecs::{Entity, World};
+use rand::Rng;
 
 pub fn ant_arrival_at_food_system(world: &mut World) {
     let mut to_update_to_returning = Vec::new();
@@ -129,6 +132,36 @@ pub fn food_discovery_system(world: &mut World) {
     }
 }
 
+pub fn ant_lifecycle_system(world: &mut World, rng: &mut impl Rng) {
+    const ANT_REPRODUCTION_CHANCE: f64 = 0.1;
+
+    // Decrease health of all ants
+    for (_, ant) in world.query_mut::<&mut Ant>() {
+        ant.health -= 1;
+    }
+
+    // Spawn new ants at the nest randomly
+    if rng.random_bool(ANT_REPRODUCTION_CHANCE) {
+        let nest_pos = world
+            .query::<(&Position, &Nest)>()
+            .iter()
+            .next()
+            .map(|(_, (pos, _))| *pos);
+        let dx = rng.random_range(-1.0..1.0);
+        let dy = rng.random_range(-1.0..1.0);
+        let ant_health = rng.random_range(100..1000);
+
+        if let Some(nest_pos) = nest_pos {
+            world.spawn((
+                nest_pos,
+                Velocity { dx, dy },
+                AntState::Wandering,
+                Ant { health: ant_health },
+            ));
+        }
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -136,6 +169,8 @@ mod tests {
         AntState, FoodPayload, FoodSource, Nest, Position, Target, Velocity,
     };
     use hecs::World;
+    use rand::SeedableRng;
+    use rand::rngs::StdRng;
 
     #[test]
     fn test_ant_arrival_at_nest_system_updates_ant_components() {
@@ -215,5 +250,59 @@ mod tests {
         // The ant's state should be updated to Foraging.
         let state = world.get::<&AntState>(ant_entity).unwrap();
         assert_eq!(*state, AntState::Foraging);
+    }
+
+    #[test]
+    fn test_ant_lifecycle_system_decreases_health_of_all_ants() {
+        // 1. Setup
+        let mut rng = StdRng::seed_from_u64(42);
+        let mut world = World::new();
+        let ant_entity = world.spawn((
+            Position { x: 10.0, y: 10.0 },
+            Velocity { dx: 0.0, dy: 0.0 },
+            AntState::Wandering,
+            Ant { health: 100 },
+        ));
+        let ant_entity2 = world.spawn((
+            Position { x: 10.0, y: 10.0 },
+            Velocity { dx: 0.0, dy: 0.0 },
+            AntState::Foraging,
+            Ant { health: 100 },
+        ));
+
+        // 2. Action
+        ant_lifecycle_system(&mut world, &mut rng);
+
+        // 3. Assertion
+        let ant = world.get::<&Ant>(ant_entity).unwrap();
+        assert_eq!(ant.health, 99);
+
+        let ant2 = world.get::<&Ant>(ant_entity2).unwrap();
+        assert_eq!(ant2.health, 99);
+    }
+
+    #[test]
+    fn test_ant_lifecycle_system_spawns_new_ants() {
+        // 1. Setup
+        let mut rng = StdRng::seed_from_u64(42);
+        let mut world = World::new();
+
+        world.spawn((Position { x: 0.0, y: 0.0 }, Nest));
+
+        world.spawn((
+            Position { x: 10.0, y: 10.0 },
+            Velocity { dx: 0.0, dy: 0.0 },
+            AntState::Wandering,
+            Ant { health: 100 },
+        ));
+
+        // 2. Action
+        for _ in 0..50 {
+            ant_lifecycle_system(&mut world, &mut rng);
+        }
+
+        // 3. Assertion
+        let ant_count = world.query::<(&Position, &Ant)>().iter().count();
+        assert!(ant_count > 1);
     }
 }

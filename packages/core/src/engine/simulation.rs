@@ -1,9 +1,10 @@
 use crate::components::dto::{AntDto, FoodSourceDto, NestDto, StatsDto, WorldDto};
 use crate::components::world::{Ant, AntState, FoodSource, Nest, Position, Velocity};
 use crate::systems::{
-    ant_arrival_at_food_system, ant_arrival_at_nest_system, apply_velocity_system, despawn_system,
-    enforce_bounds_system, food_discovery_system, pheromone_decay_system,
-    pheromone_emission_system, pheromone_following_system, target_movement_system,
+    ant_arrival_at_food_system, ant_arrival_at_nest_system, ant_lifecycle_system,
+    apply_velocity_system, despawn_system, enforce_bounds_system, food_discovery_system,
+    pheromone_decay_system, pheromone_emission_system, pheromone_following_system,
+    target_movement_system,
 };
 use crate::utils::maths::target_distance_sq;
 use hecs::World;
@@ -52,8 +53,8 @@ impl Simulation {
             world.spawn((Position { x, y }, FoodSource { amount: 100 }));
         }
 
-        // Spawn ants
-        for _ in 0..200 {
+        // Spawn ants to start
+        for _ in 0..50 {
             let dx = rng.random_range(-1.0..1.0);
             let dy = rng.random_range(-1.0..1.0);
             let ant_health = rng.random_range(100..1000);
@@ -77,6 +78,9 @@ impl Simulation {
     }
 
     pub fn tick(&mut self) {
+        // Systems that spawn entities
+        ant_lifecycle_system(&mut self.world, &mut self.rng);
+
         // Systems that determine decisions and state changes.
         food_discovery_system(&mut self.world);
         ant_arrival_at_food_system(&mut self.world);
@@ -195,7 +199,7 @@ mod tests {
             .count();
 
         // 2. Assertion
-        assert_eq!(ants, 200);
+        assert_eq!(ants, 50);
         assert_eq!(nests, 1);
         assert_eq!(food_sources, 150);
     }
@@ -213,7 +217,7 @@ mod tests {
         assert_eq!(dto.height, 100.0);
         assert_eq!(dto.nest, NestDto { x: 40.0, y: 40.0 });
         assert_eq!(dto.food_sources.len(), 150);
-        assert_eq!(dto.ants.len(), 200);
+        assert_eq!(dto.ants.len(), 50);
     }
 
     #[test]
@@ -225,7 +229,7 @@ mod tests {
         let dto = simulation.get_world_statistics_dto().unwrap();
 
         // 3. Assertion
-        assert_eq!(dto.ant_count, 200);
+        assert_eq!(dto.ant_count, 50);
         assert_eq!(dto.food_source_count, 150);
     }
 }
