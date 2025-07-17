@@ -22,8 +22,8 @@ impl Simulation {
         let mut world = World::new();
         let mut rng = Pcg64::from_rng(&mut rand::rng());
 
-        let width = 1200.0;
-        let height = 800.0;
+        let width = 2000.0;
+        let height = 2000.0;
 
         const START_X: f32 = 500.0;
         const START_Y: f32 = 300.0;

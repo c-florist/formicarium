@@ -30,9 +30,13 @@ import {
 } from "pixi.js";
 import { onDestroy, onMount } from "svelte";
 
-let app = $state<Application>();
-let worldContainer = $state<Container>();
-let uiContainer = $state<Container>();
+const viewport = new Container();
+
+let app = $state<Application>(new Application());
+let uiContainer = $state<Container>(new Container());
+let worldContainer = $state<Container>(new Container());
+
+let isWorldInitialised = $state<boolean>(false);
 
 let canvasContainer: HTMLDivElement;
 let animationInterval: NodeJS.Timeout;
@@ -45,17 +49,15 @@ let foodSourceSprites: Map<number, Sprite> = new Map();
 let foodSourceStats: Map<number, Container> = new Map();
 
 const initialise = async () => {
-  app = new Application();
   await app.init({
     resizeTo: canvasContainer,
     roundPixels: true,
   });
   canvasContainer.appendChild(app.canvas);
 
-  worldContainer = new Container();
-  app.stage.addChild(worldContainer);
+  viewport.addChild(worldContainer);
 
-  uiContainer = new Container();
+  app.stage.addChild(viewport);
   app.stage.addChild(uiContainer);
 };
 
@@ -88,55 +90,8 @@ const loadGlobalAssets = async () => {
 };
 
 onMount(async () => {
-  if (!$worldStore) {
-    return;
-  }
-
   await initialise();
   await loadGlobalAssets();
-
-  if (!app || !worldContainer) {
-    return;
-  }
-
-  const backgroundTexture = await createRandomisedTileTexture(
-    app.renderer,
-    app.canvas.width,
-    app.canvas.height,
-  );
-  const backgroundContainer = await createBackgroundContainer(
-    backgroundTexture,
-    app.canvas.width,
-    app.canvas.height,
-  );
-  worldContainer.addChildAt(backgroundContainer, LAYERS.BACKGROUND);
-
-  const boulderContainer = await createBoulderContainer(
-    app.canvas.width,
-    app.canvas.height,
-  );
-  worldContainer.addChildAt(boulderContainer, LAYERS.DECORATION);
-
-  const nestContainer = await createNestContainer($worldStore.nest);
-  worldContainer.addChildAt(nestContainer, LAYERS.DECORATION);
-
-  animationInterval = setInterval(() => {
-    // Update all ant sprites with their individual frame counters
-    for (const [_, antData] of antSprites) {
-      antData.animationFrame =
-        (antData.animationFrame + 1) % ANIMATION_CONFIG.antFrameCount;
-      const frameName = `ant-${antData.direction}-${antData.animationFrame}`;
-      antData.sprite.texture = antSpritesheet.textures[frameName];
-
-      // Flip sprite for left direction
-      const scale = SPRITE_CONFIG.ANT.scale;
-      if (antData.direction === "left") {
-        antData.sprite.scale.x = -scale;
-      } else {
-        antData.sprite.scale.x = scale;
-      }
-    }
-  }, ANIMATION_CONFIG.antFrameRate);
 });
 
 $effect(() => {
@@ -148,6 +103,90 @@ $effect(() => {
     !foodSourceSpritesheet
   )
     return;
+
+  if (!isWorldInitialised) {
+    const worldData = $worldStore;
+
+    // Setup background and static elements based on world size
+    createRandomisedTileTexture(
+      app.renderer,
+      worldData.width,
+      worldData.height,
+    ).then((texture) => {
+      const background = new Container();
+      background.addChild(new Sprite(texture));
+      worldContainer.addChildAt(background, LAYERS.BACKGROUND);
+    });
+    createBoulderContainer(worldData.width, worldData.height).then(
+      (boulders) => {
+        worldContainer.addChildAt(boulders, LAYERS.DECORATION);
+      },
+    );
+    createNestContainer(worldData.nest).then((nest) => {
+      worldContainer.addChildAt(nest, LAYERS.DECORATION);
+    });
+
+    const viewport: Container = app.stage.getChildAt(0);
+
+    // Make the STAGE interactive, not the viewport
+    app.stage.eventMode = "static";
+    app.stage.hitArea = app.screen;
+    app.stage.cursor = "url(/ui/cursor/cursor-default.png),auto";
+
+    let dragging = false;
+    let dragStart = { x: 0, y: 0 };
+
+    app.stage.on("pointerdown", (event) => {
+      dragging = true;
+      dragStart.x = event.global.x - viewport.x;
+      dragStart.y = event.global.y - viewport.y;
+      app.stage.cursor = "url(/ui/cursor/cursor-drag.png),auto";
+    });
+
+    app.stage.on("pointerup", () => {
+      dragging = false;
+      app.stage.cursor = "url(/ui/cursor/cursor-default.png),auto";
+    });
+
+    app.stage.on("pointerupoutside", () => {
+      dragging = false;
+      app.stage.cursor = "url(/ui/cursor/cursor-default.png),auto";
+    });
+
+    app.stage.on("pointermove", (event) => {
+      if (dragging) {
+        const newX = event.global.x - dragStart.x;
+        const newY = event.global.y - dragStart.y;
+
+        // Clamp the viewport's position
+        const worldWidth = $worldStore.width;
+        const worldHeight = $worldStore.height;
+        const screenWidth = app.screen.width;
+        const screenHeight = app.screen.height;
+
+        viewport.x = Math.max(Math.min(newX, 0), screenWidth - worldWidth);
+        viewport.y = Math.max(Math.min(newY, 0), screenHeight - worldHeight);
+      }
+    });
+
+    // Start the animation interval after everything is set up
+    animationInterval = setInterval(() => {
+      for (const [_, antData] of antSprites) {
+        antData.animationFrame =
+          (antData.animationFrame + 1) % ANIMATION_CONFIG.antFrameCount;
+        const frameName = `ant-${antData.direction}-${antData.animationFrame}`;
+        antData.sprite.texture = antSpritesheet.textures[frameName];
+        const scale = SPRITE_CONFIG.ANT.scale;
+        if (antData.direction === "left") {
+          antData.sprite.scale.x = -scale;
+        } else {
+          antData.sprite.scale.x = scale;
+        }
+      }
+    }, ANIMATION_CONFIG.antFrameRate);
+
+    isWorldInitialised = true;
+  }
 
   const showStats = $uiStateStore.showStatsOverlay;
 
