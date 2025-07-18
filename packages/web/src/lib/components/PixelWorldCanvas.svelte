@@ -25,7 +25,6 @@ import {
   SPRITE_CONFIG,
 } from "$lib/world/schema";
 import { createSpriteWithConfig } from "$lib/world/sprite";
-import { invoke } from "@tauri-apps/api/core";
 import { Application, Assets, Container, Sprite, Text } from "pixi.js";
 import { onDestroy, onMount } from "svelte";
 import config from "../../../../domain/src/systemConfig.json";
@@ -109,7 +108,7 @@ $effect(() => {
 
     const viewport: Container = app.stage.getChildAt(0);
 
-    // Make the STAGE interactive, not the viewport
+    // Make the stage interactive (not the viewport)
     app.stage.eventMode = "static";
     app.stage.hitArea = app.screen;
 
