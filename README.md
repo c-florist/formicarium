@@ -24,7 +24,6 @@
 1. Add user interaction with world: Allow for creating new food sources and obstacles with limits (e.g. only 14 obstacles allowed at a time).
 1. Distinguish between `outside` and `inside` worlds and allow ants to go inside a nest and dig tunnels, lay eggs, feed the queen.
 1. Introduce predators and design a system of interaction with them.
-1. Make world size configurable: Allow the world to be larger than the screen canvas and support viewing via mouse click-and-drag.
 1. Support multiple ant colonies per world: Allow for up to X number of colonies per world, design interactions between them (often ants kill other ant colonies when discovered).
 
 ## Attributions to include

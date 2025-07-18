@@ -1,103 +1,32 @@
-import { seededRandom } from "$lib/utils/maths";
 import { NEST_TEXTURES, WORLD_ASSETS } from "$lib/world/assets";
-import {
-  BACKGROUND_CONFIG,
-  BOULDER_CONFIG,
-  SPRITE_CONFIG,
-} from "$lib/world/configs";
+import { BACKGROUND_CONFIG, SPRITE_CONFIG } from "$lib/world/configs";
 import type { NestDto } from "@formicarium/domain";
 import {
   Assets,
   Container,
   Graphics,
-  type Renderer,
-  RenderTexture,
   Sprite,
   Text,
+  TilingSprite,
 } from "pixi.js";
 
-const getRandomGrassTile = () => {
-  const rng = Math.random();
-  const { grassTiles, grassWeights } = BACKGROUND_CONFIG;
-
-  for (let i = 0; i < grassWeights.length; i++) {
-    if (rng < grassWeights[i]) {
-      return grassTiles[i];
-    }
-  }
-  return grassTiles[0];
-};
-
-export const createRandomisedTileTexture = async (
-  renderer: Renderer,
-  canvasWidth: number,
-  canvasHeight: number,
+export const createBackgroundContainer = async (
+  width: number,
+  height: number,
 ) => {
-  const forestAssets = Assets.get(WORLD_ASSETS.FOREST.alias);
-  const textureWidth = canvasWidth * 2;
-  const textureHeight = canvasHeight * 2;
+  const terrainAssets = Assets.get(WORLD_ASSETS.TERRAIN.alias);
+  const darkGreenTiledTexture =
+    terrainAssets.textures[BACKGROUND_CONFIG.terrainTileNames[0]];
+  const terrainContainer = new Container();
 
-  const { tileSize } = BACKGROUND_CONFIG;
-
-  const renderTexture = RenderTexture.create({
-    width: textureWidth,
-    height: textureHeight,
+  const terrainSprite = new TilingSprite({
+    texture: darkGreenTiledTexture,
+    width,
+    height,
   });
+  terrainContainer.addChild(terrainSprite);
 
-  const tileContainer = new Container();
-
-  const tilesX = Math.ceil(canvasWidth / tileSize);
-  const tilesY = Math.ceil(canvasHeight / tileSize);
-
-  // Generate random tiles
-  for (let y = 0; y < tilesY; y++) {
-    for (let x = 0; x < tilesX; x++) {
-      const randomTile = getRandomGrassTile();
-      const tileSprite = new Sprite(forestAssets.textures[randomTile]);
-
-      tileSprite.tint = BACKGROUND_CONFIG.tint;
-      tileSprite.x = x * BACKGROUND_CONFIG.tileSize;
-      tileSprite.y = y * BACKGROUND_CONFIG.tileSize;
-
-      tileContainer.addChild(tileSprite);
-    }
-  }
-
-  renderer.render({
-    container: tileContainer,
-    target: renderTexture,
-  });
-
-  return renderTexture;
-};
-
-export const createBoulderContainer = async (
-  canvasWidth: number,
-  canvasHeight: number,
-) => {
-  const boulderContainer = new Container();
-
-  // Load boulder textures in parallel
-  const boulderTextures = await Promise.all(
-    BOULDER_CONFIG.textures.map((path) => Assets.load(path)),
-  );
-
-  for (let i = 0; i < BOULDER_CONFIG.count; i++) {
-    const textureIndex = Math.floor(seededRandom(i) * boulderTextures.length);
-    const boulderSprite = new Sprite(boulderTextures[textureIndex]);
-
-    boulderSprite.x = seededRandom(i + 10) * canvasWidth;
-    boulderSprite.y = seededRandom(i + 20) * canvasHeight;
-
-    const scaleRange = BOULDER_CONFIG.maxScale - BOULDER_CONFIG.minScale;
-    boulderSprite.scale.set(
-      BOULDER_CONFIG.minScale + seededRandom(i + 30) * scaleRange,
-    );
-
-    boulderContainer.addChild(boulderSprite);
-  }
-
-  return boulderContainer;
+  return terrainContainer;
 };
 
 export const createNestContainer = async (nestDto: NestDto) => {

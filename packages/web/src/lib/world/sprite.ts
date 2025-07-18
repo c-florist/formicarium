@@ -1,5 +1,5 @@
 import { Sprite, type Texture } from "pixi.js";
-import type { SpriteConfig } from "./schema";
+import type { SpriteConfig } from "./configs";
 
 export const createSpriteWithConfig = (
   texture: Texture,

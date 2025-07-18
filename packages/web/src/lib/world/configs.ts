@@ -16,6 +16,12 @@ export const ANIMATION_CONFIG = {
 export const BACKGROUND_CONFIG = {
   tileSize: 16,
   tint: 0x9caf88,
+  terrainTileNames: [
+    "grass-dark-0",
+    "grass-dark-1",
+    "grass-dark-2",
+    "grass-dark-3",
+  ],
   grassTiles: ["grass-plain", "grass-2", "grass-1", "grass-3"],
   grassWeights: [0.75, 0.85, 0.95, 1.0],
 } as const;

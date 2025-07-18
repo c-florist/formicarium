@@ -20,9 +20,8 @@ import {
   SPRITE_CONFIG,
 } from "$lib/world/configs";
 import {
-  createBoulderContainer,
+  createBackgroundContainer,
   createNestContainer,
-  createRandomisedTileTexture,
   createStatsBubble,
 } from "$lib/world/render";
 import { createSpriteWithConfig } from "$lib/world/sprite";
@@ -59,25 +58,15 @@ const initialisePixiApp = async () => {
   app.stage.cursor = CURSOR_DEFAULT;
 };
 
-const initialiseWorld = (worldData: WorldDto) => {
-  // Setup background and static elements
-  createRandomisedTileTexture(
-    app.renderer,
+const initialiseWorld = async (worldData: WorldDto) => {
+  const background = await createBackgroundContainer(
     worldData.width,
     worldData.height,
-  ).then((texture) => {
-    const background = new Container();
-    background.addChild(new Sprite(texture));
-    worldContainer.addChildAt(background, LAYERS.BACKGROUND);
-  });
+  );
+  worldContainer.addChildAt(background, LAYERS.BACKGROUND);
 
-  createBoulderContainer(worldData.width, worldData.height).then((boulders) => {
-    worldContainer.addChildAt(boulders, LAYERS.DECORATION);
-  });
-
-  createNestContainer(worldData.nest).then((nest) => {
-    worldContainer.addChildAt(nest, LAYERS.DECORATION);
-  });
+  const nest = await createNestContainer(worldData.nest);
+  worldContainer.addChildAt(nest, LAYERS.DECORATION);
 
   // Setup viewport dragging
   app.stage.eventMode = "static";
