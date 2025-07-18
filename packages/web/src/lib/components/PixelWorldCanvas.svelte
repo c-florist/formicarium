@@ -1,7 +1,11 @@
 <script lang="ts">
+import { initialiseSimulation } from "$lib/core/query";
 import { uiStateStore } from "$lib/stores/ui-state-store";
 import { startWorldUpdates, worldStore } from "$lib/stores/world-store";
-import { calculateMovementDirection } from "$lib/utils/maths";
+import {
+  calculateIfHiddenInNest,
+  calculateMovementDirection,
+} from "$lib/utils/maths";
 import {
   CURSOR_DEFAULT,
   DEFAULT_ANT_TEXTURE,
@@ -60,27 +64,14 @@ const initialise = async () => {
   app.stage.cursor = CURSOR_DEFAULT;
 };
 
-const calculateIfHiddenInNest = (
-  antX: number,
-  antY: number,
-  nestX: number,
-  nestY: number,
-) => {
-  const distanceToNest = Math.sqrt((antX - nestX) ** 2 + (antY - nestY) ** 2);
-  return distanceToNest > ANIMATION_CONFIG.hideSpriteRadius ? 1 : 0;
-};
-
 onMount(async () => {
   if (!isSimulationInitialised && canvasContainer) {
     const width = canvasContainer.clientWidth;
     const height = canvasContainer.clientHeight;
 
-    await invoke("initialise_simulation", {
-      deviceWidth: width,
-      deviceHeight: height,
-    });
-
+    await initialiseSimulation(width, height);
     isSimulationInitialised = true;
+
     startWorldUpdates();
   }
 

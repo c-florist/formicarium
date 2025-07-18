@@ -1,7 +1,6 @@
 <script lang="ts">
 import PixelWorldCanvas from "$lib/components/PixelWorldCanvas.svelte";
-import { initialiseWorldAssets, WORLD_ASSETS } from "$lib/world/assets";
-import { Assets } from "pixi.js";
+import { initialiseWorldAssets } from "$lib/world/assets";
 import { onMount } from "svelte";
 
 let isLoading = $state(true);

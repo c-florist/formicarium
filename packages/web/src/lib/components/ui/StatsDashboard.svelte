@@ -1,5 +1,5 @@
 <script lang="ts">
-import { getWorldStatistics } from "$lib/world/query";
+import { getWorldStatistics } from "$lib/core/query";
 import type { StatsDto } from "@formicarium/domain";
 
 let {

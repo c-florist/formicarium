@@ -1,5 +1,5 @@
+import { getWorldState } from "$lib/core/query";
 import type { WorldDto } from "@formicarium/domain";
-import { invoke } from "@tauri-apps/api/core";
 import { writable } from "svelte/store";
 
 export const worldStore = writable<WorldDto | null>(null);
@@ -11,24 +11,16 @@ export const startWorldUpdates = () => {
     return;
   }
 
-  const fetchWorldState = async () => {
-    try {
-      const worldData = await invoke<WorldDto | null>("get_world_state");
-      console.log(
-        "[world-store] Received data from get_world_state",
-        worldData,
-      );
-      if (worldData) {
-        worldStore.set(worldData);
-      }
-    } catch (error) {
-      console.error("[world-store] Failed to get world state:", error);
+  const setWorldState = async () => {
+    const worldData = await getWorldState();
+    if (worldData) {
+      worldStore.set(worldData);
     }
   };
 
-  fetchWorldState();
+  setWorldState();
 
-  intervalId = setInterval(fetchWorldState, 100);
+  intervalId = setInterval(setWorldState, 100);
 };
 
 export const stopWorldUpdates = () => {
