@@ -4,7 +4,7 @@ import {
   BACKGROUND_CONFIG,
   BOULDER_CONFIG,
   SPRITE_CONFIG,
-} from "$lib/world/schema";
+} from "$lib/world/configs";
 import type { NestDto } from "@formicarium/domain";
 import {
   Assets,

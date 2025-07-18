@@ -13,18 +13,18 @@ import {
   WORLD_ASSETS,
 } from "$lib/world/assets";
 import {
-  createBoulderContainer,
-  createNestContainer,
-  createRandomisedTileTexture,
-  createStatsBubble,
-} from "$lib/world/render";
-import {
   ANIMATION_CONFIG,
   type AntSprite,
   FOOD_SOURCE_CONFIG,
   LAYERS,
   SPRITE_CONFIG,
-} from "$lib/world/schema";
+} from "$lib/world/configs";
+import {
+  createBoulderContainer,
+  createNestContainer,
+  createRandomisedTileTexture,
+  createStatsBubble,
+} from "$lib/world/render";
 import { createSpriteWithConfig } from "$lib/world/sprite";
 import type { WorldDto } from "@formicarium/domain";
 import { event } from "@tauri-apps/api";
@@ -32,7 +32,6 @@ import { Application, Assets, Container, Sprite, Text } from "pixi.js";
 import { onDestroy, onMount } from "svelte";
 import config from "../../../../domain/src/systemConfig.json";
 
-// --- Component State ---
 const app = new Application();
 const viewport = new Container();
 const uiContainer = new Container();
@@ -199,7 +198,7 @@ $effect(() => {
       worldContainer.addChild(statsBubble);
     }
 
-    (statsBubble.getChildAt(1) as Text).text = `Amount: ${foodSource.amount}`;
+    statsBubble.getChildAt<Text>(1).text = `Amount: ${foodSource.amount}`;
 
     if (!foodSprite) {
       const textureNames = Object.keys(foodSourceAssets.textures);
