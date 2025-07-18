@@ -25,30 +25,28 @@ import {
   SPRITE_CONFIG,
 } from "$lib/world/schema";
 import { createSpriteWithConfig } from "$lib/world/sprite";
+import type { WorldDto } from "@formicarium/domain";
 import { Application, Assets, Container, Sprite, Text } from "pixi.js";
 import { onDestroy, onMount } from "svelte";
 import config from "../../../../domain/src/systemConfig.json";
 
+// --- Component State ---
+const app = new Application();
 const viewport = new Container();
-
-let app = $state<Application>(new Application());
-let uiContainer = $state<Container>(new Container());
-let worldContainer = $state<Container>(new Container());
-
-let isSimulationInitialised = $state<boolean>(false);
-let isWorldInitialised = $state<boolean>(false);
+const uiContainer = new Container();
+const worldContainer = new Container();
 
 let canvasContainer: HTMLDivElement;
+let isWorldInitialised = $state(false);
 
 const workerAntAssets = Assets.get(WORLD_ASSETS.WORKER_ANT.alias);
 const foodSourceAssets = Assets.get(WORLD_ASSETS.FOOD_SOURCE.alias);
 
 let antSprites: Map<number, AntSprite> = new Map();
-
 let foodSourceSprites: Map<number, Sprite> = new Map();
 let foodSourceStats: Map<number, Container> = new Map();
 
-const initialise = async () => {
+const initialisePixiApp = async () => {
   await app.init({
     resizeTo: canvasContainer,
     roundPixels: true,
@@ -56,133 +54,124 @@ const initialise = async () => {
   canvasContainer.appendChild(app.canvas);
 
   viewport.addChild(worldContainer);
-
   app.stage.addChild(viewport);
   app.stage.addChild(uiContainer);
-
   app.stage.cursor = CURSOR_DEFAULT;
 };
 
+const initialiseWorld = (worldData: WorldDto) => {
+  // Setup background and static elements
+  createRandomisedTileTexture(
+    app.renderer,
+    worldData.width,
+    worldData.height,
+  ).then((texture) => {
+    const background = new Container();
+    background.addChild(new Sprite(texture));
+    worldContainer.addChildAt(background, LAYERS.BACKGROUND);
+  });
+
+  createBoulderContainer(worldData.width, worldData.height).then((boulders) => {
+    worldContainer.addChildAt(boulders, LAYERS.DECORATION);
+  });
+
+  createNestContainer(worldData.nest).then((nest) => {
+    worldContainer.addChildAt(nest, LAYERS.DECORATION);
+  });
+
+  // Setup viewport dragging
+  app.stage.eventMode = "static";
+  app.stage.hitArea = app.screen;
+
+  let dragging = false;
+  let dragStart = { x: 0, y: 0 };
+
+  app.stage.on("pointerdown", (event) => {
+    dragging = true;
+    dragStart.x = event.global.x - viewport.x;
+    dragStart.y = event.global.y - viewport.y;
+  });
+
+  app.stage.on("pointerup", () => {
+    dragging = false;
+  });
+  app.stage.on("pointerupoutside", () => {
+    dragging = false;
+  });
+
+  app.stage.on("pointermove", (event) => {
+    if (dragging) {
+      const newX = event.global.x - dragStart.x;
+      const newY = event.global.y - dragStart.y;
+      const { width: worldWidth, height: worldHeight } = worldData;
+      const { width: screenWidth, height: screenHeight } = app.screen;
+
+      viewport.x = Math.max(Math.min(newX, 0), screenWidth - worldWidth);
+      viewport.y = Math.max(Math.min(newY, 0), screenHeight - worldHeight);
+    }
+  });
+
+  // Setup animation ticker
+  let frameCounter = 0;
+  const animationSpeed = config.rendering.animationSpeed;
+
+  app.ticker.add(() => {
+    frameCounter++;
+    if (frameCounter < animationSpeed) return;
+    frameCounter = 0;
+
+    for (const [, antData] of antSprites) {
+      if (antData.sprite.alpha > 0.9) {
+        antData.animationFrame =
+          (antData.animationFrame + 1) % ANIMATION_CONFIG.antFrameCount;
+        const frameName = `ant-${antData.direction}-${antData.animationFrame}`;
+        antData.sprite.texture = workerAntAssets.textures[frameName];
+
+        const scale = SPRITE_CONFIG.ANT.scale;
+        if (antData.direction === "left") {
+          antData.sprite.scale.x = -scale;
+        } else {
+          antData.sprite.scale.x = scale;
+        }
+      }
+    }
+  });
+
+  isWorldInitialised = true;
+};
+
 onMount(async () => {
-  if (!isSimulationInitialised && canvasContainer) {
-    const width = canvasContainer.clientWidth;
-    const height = canvasContainer.clientHeight;
+  await initialisePixiApp();
 
-    await initialiseSimulation(width, height);
-    isSimulationInitialised = true;
+  const { clientWidth: width, clientHeight: height } = canvasContainer;
+  await initialiseSimulation(width, height);
 
-    startWorldUpdates();
-  }
-
-  await initialise();
+  startWorldUpdates();
 });
 
 $effect(() => {
-  if (!app || !worldContainer || !$worldStore) {
+  const worldData = $worldStore;
+  if (!app.renderer || !worldData) {
     return;
   }
 
+  // Run world initialisation once when the first world data arrives
   if (!isWorldInitialised) {
-    const worldData = $worldStore;
+    initialiseWorld(worldData);
+  }
 
-    // Setup background and static elements based on world size
-    createRandomisedTileTexture(
-      app.renderer,
-      worldData.width,
-      worldData.height,
-    ).then((texture) => {
-      const background = new Container();
-      background.addChild(new Sprite(texture));
-      worldContainer.addChildAt(background, LAYERS.BACKGROUND);
-    });
-
-    createBoulderContainer(worldData.width, worldData.height).then(
-      (boulders) => {
-        worldContainer.addChildAt(boulders, LAYERS.DECORATION);
-      },
-    );
-
-    createNestContainer(worldData.nest).then((nest) => {
-      worldContainer.addChildAt(nest, LAYERS.DECORATION);
-    });
-
-    const viewport: Container = app.stage.getChildAt(0);
-
-    // Make the stage interactive (not the viewport)
-    app.stage.eventMode = "static";
-    app.stage.hitArea = app.screen;
-
-    let dragging = false;
-    let dragStart = { x: 0, y: 0 };
-
-    app.stage.on("pointerdown", (event) => {
-      dragging = true;
-      dragStart.x = event.global.x - viewport.x;
-      dragStart.y = event.global.y - viewport.y;
-    });
-
-    app.stage.on("pointerup", () => {
-      dragging = false;
-    });
-
-    app.stage.on("pointerupoutside", () => {
-      dragging = false;
-    });
-
-    app.stage.on("pointermove", (event) => {
-      if (dragging) {
-        const newX = event.global.x - dragStart.x;
-        const newY = event.global.y - dragStart.y;
-
-        // Clamp the viewport's position
-        const worldWidth = $worldStore.width;
-        const worldHeight = $worldStore.height;
-        const screenWidth = app.screen.width;
-        const screenHeight = app.screen.height;
-
-        viewport.x = Math.max(Math.min(newX, 0), screenWidth - worldWidth);
-        viewport.y = Math.max(Math.min(newY, 0), screenHeight - worldHeight);
-      }
-    });
-
-    let frameCounter = 0;
-    const animationSpeed = config.rendering.animationSpeed;
-
-    app.ticker.add(() => {
-      frameCounter++;
-      if (frameCounter >= animationSpeed) {
-        frameCounter = 0;
-
-        // Update all ant sprites
-        for (const [_, antData] of antSprites) {
-          // Only animate ants that are not fading out
-          if (antData.sprite.alpha > 0.9) {
-            antData.animationFrame =
-              (antData.animationFrame + 1) % ANIMATION_CONFIG.antFrameCount;
-            const frameName = `ant-${antData.direction}-${antData.animationFrame}`;
-            antData.sprite.texture = workerAntAssets.textures[frameName];
-
-            const scale = SPRITE_CONFIG.ANT.scale;
-            if (antData.direction === "left") {
-              antData.sprite.scale.x = -scale;
-            } else {
-              antData.sprite.scale.x = scale;
-            }
-          }
-        }
-      }
-    });
-
-    isWorldInitialised = true;
+  // After initialisation, run reactive updates
+  if (!isWorldInitialised) {
+    return;
   }
 
   const showStats = $uiStateStore.showStatsOverlay;
-
-  const currentAntIds = new Set($worldStore.ants.map((ant) => ant.id));
+  const currentAntIds = new Set(worldData.ants.map((ant) => ant.id));
   const currentFoodSourceIds = new Set(
-    $worldStore.foodSources.map((foodSource) => foodSource.id),
+    worldData.foodSources.map((foodSource) => foodSource.id),
   );
 
+  // Cleanup removed sprites
   for (const [antId, antData] of antSprites) {
     if (!currentAntIds.has(antId)) {
       worldContainer.removeChild(antData.sprite);
@@ -203,8 +192,8 @@ $effect(() => {
     }
   }
 
-  // Food source update loop
-  for (const foodSource of $worldStore.foodSources) {
+  // Update/Create Food Sources
+  for (const foodSource of worldData.foodSources) {
     let statsBubble = foodSourceStats.get(foodSource.id);
     let foodSprite = foodSourceSprites.get(foodSource.id);
 
@@ -214,8 +203,7 @@ $effect(() => {
       worldContainer.addChild(statsBubble);
     }
 
-    const textObject: Text = statsBubble.getChildAt(1);
-    textObject.text = `Amount: ${foodSource.amount}`;
+    (statsBubble.getChildAt(1) as Text).text = `Amount: ${foodSource.amount}`;
 
     if (!foodSprite) {
       const textureNames = Object.keys(foodSourceAssets.textures);
@@ -232,16 +220,15 @@ $effect(() => {
     foodSprite.y = foodSource.y;
     statsBubble.x = foodSprite.x;
     statsBubble.y = foodSprite.y;
-
     statsBubble.visible = showStats;
-
-    // Set alpha based on remaining amount
-    const alpha = foodSource.amount / FOOD_SOURCE_CONFIG.maxAmount;
-    foodSprite.alpha = Math.max(0.15, alpha);
+    foodSprite.alpha = Math.max(
+      0.15,
+      foodSource.amount / FOOD_SOURCE_CONFIG.maxAmount,
+    );
   }
 
-  // Ant sprite update loop
-  for (const ant of $worldStore.ants) {
+  // Update/Create Ant Sprites
+  for (const ant of worldData.ants) {
     let antData = antSprites.get(ant.id);
 
     if (!antData) {
@@ -262,26 +249,19 @@ $effect(() => {
       antSprites.set(ant.id, antData);
     }
 
-    // Stop moving ants that are dying
     if (ant.state.type === "dying") {
-      const maxTicks = config.ant.deathAnimationTicks;
-      antData.sprite.alpha = ant.state.ticks / maxTicks;
+      antData.sprite.alpha = ant.state.ticks / config.ant.deathAnimationTicks;
     } else {
-      // Calculate movement direction
       const deltaX = ant.x - antData.previousPosition.x;
       const deltaY = ant.y - antData.previousPosition.y;
       antData.direction = calculateMovementDirection(deltaX, deltaY);
-
-      // Update position
       antData.sprite.x = ant.x;
       antData.sprite.y = ant.y;
-
-      // Apply nest fade effect
       antData.sprite.alpha = calculateIfHiddenInNest(
         ant.x,
         ant.y,
-        $worldStore.nest.x,
-        $worldStore.nest.y,
+        worldData.nest.x,
+        worldData.nest.y,
       );
     }
 
@@ -290,7 +270,7 @@ $effect(() => {
 });
 
 onDestroy(() => {
-  if (app) {
+  if (app.canvas) {
     app.destroy(true);
   }
 });
