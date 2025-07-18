@@ -1,4 +1,5 @@
 <script lang="ts">
+import { EMIT_EVENTS } from "$lib/core/events";
 import { initialiseSimulation } from "$lib/core/query";
 import { uiStateStore } from "$lib/stores/ui-state-store";
 import { startWorldUpdates, worldStore } from "$lib/stores/world-store";
@@ -26,6 +27,7 @@ import {
 } from "$lib/world/schema";
 import { createSpriteWithConfig } from "$lib/world/sprite";
 import type { WorldDto } from "@formicarium/domain";
+import { event } from "@tauri-apps/api";
 import { Application, Assets, Container, Sprite, Text } from "pixi.js";
 import { onDestroy, onMount } from "svelte";
 import config from "../../../../domain/src/systemConfig.json";
@@ -37,7 +39,6 @@ const uiContainer = new Container();
 const worldContainer = new Container();
 
 let canvasContainer: HTMLDivElement;
-let isWorldInitialised = $state(false);
 
 const workerAntAssets = Assets.get(WORLD_ASSETS.WORKER_ANT.alias);
 const foodSourceAssets = Assets.get(WORLD_ASSETS.FOOD_SOURCE.alias);
@@ -136,15 +137,21 @@ const initialiseWorld = (worldData: WorldDto) => {
       }
     }
   });
-
-  isWorldInitialised = true;
 };
 
 onMount(async () => {
   await initialisePixiApp();
 
-  const { clientWidth: width, clientHeight: height } = canvasContainer;
-  await initialiseSimulation(width, height);
+  const unlisten = await event.once<WorldDto>(
+    EMIT_EVENTS.SIM_INITIALISED,
+    (event) => {
+      initialiseWorld(event.payload);
+      unlisten();
+    },
+  );
+
+  const { clientWidth, clientHeight } = canvasContainer;
+  await initialiseSimulation(clientWidth, clientHeight);
 
   startWorldUpdates();
 });
@@ -152,16 +159,6 @@ onMount(async () => {
 $effect(() => {
   const worldData = $worldStore;
   if (!app.renderer || !worldData) {
-    return;
-  }
-
-  // Run world initialisation once when the first world data arrives
-  if (!isWorldInitialised) {
-    initialiseWorld(worldData);
-  }
-
-  // After initialisation, run reactive updates
-  if (!isWorldInitialised) {
     return;
   }
 
