@@ -40,6 +40,7 @@ pub struct PheromoneConfig {
 #[serde(rename_all = "camelCase")]
 pub struct MovementConfig {
     pub wander_probability: f64,
+    pub speed: f32,
 }
 
 #[derive(Deserialize, Debug)]

@@ -1,4 +1,4 @@
-import { ANIMATION_CONFIG } from "$lib/world/schema";
+import { ANIMATION_CONFIG } from "$lib/world/configs";
 
 export const seededRandom = (seed: number) => {
   const x = Math.sin(seed) * 10000;

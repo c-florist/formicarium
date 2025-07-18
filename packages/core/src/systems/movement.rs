@@ -28,9 +28,10 @@ pub fn target_movement_system(world: &mut World) {
 }
 
 pub fn apply_velocity_system(world: &mut World) {
+    let speed = CONFIG.movement.speed;
     for (_entity, (pos, vel)) in world.query_mut::<(&mut Position, &Velocity)>() {
-        pos.x += vel.dx;
-        pos.y += vel.dy;
+        pos.x += vel.dx * speed;
+        pos.y += vel.dy * speed;
     }
 }
 

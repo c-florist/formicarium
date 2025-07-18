@@ -8,7 +8,7 @@ export const SPRITE_CONFIG = {
 export type SpriteConfig = (typeof SPRITE_CONFIG)[keyof typeof SPRITE_CONFIG];
 
 export const ANIMATION_CONFIG = {
-  antFrameRate: 125,
+  antFrameRate: 100,
   antFrameCount: 4,
   hideSpriteRadius: 60,
 } as const;
