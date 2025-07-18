@@ -10,6 +10,7 @@ mod utils;
 use components::dto::{StatsDto, WorldDto};
 use engine::simulation::Simulation;
 use std::sync::{Arc, Mutex};
+use tauri::Emitter;
 
 pub struct AppState(Arc<Mutex<Option<Simulation>>>);
 
@@ -28,13 +29,25 @@ fn main() {
 }
 
 #[tauri::command]
-fn initialise_simulation(device_width: u32, device_height: u32, app_state: tauri::State<AppState>) {
+fn initialise_simulation(
+    device_width: u32,
+    device_height: u32,
+    app_handle: tauri::AppHandle,
+    app_state: tauri::State<AppState>,
+) {
     let sim_width = device_width as f32 + 500.0;
     let sim_height = device_height as f32 + 500.0;
 
     println!("Initialising world with size: {}x{}", sim_width, sim_height);
 
-    let world = Simulation::new(sim_width, sim_height);
+    let mut world = Simulation::new(sim_width, sim_height);
+    let initial_world_state = world
+        .get_world_state_dto()
+        .expect("Failed to get initial world state");
+
+    if let Err(e) = app_handle.emit("sim-initialised", initial_world_state) {
+        eprintln!("Error emitting sim-initialised event: {}", e);
+    }
 
     *app_state.0.lock().unwrap() = Some(world);
 }

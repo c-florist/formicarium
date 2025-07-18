@@ -23,7 +23,7 @@ impl From<&AntState> for AntStateDto {
     }
 }
 
-#[derive(Serialize, Deserialize, TS, PartialEq, Debug)]
+#[derive(Serialize, Deserialize, TS, PartialEq, Debug, Clone)]
 #[ts(export, export_to = "../../domain/src/types/AntDto.ts")]
 pub struct AntDto {
     pub id: u32,
@@ -33,14 +33,14 @@ pub struct AntDto {
     pub health: u32,
 }
 
-#[derive(Serialize, Deserialize, TS, PartialEq, Debug)]
+#[derive(Serialize, Deserialize, TS, PartialEq, Debug, Clone)]
 #[ts(export, export_to = "../../domain/src/types/NestDto.ts")]
 pub struct NestDto {
     pub x: f32,
     pub y: f32,
 }
 
-#[derive(Serialize, Deserialize, TS, PartialEq, Debug)]
+#[derive(Serialize, Deserialize, TS, PartialEq, Debug, Clone)]
 #[ts(export, export_to = "../../domain/src/types/FoodSourceDto.ts")]
 pub struct FoodSourceDto {
     pub id: u32,
@@ -57,7 +57,7 @@ pub struct StatsDto {
     pub food_source_count: u32,
 }
 
-#[derive(Serialize, Deserialize, TS, PartialEq, Debug)]
+#[derive(Serialize, Deserialize, TS, PartialEq, Debug, Clone)]
 #[serde(rename_all = "camelCase")]
 #[ts(export, export_to = "../../domain/src/types/WorldDto.ts")]
 pub struct WorldDto {
