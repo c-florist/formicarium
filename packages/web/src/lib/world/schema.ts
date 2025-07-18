@@ -1,16 +1,5 @@
 import type { Sprite } from "pixi.js";
 
-export const ANT_SPRITESHEET = "/characters/worker-ant.json";
-export const FOOD_SPRITESHEET = "/food/food-1.json";
-export const FOREST_TILESET = "/background/forest-terrain.json";
-export const NEST_SPRITESHEET = "/nests/big-stump.json";
-
-export const NEST_TEXTURES = {
-  TREE: "big-tree-0",
-} as const;
-
-export const DEFAULT_ANT_TEXTURE = "ant-down-0";
-
 export const SPRITE_CONFIG = {
   ANT: { scale: 1.8, anchor: { x: 0.5, y: 0 } },
   FOOD: { scale: 1.5, anchor: { x: 0.5, y: -1 } },

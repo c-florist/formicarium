@@ -1,13 +1,18 @@
 <script lang="ts">
 import PixelWorldCanvas from "$lib/components/PixelWorldCanvas.svelte";
+import { initialiseWorldAssets, WORLD_ASSETS } from "$lib/world/assets";
+import { Assets } from "pixi.js";
 import { onMount } from "svelte";
 
 let isLoading = $state(true);
 
-onMount(() => {
+onMount(async () => {
+  await initialiseWorldAssets();
+
+  // Show connecting screen for fun
   setTimeout(() => {
     isLoading = false;
-  }, 2500);
+  }, 2000);
 });
 </script>
 

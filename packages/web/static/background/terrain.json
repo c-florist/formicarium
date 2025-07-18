@@ -1,23 +1,20 @@
 {
   "frames": {
-    "pixel_rpg_tiles.png": {
-      "frame": { "x": 0, "y": 0, "w": 544, "h": 240 },
-      "rotated": false,
-      "trimmed": false,
-      "spriteSourceSize": { "x": 0, "y": 0, "w": 544, "h": 240 },
-      "sourceSize": { "w": 544, "h": 240 },
-      "duration": 100
-    }
+    "grass-light-0": { "frame": { "x": 528, "y": 0, "w": 16, "h": 16 } },
+    "grass-light-1": { "frame": { "x": 512, "y": 0, "w": 16, "h": 16 } },
+    "grass-light-2": { "frame": { "x": 496, "y": 0, "w": 16, "h": 16 } },
+    "grass-light-3": { "frame": { "x": 480, "y": 0, "w": 16, "h": 16 } },
+    "grass-med-0": { "frame": { "x": 0, "y": 0, "w": 16, "h": 16 } },
+    "grass-med-1": { "frame": { "x": 0, "y": 0, "w": 16, "h": 16 } },
+    "grass-med-2": { "frame": { "x": 0, "y": 0, "w": 16, "h": 16 } },
+    "grass-med-3": { "frame": { "x": 0, "y": 0, "w": 16, "h": 16 } },
+    "grass-dark-0": { "frame": { "x": 0, "y": 0, "w": 16, "h": 16 } },
+    "grass-dark-1": { "frame": { "x": 0, "y": 0, "w": 16, "h": 16 } },
+    "grass-dark-2": { "frame": { "x": 0, "y": 0, "w": 16, "h": 16 } },
+    "grass-dark-3": { "frame": { "x": 0, "y": 0, "w": 16, "h": 16 } }
   },
   "meta": {
-    "app": "https://www.aseprite.org/",
-    "version": "1.3.14.3-arm64-trial",
-    "image": "pixel_rpg_tiles-sheet.png",
-    "format": "RGBA8888",
-    "size": { "w": 544, "h": 240 },
-    "scale": "1",
-    "frameTags": [],
-    "layers": [{ "name": "Layer", "opacity": 255, "blendMode": "normal" }],
-    "slices": []
+    "image": "terrain.png",
+    "size": { "w": 544, "h": 240 }
   }
 }

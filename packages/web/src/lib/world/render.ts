@@ -1,10 +1,8 @@
 import { seededRandom } from "$lib/utils/maths";
+import { NEST_TEXTURES, WORLD_ASSETS } from "$lib/world/assets";
 import {
   BACKGROUND_CONFIG,
   BOULDER_CONFIG,
-  FOREST_TILESET,
-  NEST_SPRITESHEET,
-  NEST_TEXTURES,
   SPRITE_CONFIG,
 } from "$lib/world/schema";
 import type { NestDto } from "@formicarium/domain";
@@ -16,7 +14,6 @@ import {
   RenderTexture,
   Sprite,
   Text,
-  TilingSprite,
 } from "pixi.js";
 
 const getRandomGrassTile = () => {
@@ -36,10 +33,10 @@ export const createRandomisedTileTexture = async (
   canvasWidth: number,
   canvasHeight: number,
 ) => {
+  const forestAssets = Assets.get(WORLD_ASSETS.FOREST.alias);
   const textureWidth = canvasWidth * 2;
   const textureHeight = canvasHeight * 2;
 
-  const forestTileset = await Assets.load(FOREST_TILESET);
   const { tileSize } = BACKGROUND_CONFIG;
 
   const renderTexture = RenderTexture.create({
@@ -56,7 +53,7 @@ export const createRandomisedTileTexture = async (
   for (let y = 0; y < tilesY; y++) {
     for (let x = 0; x < tilesX; x++) {
       const randomTile = getRandomGrassTile();
-      const tileSprite = new Sprite(forestTileset.textures[randomTile]);
+      const tileSprite = new Sprite(forestAssets.textures[randomTile]);
 
       tileSprite.tint = BACKGROUND_CONFIG.tint;
       tileSprite.x = x * BACKGROUND_CONFIG.tileSize;
@@ -72,20 +69,6 @@ export const createRandomisedTileTexture = async (
   });
 
   return renderTexture;
-};
-
-export const createBackgroundContainer = async (
-  texture: RenderTexture,
-  canvasWidth: number,
-  canvasHeight: number,
-) => {
-  const bgTileSprite = new TilingSprite({
-    texture: texture,
-    width: canvasWidth,
-    height: canvasHeight,
-  });
-
-  return bgTileSprite;
 };
 
 export const createBoulderContainer = async (
@@ -119,10 +102,9 @@ export const createBoulderContainer = async (
 
 export const createNestContainer = async (nestDto: NestDto) => {
   const nestContainer = new Container();
-  const nestTextures = await Assets.load(NEST_SPRITESHEET);
 
-  nestTextures.textures[NEST_TEXTURES.TREE].source.scaleMode = "nearest";
-  const nestSprite = new Sprite(nestTextures.textures[NEST_TEXTURES.TREE]);
+  const nestAssets = Assets.get(WORLD_ASSETS.NEST.alias);
+  const nestSprite = new Sprite(nestAssets.textures[NEST_TEXTURES.TREE]);
 
   const { anchor, scale } = SPRITE_CONFIG.NEST;
   nestSprite.anchor.set(anchor.x, anchor.y);

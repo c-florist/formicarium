@@ -2,6 +2,7 @@
 import { uiStateStore } from "$lib/stores/ui-state-store";
 import { startWorldUpdates, worldStore } from "$lib/stores/world-store";
 import { calculateMovementDirection } from "$lib/utils/maths";
+import { DEFAULT_ANT_TEXTURE, WORLD_ASSETS } from "$lib/world/assets";
 import {
   createBoulderContainer,
   createNestContainer,
@@ -10,24 +11,14 @@ import {
 } from "$lib/world/render";
 import {
   ANIMATION_CONFIG,
-  ANT_SPRITESHEET,
   type AntSprite,
-  DEFAULT_ANT_TEXTURE,
   FOOD_SOURCE_CONFIG,
-  FOOD_SPRITESHEET,
   LAYERS,
   SPRITE_CONFIG,
 } from "$lib/world/schema";
 import { createSpriteWithConfig } from "$lib/world/sprite";
 import { invoke } from "@tauri-apps/api/core";
-import {
-  Application,
-  Assets,
-  Container,
-  Sprite,
-  Text,
-  type UnresolvedAsset,
-} from "pixi.js";
+import { Application, Assets, Container, Sprite, Text } from "pixi.js";
 import { onDestroy, onMount } from "svelte";
 import config from "../../../../domain/src/systemConfig.json";
 
@@ -42,10 +33,11 @@ let isWorldInitialised = $state<boolean>(false);
 
 let canvasContainer: HTMLDivElement;
 
-let antSprites: Map<number, AntSprite> = new Map();
-let antSpritesheet: UnresolvedAsset;
+const workerAntAssets = Assets.get(WORLD_ASSETS.WORKER_ANT.alias);
+const foodSourceAssets = Assets.get(WORLD_ASSETS.FOOD_SOURCE.alias);
 
-let foodSourceSpritesheet: UnresolvedAsset;
+let antSprites: Map<number, AntSprite> = new Map();
+
 let foodSourceSprites: Map<number, Sprite> = new Map();
 let foodSourceStats: Map<number, Container> = new Map();
 
@@ -72,24 +64,6 @@ const calculateIfHiddenInNest = (
   return distanceToNest > ANIMATION_CONFIG.hideSpriteRadius ? 1 : 0;
 };
 
-const loadGlobalAssets = async () => {
-  const [antSheet, foodSheet] = await Promise.all([
-    Assets.load(ANT_SPRITESHEET),
-    Assets.load(FOOD_SPRITESHEET),
-  ]);
-
-  // Set scale mode for all loaded simulation assets
-  for (const key in antSheet.textures) {
-    antSheet.textures[key].source.scaleMode = "nearest";
-  }
-  for (const key in foodSheet.textures) {
-    foodSheet.textures[key].source.scaleMode = "nearest";
-  }
-
-  antSpritesheet = antSheet;
-  foodSourceSpritesheet = foodSheet;
-};
-
 onMount(async () => {
   if (!isSimulationInitialised && canvasContainer) {
     const width = canvasContainer.clientWidth;
@@ -108,17 +82,10 @@ onMount(async () => {
   }
 
   await initialise();
-  await loadGlobalAssets();
 });
 
 $effect(() => {
-  if (
-    !app ||
-    !worldContainer ||
-    !$worldStore ||
-    !antSpritesheet ||
-    !foodSourceSpritesheet
-  ) {
+  if (!app || !worldContainer || !$worldStore) {
     return;
   }
 
@@ -135,11 +102,13 @@ $effect(() => {
       background.addChild(new Sprite(texture));
       worldContainer.addChildAt(background, LAYERS.BACKGROUND);
     });
+
     createBoulderContainer(worldData.width, worldData.height).then(
       (boulders) => {
         worldContainer.addChildAt(boulders, LAYERS.DECORATION);
       },
     );
+
     createNestContainer(worldData.nest).then((nest) => {
       worldContainer.addChildAt(nest, LAYERS.DECORATION);
     });
@@ -149,7 +118,7 @@ $effect(() => {
     // Make the STAGE interactive, not the viewport
     app.stage.eventMode = "static";
     app.stage.hitArea = app.screen;
-    app.stage.cursor = "url(/ui/cursor/cursor-default.png),auto";
+    app.stage.cursor = "url(/ui/cursor/cursor-default.png),auto"; // TODO: Move to initialise
 
     let dragging = false;
     let dragStart = { x: 0, y: 0 };
@@ -202,7 +171,7 @@ $effect(() => {
             antData.animationFrame =
               (antData.animationFrame + 1) % ANIMATION_CONFIG.antFrameCount;
             const frameName = `ant-${antData.direction}-${antData.animationFrame}`;
-            antData.sprite.texture = antSpritesheet.textures[frameName];
+            antData.sprite.texture = workerAntAssets.textures[frameName];
 
             const scale = SPRITE_CONFIG.ANT.scale;
             if (antData.direction === "left") {
@@ -260,10 +229,10 @@ $effect(() => {
     textObject.text = `Amount: ${foodSource.amount}`;
 
     if (!foodSprite) {
-      const textureNames = Object.keys(foodSourceSpritesheet.textures);
+      const textureNames = Object.keys(foodSourceAssets.textures);
       const deterministicTextureIndex = foodSource.id % textureNames.length;
       const textureName = textureNames[deterministicTextureIndex];
-      const texture = foodSourceSpritesheet.textures[textureName];
+      const texture = foodSourceAssets.textures[textureName];
 
       foodSprite = createSpriteWithConfig(texture, SPRITE_CONFIG.FOOD);
       worldContainer.addChild(foodSprite);
@@ -288,7 +257,7 @@ $effect(() => {
 
     if (!antData) {
       const sprite = createSpriteWithConfig(
-        antSpritesheet.textures[DEFAULT_ANT_TEXTURE],
+        workerAntAssets.textures[DEFAULT_ANT_TEXTURE],
         SPRITE_CONFIG.ANT,
       );
       worldContainer.addChild(sprite);
