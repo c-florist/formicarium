@@ -157,15 +157,14 @@ onMount(async () => {
 });
 
 $effect(() => {
-  const worldData = $worldStore;
-  if (!app.renderer || !worldData) {
+  if (!$worldStore) {
     return;
   }
 
   const showStats = $uiStateStore.showStatsOverlay;
-  const currentAntIds = new Set(worldData.ants.map((ant) => ant.id));
+  const currentAntIds = new Set($worldStore.ants.map((ant) => ant.id));
   const currentFoodSourceIds = new Set(
-    worldData.foodSources.map((foodSource) => foodSource.id),
+    $worldStore.foodSources.map((foodSource) => foodSource.id),
   );
 
   // Cleanup removed sprites
@@ -190,7 +189,7 @@ $effect(() => {
   }
 
   // Update/Create Food Sources
-  for (const foodSource of worldData.foodSources) {
+  for (const foodSource of $worldStore.foodSources) {
     let statsBubble = foodSourceStats.get(foodSource.id);
     let foodSprite = foodSourceSprites.get(foodSource.id);
 
@@ -225,7 +224,7 @@ $effect(() => {
   }
 
   // Update/Create Ant Sprites
-  for (const ant of worldData.ants) {
+  for (const ant of $worldStore.ants) {
     let antData = antSprites.get(ant.id);
 
     if (!antData) {
@@ -257,8 +256,8 @@ $effect(() => {
       antData.sprite.alpha = calculateIfHiddenInNest(
         ant.x,
         ant.y,
-        worldData.nest.x,
-        worldData.nest.y,
+        $worldStore.nest.x,
+        $worldStore.nest.y,
       );
     }
 
