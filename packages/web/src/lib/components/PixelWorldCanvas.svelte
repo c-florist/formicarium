@@ -2,7 +2,11 @@
 import { uiStateStore } from "$lib/stores/ui-state-store";
 import { startWorldUpdates, worldStore } from "$lib/stores/world-store";
 import { calculateMovementDirection } from "$lib/utils/maths";
-import { DEFAULT_ANT_TEXTURE, WORLD_ASSETS } from "$lib/world/assets";
+import {
+  CURSOR_DEFAULT,
+  DEFAULT_ANT_TEXTURE,
+  WORLD_ASSETS,
+} from "$lib/world/assets";
 import {
   createBoulderContainer,
   createNestContainer,
@@ -52,6 +56,8 @@ const initialise = async () => {
 
   app.stage.addChild(viewport);
   app.stage.addChild(uiContainer);
+
+  app.stage.cursor = CURSOR_DEFAULT;
 };
 
 const calculateIfHiddenInNest = (
@@ -69,13 +75,10 @@ onMount(async () => {
     const width = canvasContainer.clientWidth;
     const height = canvasContainer.clientHeight;
 
-    console.log("[PixelWorldCanvas] Initialising simulation");
     await invoke("initialise_simulation", {
       deviceWidth: width,
       deviceHeight: height,
     });
-
-    console.log("[PixelWorldCanvas] Simulation initialised");
 
     isSimulationInitialised = true;
     startWorldUpdates();
@@ -118,7 +121,6 @@ $effect(() => {
     // Make the STAGE interactive, not the viewport
     app.stage.eventMode = "static";
     app.stage.hitArea = app.screen;
-    app.stage.cursor = "url(/ui/cursor/cursor-default.png),auto"; // TODO: Move to initialise
 
     let dragging = false;
     let dragStart = { x: 0, y: 0 };
@@ -127,17 +129,14 @@ $effect(() => {
       dragging = true;
       dragStart.x = event.global.x - viewport.x;
       dragStart.y = event.global.y - viewport.y;
-      app.stage.cursor = "url(/ui/cursor/cursor-drag.png),auto";
     });
 
     app.stage.on("pointerup", () => {
       dragging = false;
-      app.stage.cursor = "url(/ui/cursor/cursor-default.png),auto";
     });
 
     app.stage.on("pointerupoutside", () => {
       dragging = false;
-      app.stage.cursor = "url(/ui/cursor/cursor-default.png),auto";
     });
 
     app.stage.on("pointermove", (event) => {

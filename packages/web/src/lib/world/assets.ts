@@ -14,6 +14,8 @@ export const NEST_TEXTURES = {
 
 export const DEFAULT_ANT_TEXTURE = "ant-down-0";
 
+export const CURSOR_DEFAULT = "url(/ui/cursor/cursor-default.png),auto";
+
 export const initialiseWorldAssets = async () => {
   await Assets.load(Object.values(WORLD_ASSETS));
 
