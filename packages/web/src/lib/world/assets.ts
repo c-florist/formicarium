@@ -3,7 +3,7 @@ import { Assets } from "pixi.js";
 export const WORLD_ASSETS = {
   WORKER_ANT: { alias: "worker-ant", src: "/characters/worker-ant.json" },
   FOOD_SOURCE: { alias: "food", src: "/food/food-1.json" },
-  WORLD_MAP: { alias: "world-map", src: "/background/world-map-1.json" },
+  WORLD_MAP: { alias: "world-map", src: "/background/world-map-2.json" },
   // TERRAIN: { alias: "terrain", src: "/background/terrain.json" },
   NEST: { alias: "nest", src: "/nests/big-stump.json" },
 } as const;

@@ -38,6 +38,7 @@ export type TiledTileset = {
   tileheight: number;
   tilecount: number;
   columns: number;
+  spacing?: number;
 };
 
 export class TiledMapRenderer {
@@ -52,17 +53,24 @@ export class TiledMapRenderer {
     for (const tileset of this.map.tilesets) {
       const texture = await Assets.load(basePath + tileset.image);
       texture.source.scaleMode = "nearest";
-      // texture.source.alphaMode = "no-premultiply-alpha";
+      texture.source.alphaMode = "no-premultiply-alpha";
 
       // Create individual tile textures from the tileset
-      const { tilewidth, tileheight, columns, tilecount } = tileset;
+      const {
+        tilewidth,
+        tileheight,
+        columns,
+        tilecount,
+        spacing = 0,
+      } = tileset;
 
       for (let i = 0; i < tilecount; i++) {
         const col = i % columns;
         const row = Math.floor(i / columns);
 
-        const x = col * tilewidth;
-        const y = row * tileheight;
+        // Account for spacing between tiles
+        const x = col * (tilewidth + spacing);
+        const y = row * (tileheight + spacing);
 
         const tileTexture = new Texture({
           source: texture.source,

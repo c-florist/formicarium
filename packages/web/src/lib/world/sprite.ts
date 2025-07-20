@@ -8,5 +8,6 @@ export const createSpriteWithConfig = (
   const sprite = new Sprite(texture);
   sprite.anchor.set(config.anchor.x, config.anchor.y);
   sprite.scale.set(config.scale);
+
   return sprite;
 };

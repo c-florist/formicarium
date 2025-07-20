@@ -25,7 +25,7 @@ import { loadTiledMap } from "$lib/world/tiled";
 import type { WorldDto } from "@formicarium/domain";
 import { event } from "@tauri-apps/api";
 import { Application, Assets, Container, Sprite, Text } from "pixi.js";
-import { AdjustmentFilter, GodrayFilter } from "pixi-filters";
+import { AdjustmentFilter } from "pixi-filters";
 import { onDestroy, onMount } from "svelte";
 import config from "../../../../domain/src/systemConfig.json";
 
@@ -53,24 +53,12 @@ const initialisePixiApp = async () => {
   canvasContainer.appendChild(app.canvas);
 
   const adjustmentFilter = new AdjustmentFilter({
-    gamma: 0.85,
-    brightness: 1.1,
-    saturation: 1.1,
-  });
-
-  godrayFilter = new GodrayFilter({
-    angle: 30,
-    gain: 0.4,
-    lacunarity: 5,
-    parallel: true,
-    time: 0,
-    // Top-left light source
-    // center: [0.4, 2],
-    alpha: 0.4,
+    gamma: 0.9,
+    saturation: 1.05,
   });
 
   viewport.addChild(worldContainer);
-  viewport.filters = [adjustmentFilter, godrayFilter];
+  viewport.filters = [adjustmentFilter];
 
   app.stage.addChild(viewport);
   app.stage.addChild(uiContainer);
@@ -79,7 +67,7 @@ const initialisePixiApp = async () => {
 
 const initialiseWorld = async (worldData: WorldDto) => {
   // Load and render Tiled map
-  const tiledRenderer = await loadTiledMap("/background/world-map-1.json");
+  const tiledRenderer = await loadTiledMap("/background/world-map-2.json");
   await tiledRenderer.loadTilesets();
   const mapScale = 3;
   const background = tiledRenderer.renderMap(mapScale);
@@ -120,7 +108,7 @@ const initialiseWorld = async (worldData: WorldDto) => {
     }
   });
 
-  // Setup animation ticker
+  // Setup animation tickers
   let frameCounter = 0;
   const animationSpeed = config.rendering.animationSpeed;
 
@@ -150,7 +138,7 @@ const initialiseWorld = async (worldData: WorldDto) => {
     if (!godrayFilter) {
       return;
     }
-    godrayFilter.time += 0.003;
+    godrayFilter.time += 0.001;
   });
 };
 
