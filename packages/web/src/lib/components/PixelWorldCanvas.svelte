@@ -34,8 +34,6 @@ const viewport = new Container();
 const uiContainer = new Container();
 const worldContainer = new Container();
 
-let godrayFilter = $state<GodrayFilter>();
-
 let canvasContainer: HTMLDivElement;
 
 const workerAntAssets = Assets.get(WORLD_ASSETS.WORKER_ANT.alias);
@@ -132,13 +130,6 @@ const initialiseWorld = async (worldData: WorldDto) => {
         }
       }
     }
-  });
-
-  app.ticker.add(() => {
-    if (!godrayFilter) {
-      return;
-    }
-    godrayFilter.time += 0.001;
   });
 };
 
