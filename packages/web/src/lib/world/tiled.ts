@@ -31,14 +31,21 @@ export type TiledChunk = {
 export type TiledTileset = {
   firstgid: number;
   name: string;
-  image: string;
-  imagewidth: number;
-  imageheight: number;
+  image?: string;
+  imagewidth?: number;
+  imageheight?: number;
   tilewidth: number;
   tileheight: number;
   tilecount: number;
-  columns: number;
+  columns?: number;
   spacing?: number;
+  tiles?: TiledTileData[];
+};
+
+export type TiledTileData = {
+  id: number;
+  type?: string;
+  image?: string;
 };
 
 export class TiledMapRenderer {
@@ -51,34 +58,47 @@ export class TiledMapRenderer {
 
   async loadTilesets(basePath = "/background/") {
     for (const tileset of this.map.tilesets) {
-      const texture = await Assets.load(basePath + tileset.image);
-      texture.source.scaleMode = "nearest";
-      texture.source.alphaMode = "no-premultiply-alpha";
+      if (tileset.image) {
+        // Single tileset image - original logic
+        const texture = await Assets.load(basePath + tileset.image);
+        texture.source.scaleMode = "nearest";
+        texture.source.alphaMode = "no-premultiply-alpha";
 
-      // Create individual tile textures from the tileset
-      const {
-        tilewidth,
-        tileheight,
-        columns,
-        tilecount,
-        spacing = 0,
-      } = tileset;
+        const {
+          tilewidth,
+          tileheight,
+          columns = 1,
+          tilecount,
+          spacing = 0,
+        } = tileset;
 
-      for (let i = 0; i < tilecount; i++) {
-        const col = i % columns;
-        const row = Math.floor(i / columns);
+        for (let i = 0; i < tilecount; i++) {
+          const col = i % columns;
+          const row = Math.floor(i / columns);
 
-        // Account for spacing between tiles
-        const x = col * (tilewidth + spacing);
-        const y = row * (tileheight + spacing);
+          const x = col * (tilewidth + spacing);
+          const y = row * (tileheight + spacing);
 
-        const tileTexture = new Texture({
-          source: texture.source,
-          frame: new Rectangle(x, y, tilewidth, tileheight),
-        });
+          const tileTexture = new Texture({
+            source: texture.source,
+            frame: new Rectangle(x, y, tilewidth, tileheight),
+          });
 
-        // Store with global tile ID (firstgid + local tile index)
-        this.tilesetTextures.set(tileset.firstgid + i, tileTexture);
+          this.tilesetTextures.set(tileset.firstgid + i, tileTexture);
+        }
+      } else if (tileset.tiles) {
+        // Collection tileset - each tile has its own image
+        for (const tileData of tileset.tiles) {
+          if (tileData.image) {
+            const texture = await Assets.load(basePath + tileData.image);
+            texture.source.scaleMode = "nearest";
+            texture.source.alphaMode = "no-premultiply-alpha";
+
+            // For collection tiles, use the image as-is
+            const globalTileId = tileset.firstgid + tileData.id;
+            this.tilesetTextures.set(globalTileId, texture);
+          }
+        }
       }
     }
   }

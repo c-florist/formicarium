@@ -12,6 +12,13 @@
 1. Ant population dynamics: Instead of spawning new ants randomly, nest should keep track of its current population and food and spawn new ants based on a predefined growth rate and how much food is available. When ants return to nest they should deposit their food in the nest's food storage. Ants should only despawn when they've returned to the nest.
 1. Add ant health to stats bubbles.
 1. World creation with parameters: Allow user to specify parameters (starting number of ants, starting number of food sources, number of obstacles, ant spawn rate, max food sources).
+1. Add load progress tracker when assets are loading:
+```javascript
+// Load with progress tracking
+const textures = await Assets.load(['sprite1.png', 'sprite2.png'],
+    (progress) => console.log(`Loading: ${Math.round(progress * 100)}%`)
+);
+```
 
 ### Improvements
 1. Add a collision system with obstacles, i.e. boulders.
