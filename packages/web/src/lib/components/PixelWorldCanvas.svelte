@@ -25,6 +25,7 @@ import { loadTiledMap } from "$lib/world/tiled";
 import type { WorldDto } from "@formicarium/domain";
 import { event } from "@tauri-apps/api";
 import { Application, Assets, Container, Sprite, Text } from "pixi.js";
+import { AdjustmentFilter, GodrayFilter } from "pixi-filters";
 import { onDestroy, onMount } from "svelte";
 import config from "../../../../domain/src/systemConfig.json";
 
@@ -32,6 +33,8 @@ const app = new Application();
 const viewport = new Container();
 const uiContainer = new Container();
 const worldContainer = new Container();
+
+let godrayFilter = $state<GodrayFilter>();
 
 let canvasContainer: HTMLDivElement;
 
@@ -49,7 +52,26 @@ const initialisePixiApp = async () => {
   });
   canvasContainer.appendChild(app.canvas);
 
+  const adjustmentFilter = new AdjustmentFilter({
+    gamma: 0.85,
+    brightness: 1.1,
+    saturation: 1.1,
+  });
+
+  godrayFilter = new GodrayFilter({
+    angle: 30,
+    gain: 0.4,
+    lacunarity: 5,
+    parallel: true,
+    time: 0,
+    // Top-left light source
+    // center: [0.4, 2],
+    alpha: 0.4,
+  });
+
   viewport.addChild(worldContainer);
+  viewport.filters = [adjustmentFilter, godrayFilter];
+
   app.stage.addChild(viewport);
   app.stage.addChild(uiContainer);
   app.stage.cursor = CURSOR_DEFAULT;
@@ -122,6 +144,13 @@ const initialiseWorld = async (worldData: WorldDto) => {
         }
       }
     }
+  });
+
+  app.ticker.add(() => {
+    if (!godrayFilter) {
+      return;
+    }
+    godrayFilter.time += 0.003;
   });
 };
 
