@@ -1,33 +1,7 @@
 import { NEST_TEXTURES, WORLD_ASSETS } from "$lib/world/assets";
-import { BACKGROUND_CONFIG, SPRITE_CONFIG } from "$lib/world/configs";
+import { SPRITE_CONFIG } from "$lib/world/configs";
 import type { NestDto } from "@formicarium/domain";
-import {
-  Assets,
-  Container,
-  Graphics,
-  Sprite,
-  Text,
-  TilingSprite,
-} from "pixi.js";
-
-export const createBackgroundContainer = async (
-  width: number,
-  height: number,
-) => {
-  const terrainAssets = Assets.get(WORLD_ASSETS.TERRAIN.alias);
-  const darkGreenTiledTexture =
-    terrainAssets.textures[BACKGROUND_CONFIG.terrainTileNames[0]];
-  const terrainContainer = new Container();
-
-  const terrainSprite = new TilingSprite({
-    texture: darkGreenTiledTexture,
-    width,
-    height,
-  });
-  terrainContainer.addChild(terrainSprite);
-
-  return terrainContainer;
-};
+import { Assets, Container, Graphics, Sprite, Text } from "pixi.js";
 
 export const createNestContainer = async (nestDto: NestDto) => {
   const nestContainer = new Container();

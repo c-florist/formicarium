@@ -15,7 +15,6 @@ export const ANIMATION_CONFIG = {
 
 export const BACKGROUND_CONFIG = {
   tileSize: 16,
-  tint: 0x9caf88,
   terrainTileNames: [
     "grass-dark-0",
     "grass-dark-1",
@@ -39,8 +38,9 @@ export const FOOD_SOURCE_CONFIG = {
 
 export const LAYERS = {
   BACKGROUND: 0,
-  DECORATION: 1,
-  ENTITIES: 2,
+  MAP: 1,
+  STATIC_OBJECTS: 2,
+  ENTITIES: 3,
 } as const;
 
 export type AntSprite = {

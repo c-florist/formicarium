@@ -19,12 +19,9 @@ import {
   LAYERS,
   SPRITE_CONFIG,
 } from "$lib/world/configs";
-import {
-  createBackgroundContainer,
-  createNestContainer,
-  createStatsBubble,
-} from "$lib/world/render";
+import { createNestContainer, createStatsBubble } from "$lib/world/render";
 import { createSpriteWithConfig } from "$lib/world/sprite";
+import { loadTiledMap } from "$lib/world/tiled";
 import type { WorldDto } from "@formicarium/domain";
 import { event } from "@tauri-apps/api";
 import { Application, Assets, Container, Sprite, Text } from "pixi.js";
@@ -59,14 +56,15 @@ const initialisePixiApp = async () => {
 };
 
 const initialiseWorld = async (worldData: WorldDto) => {
-  const background = await createBackgroundContainer(
-    worldData.width,
-    worldData.height,
-  );
+  // Load and render Tiled map
+  const tiledRenderer = await loadTiledMap("/background/world-map-1.json");
+  await tiledRenderer.loadTilesets();
+  const mapScale = 3;
+  const background = tiledRenderer.renderMap(mapScale);
   worldContainer.addChildAt(background, LAYERS.BACKGROUND);
 
   const nest = await createNestContainer(worldData.nest);
-  worldContainer.addChildAt(nest, LAYERS.DECORATION);
+  worldContainer.addChildAt(nest, LAYERS.STATIC_OBJECTS);
 
   // Setup viewport dragging
   app.stage.eventMode = "static";
