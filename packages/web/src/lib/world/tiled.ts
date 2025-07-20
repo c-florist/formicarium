@@ -52,6 +52,7 @@ export class TiledMapRenderer {
     for (const tileset of this.map.tilesets) {
       const texture = await Assets.load(basePath + tileset.image);
       texture.source.scaleMode = "nearest";
+      texture.source.alphaMode = "no-premultiply-alpha";
 
       // Create individual tile textures from the tileset
       const { tilewidth, tileheight, columns, tilecount } = tileset;
