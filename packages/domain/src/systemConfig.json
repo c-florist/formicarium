@@ -25,9 +25,9 @@
   },
   "movement": {
     "wanderProbability": 0.05,
-    "speed": 2.0
+    "speed": 3.0
   },
   "rendering": {
-    "animationSpeed": 8
+    "animationSpeed": 6
   }
 }

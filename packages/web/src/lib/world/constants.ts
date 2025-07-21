@@ -1,13 +1,13 @@
 export const SPRITE_CONFIGS = {
   WORKER_ANT: {
-    scale: 1.8,
+    scale: 1.4,
     anchor: { x: 0.5, y: 0 },
     frameCount: 4,
     concealedRadius: 60,
     defaultTextureName: "ant-down-0",
   },
-  FOOD: { scale: 1.5, anchor: { x: 0.5, y: -1 } },
-  NEST: { scale: 4, anchor: { x: 0.5, y: 0.5 } },
+  FOOD: { scale: 1, anchor: { x: 0.5, y: -1 } },
+  NEST: { scale: 3, anchor: { x: 0.5, y: 0.5 } },
 } as const;
 
 export const LAYER_INDEX = {
