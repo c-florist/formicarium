@@ -8,6 +8,7 @@ export type SpriteConfig = {
 export type AntSprite = {
   sprite: Sprite;
   previousPosition: { x: number; y: number };
+  targetPosition: { x: number; y: number };
   direction: string;
   animationFrame: number;
 };

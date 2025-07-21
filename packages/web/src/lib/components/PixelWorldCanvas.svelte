@@ -78,24 +78,35 @@ const initialiseWorld = async (worldData: WorldDto) => {
   let frameCounter = 0;
   const animationSpeed = SYSTEM_CONFIG.rendering.animationSpeed;
 
-  app.ticker.add(() => {
+  app.ticker.add((ticker) => {
     frameCounter++;
-    if (frameCounter < animationSpeed) return;
-    frameCounter = 0;
+    if (frameCounter >= animationSpeed) {
+      frameCounter = 0;
+      for (const [, antData] of antSprites) {
+        if (antData.sprite.alpha > 0.9) {
+          antData.animationFrame =
+            (antData.animationFrame + 1) % SPRITE_CONFIGS.WORKER_ANT.frameCount;
+          const frameName = `ant-${antData.direction}-${antData.animationFrame}`;
+          antData.sprite.texture = workerAntAssets.textures[frameName];
 
-    for (const [, antData] of antSprites) {
-      if (antData.sprite.alpha > 0.9) {
-        antData.animationFrame =
-          (antData.animationFrame + 1) % SPRITE_CONFIGS.WORKER_ANT.frameCount;
-        const frameName = `ant-${antData.direction}-${antData.animationFrame}`;
-        antData.sprite.texture = workerAntAssets.textures[frameName];
-
-        const scale = SPRITE_CONFIGS.WORKER_ANT.scale;
-        if (antData.direction === "left") {
-          antData.sprite.scale.x = -scale;
-        } else {
-          antData.sprite.scale.x = scale;
+          const scale = SPRITE_CONFIGS.WORKER_ANT.scale;
+          if (antData.direction === "left") {
+            antData.sprite.scale.x = -scale;
+          } else {
+            antData.sprite.scale.x = scale;
+          }
         }
+      }
+    }
+
+    // Smoothly move ants
+    for (const [, antData] of antSprites) {
+      const { sprite, targetPosition } = antData;
+      if (targetPosition) {
+        const dx = targetPosition.x - sprite.x;
+        const dy = targetPosition.y - sprite.y;
+        sprite.x += dx * ticker.deltaTime * 0.1;
+        sprite.y += dy * ticker.deltaTime * 0.1;
       }
     }
   });
@@ -194,11 +205,14 @@ $effect(() => {
         workerAntAssets.textures[SPRITE_CONFIGS.WORKER_ANT.defaultTextureName],
         SPRITE_CONFIGS.WORKER_ANT,
       );
+      sprite.x = ant.x;
+      sprite.y = ant.y;
       worldContainer.addChild(sprite);
 
       antData = {
         sprite,
         previousPosition: { x: ant.x, y: ant.y },
+        targetPosition: { x: ant.x, y: ant.y },
         direction: "down",
         animationFrame: Math.floor(
           Math.random() * SPRITE_CONFIGS.WORKER_ANT.frameCount,
@@ -214,8 +228,7 @@ $effect(() => {
       const deltaX = ant.x - antData.previousPosition.x;
       const deltaY = ant.y - antData.previousPosition.y;
       antData.direction = calculateMovementDirection(deltaX, deltaY);
-      antData.sprite.x = ant.x;
-      antData.sprite.y = ant.y;
+      antData.targetPosition = { x: ant.x, y: ant.y };
       antData.sprite.alpha = calculateIfHiddenInNest(
         ant.x,
         ant.y,
