@@ -1,10 +1,11 @@
 use crate::components::dto::{AntDto, FoodSourceDto, NestDto, StatsDto, WorldDto};
 use crate::components::world::{Ant, AntState, FoodSource, Nest, Position, Velocity};
+use crate::engine::stats::Stats;
 use crate::systems::{
     ant_arrival_at_food_system, ant_arrival_at_nest_system, ant_dying_system, ant_lifecycle_system,
     apply_velocity_system, despawn_system, enforce_bounds_system, food_discovery_system,
     food_spawn_system, pheromone_decay_system, pheromone_emission_system,
-    pheromone_following_system, target_movement_system,
+    pheromone_following_system, target_movement_system, update_world_stats,
 };
 use crate::utils::maths::target_distance_sq;
 use hecs::World;
@@ -16,6 +17,7 @@ pub struct Simulation {
     width: f32,
     height: f32,
     rng: Pcg64,
+    stats: Stats,
 }
 
 impl Simulation {
@@ -74,6 +76,7 @@ impl Simulation {
             width,
             height,
             rng,
+            stats: Stats::default(),
         }
     }
 
@@ -102,6 +105,7 @@ impl Simulation {
         // Simulation-wide systems.
         apply_velocity_system(&mut self.world);
         enforce_bounds_system(&mut self.world, self.width, self.height);
+        update_world_stats(&mut self.world, &mut self.stats);
     }
 
     pub fn get_world_state_dto(&mut self) -> Result<WorldDto, &'static str> {
@@ -148,16 +152,9 @@ impl Simulation {
     }
 
     pub fn get_world_statistics_dto(&mut self) -> Result<StatsDto, &'static str> {
-        let ants = self.world.query::<(&Position, &Ant)>().iter().count();
-        let food_sources = self
-            .world
-            .query::<(&Position, &FoodSource)>()
-            .iter()
-            .count();
-
         Ok(StatsDto {
-            ant_count: ants as u32,
-            food_source_count: food_sources as u32,
+            ant_count: self.stats.ants,
+            food_source_count: self.stats.food_sources,
         })
     }
 }
@@ -227,6 +224,7 @@ mod tests {
     fn test_get_world_statistics_includes_all_expected_stats() {
         // 1. Setup
         let mut simulation = Simulation::new(100.0, 100.0);
+        simulation.tick();
 
         // 2. Action
         let dto = simulation.get_world_statistics_dto().unwrap();
