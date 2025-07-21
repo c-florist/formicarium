@@ -1,41 +1,15 @@
-import { NEST_TEXTURES, WORLD_ASSETS } from "$lib/world/assets";
-import { BACKGROUND_CONFIG, SPRITE_CONFIG } from "$lib/world/configs";
+import { ASSET_ALIASES } from "$lib/world/assets";
+import { SPRITE_CONFIGS } from "$lib/world/constants";
 import type { NestDto } from "@formicarium/domain";
-import {
-  Assets,
-  Container,
-  Graphics,
-  Sprite,
-  Text,
-  TilingSprite,
-} from "pixi.js";
-
-export const createBackgroundContainer = async (
-  width: number,
-  height: number,
-) => {
-  const terrainAssets = Assets.get(WORLD_ASSETS.TERRAIN.alias);
-  const darkGreenTiledTexture =
-    terrainAssets.textures[BACKGROUND_CONFIG.terrainTileNames[0]];
-  const terrainContainer = new Container();
-
-  const terrainSprite = new TilingSprite({
-    texture: darkGreenTiledTexture,
-    width,
-    height,
-  });
-  terrainContainer.addChild(terrainSprite);
-
-  return terrainContainer;
-};
+import { Assets, Container, Graphics, Sprite, Text } from "pixi.js";
 
 export const createNestContainer = async (nestDto: NestDto) => {
   const nestContainer = new Container();
 
-  const nestAssets = Assets.get(WORLD_ASSETS.NEST.alias);
-  const nestSprite = new Sprite(nestAssets.textures[NEST_TEXTURES.TREE]);
+  const nestTexture = Assets.get(ASSET_ALIASES.NEST);
+  const nestSprite = new Sprite(nestTexture);
 
-  const { anchor, scale } = SPRITE_CONFIG.NEST;
+  const { anchor, scale } = SPRITE_CONFIGS.NEST;
   nestSprite.anchor.set(anchor.x, anchor.y);
   nestSprite.x = nestDto.x;
   nestSprite.y = nestDto.y;

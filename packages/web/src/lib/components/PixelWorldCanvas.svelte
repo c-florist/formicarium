@@ -7,29 +7,22 @@ import {
   calculateIfHiddenInNest,
   calculateMovementDirection,
 } from "$lib/utils/maths";
+import { setupPanning } from "$lib/world/actions";
 import {
+  ASSET_ALIASES,
   CURSOR_DEFAULT,
-  DEFAULT_ANT_TEXTURE,
-  WORLD_ASSETS,
+  WORLD_MAP_CONFIG,
 } from "$lib/world/assets";
-import {
-  ANIMATION_CONFIG,
-  type AntSprite,
-  FOOD_SOURCE_CONFIG,
-  LAYERS,
-  SPRITE_CONFIG,
-} from "$lib/world/configs";
-import {
-  createBackgroundContainer,
-  createNestContainer,
-  createStatsBubble,
-} from "$lib/world/render";
-import { createSpriteWithConfig } from "$lib/world/sprite";
+import { LAYER_INDEX, SPRITE_CONFIGS } from "$lib/world/constants";
+import { createNestContainer, createStatsBubble } from "$lib/world/render";
+import { type AntSprite, createSpriteWithConfig } from "$lib/world/sprite";
+import { TiledMapRenderer } from "$lib/world/tiled";
 import type { WorldDto } from "@formicarium/domain";
 import { event } from "@tauri-apps/api";
 import { Application, Assets, Container, Sprite, Text } from "pixi.js";
+import { AdjustmentFilter } from "pixi-filters";
 import { onDestroy, onMount } from "svelte";
-import config from "../../../../domain/src/systemConfig.json";
+import SYSTEM_CONFIG from "../../../../domain/src/systemConfig.json";
 
 const app = new Application();
 const viewport = new Container();
@@ -38,8 +31,8 @@ const worldContainer = new Container();
 
 let canvasContainer: HTMLDivElement;
 
-const workerAntAssets = Assets.get(WORLD_ASSETS.WORKER_ANT.alias);
-const foodSourceAssets = Assets.get(WORLD_ASSETS.FOOD_SOURCE.alias);
+const workerAntAssets = Assets.get(ASSET_ALIASES.WORKER_ANT);
+const foodSourceAssets = Assets.get(ASSET_ALIASES.FOOD_SOURCE);
 
 let antSprites: Map<number, AntSprite> = new Map();
 let foodSourceSprites: Map<number, Sprite> = new Map();
@@ -49,79 +42,76 @@ const initialisePixiApp = async () => {
   await app.init({
     resizeTo: canvasContainer,
     roundPixels: true,
+    sharedTicker: true,
+    premultipliedAlpha: false,
   });
   canvasContainer.appendChild(app.canvas);
 
+  const adjustmentFilter = new AdjustmentFilter({
+    gamma: 0.9,
+    saturation: 1.05,
+  });
+
   viewport.addChild(worldContainer);
+  viewport.filters = [adjustmentFilter];
+
   app.stage.addChild(viewport);
   app.stage.addChild(uiContainer);
   app.stage.cursor = CURSOR_DEFAULT;
 };
 
 const initialiseWorld = async (worldData: WorldDto) => {
-  const background = await createBackgroundContainer(
-    worldData.width,
-    worldData.height,
+  // Load and render Tiled map
+  const tiledRenderer = await TiledMapRenderer.fromFile(
+    WORLD_MAP_CONFIG.filePath,
   );
-  worldContainer.addChildAt(background, LAYERS.BACKGROUND);
+  tiledRenderer.loadTilesets();
+  const background = tiledRenderer.renderMap(WORLD_MAP_CONFIG.scale);
+  worldContainer.addChildAt(background, LAYER_INDEX.BACKGROUND);
 
   const nest = await createNestContainer(worldData.nest);
-  worldContainer.addChildAt(nest, LAYERS.DECORATION);
+  worldContainer.addChildAt(nest, LAYER_INDEX.STATIC_OBJECTS);
 
-  // Setup viewport dragging
-  app.stage.eventMode = "static";
-  app.stage.hitArea = app.screen;
-
-  let dragging = false;
-  let dragStart = { x: 0, y: 0 };
-
-  app.stage.on("pointerdown", (event) => {
-    dragging = true;
-    dragStart.x = event.global.x - viewport.x;
-    dragStart.y = event.global.y - viewport.y;
+  setupPanning({
+    appStage: app.stage,
+    hitArea: app.screen,
+    viewport: viewport,
+    worldData: worldData,
   });
 
-  app.stage.on("pointerup", () => {
-    dragging = false;
-  });
-  app.stage.on("pointerupoutside", () => {
-    dragging = false;
-  });
-
-  app.stage.on("pointermove", (event) => {
-    if (dragging) {
-      const newX = event.global.x - dragStart.x;
-      const newY = event.global.y - dragStart.y;
-      const { width: worldWidth, height: worldHeight } = worldData;
-      const { width: screenWidth, height: screenHeight } = app.screen;
-
-      viewport.x = Math.max(Math.min(newX, 0), screenWidth - worldWidth);
-      viewport.y = Math.max(Math.min(newY, 0), screenHeight - worldHeight);
-    }
-  });
-
-  // Setup animation ticker
+  // Setup animation tickers
   let frameCounter = 0;
-  const animationSpeed = config.rendering.animationSpeed;
+  const animationSpeed = SYSTEM_CONFIG.rendering.animationSpeed;
 
-  app.ticker.add(() => {
+  app.ticker.add((ticker) => {
     frameCounter++;
-    if (frameCounter < animationSpeed) return;
-    frameCounter = 0;
+    if (frameCounter >= animationSpeed) {
+      frameCounter = 0;
+      for (const [, antData] of antSprites) {
+        if (antData.sprite.alpha > 0.9) {
+          antData.animationFrame =
+            (antData.animationFrame + 1) % SPRITE_CONFIGS.WORKER_ANT.frameCount;
+          const frameName = `ant-${antData.direction}-${antData.animationFrame}`;
+          antData.sprite.texture = workerAntAssets.textures[frameName];
 
-    for (const [, antData] of antSprites) {
-      if (antData.sprite.alpha > 0.9) {
-        antData.animationFrame =
-          (antData.animationFrame + 1) % ANIMATION_CONFIG.antFrameCount;
-        const frameName = `ant-${antData.direction}-${antData.animationFrame}`;
-        antData.sprite.texture = workerAntAssets.textures[frameName];
-
-        const scale = SPRITE_CONFIG.ANT.scale;
-        if (antData.direction === "left") {
-          antData.sprite.scale.x = -scale;
-        } else {
-          antData.sprite.scale.x = scale;
+          const scale = SPRITE_CONFIGS.WORKER_ANT.scale;
+          if (antData.direction === "left") {
+            antData.sprite.scale.x = -scale;
+          } else {
+            antData.sprite.scale.x = scale;
+          }
         }
+      }
+    }
+
+    // Smoothly move ants
+    for (const [, antData] of antSprites) {
+      const { sprite, targetPosition } = antData;
+      if (targetPosition) {
+        const dx = targetPosition.x - sprite.x;
+        const dy = targetPosition.y - sprite.y;
+        sprite.x += dx * ticker.deltaTime * 0.1;
+        sprite.y += dy * ticker.deltaTime * 0.1;
       }
     }
   });
@@ -195,7 +185,7 @@ $effect(() => {
       const textureName = textureNames[deterministicTextureIndex];
       const texture = foodSourceAssets.textures[textureName];
 
-      foodSprite = createSpriteWithConfig(texture, SPRITE_CONFIG.FOOD);
+      foodSprite = createSpriteWithConfig(texture, SPRITE_CONFIGS.FOOD);
       worldContainer.addChild(foodSprite);
       foodSourceSprites.set(foodSource.id, foodSprite);
     }
@@ -207,7 +197,7 @@ $effect(() => {
     statsBubble.visible = showStats;
     foodSprite.alpha = Math.max(
       0.15,
-      foodSource.amount / FOOD_SOURCE_CONFIG.maxAmount,
+      foodSource.amount / SYSTEM_CONFIG.world.maxFoodSources,
     );
   }
 
@@ -217,30 +207,33 @@ $effect(() => {
 
     if (!antData) {
       const sprite = createSpriteWithConfig(
-        workerAntAssets.textures[DEFAULT_ANT_TEXTURE],
-        SPRITE_CONFIG.ANT,
+        workerAntAssets.textures[SPRITE_CONFIGS.WORKER_ANT.defaultTextureName],
+        SPRITE_CONFIGS.WORKER_ANT,
       );
+      sprite.x = ant.x;
+      sprite.y = ant.y;
       worldContainer.addChild(sprite);
 
       antData = {
         sprite,
         previousPosition: { x: ant.x, y: ant.y },
+        targetPosition: { x: ant.x, y: ant.y },
         direction: "down",
         animationFrame: Math.floor(
-          Math.random() * ANIMATION_CONFIG.antFrameCount,
+          Math.random() * SPRITE_CONFIGS.WORKER_ANT.frameCount,
         ),
       };
       antSprites.set(ant.id, antData);
     }
 
     if (ant.state.type === "dying") {
-      antData.sprite.alpha = ant.state.ticks / config.ant.deathAnimationTicks;
+      antData.sprite.alpha =
+        ant.state.ticks / SYSTEM_CONFIG.ant.deathAnimationTicks;
     } else {
       const deltaX = ant.x - antData.previousPosition.x;
       const deltaY = ant.y - antData.previousPosition.y;
       antData.direction = calculateMovementDirection(deltaX, deltaY);
-      antData.sprite.x = ant.x;
-      antData.sprite.y = ant.y;
+      antData.targetPosition = { x: ant.x, y: ant.y };
       antData.sprite.alpha = calculateIfHiddenInNest(
         ant.x,
         ant.y,
