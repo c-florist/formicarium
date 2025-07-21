@@ -15,4 +15,8 @@ impl Stats {
             food_in_nest: 0,
         }
     }
+
+    pub fn new() -> Self {
+        Stats::default()
+    }
 }

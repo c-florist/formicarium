@@ -89,7 +89,7 @@ impl Simulation {
         // Systems that determine decisions and state changes.
         food_discovery_system(&mut self.world);
         ant_arrival_at_food_system(&mut self.world);
-        ant_arrival_at_nest_system(&mut self.world);
+        ant_arrival_at_nest_system(&mut self.world, &mut self.stats);
 
         // Pheromone systems that modify the world state.
         pheromone_emission_system(&mut self.world, &mut self.rng);
@@ -155,6 +155,7 @@ impl Simulation {
         Ok(StatsDto {
             ant_count: self.stats.ants,
             food_source_count: self.stats.food_sources,
+            food_in_nest: self.stats.food_in_nest,
         })
     }
 }

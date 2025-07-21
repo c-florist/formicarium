@@ -55,6 +55,7 @@ pub struct FoodSourceDto {
 pub struct StatsDto {
     pub ant_count: u32,
     pub food_source_count: u32,
+    pub food_in_nest: u32,
 }
 
 #[derive(Serialize, Deserialize, TS, PartialEq, Debug, Clone)]

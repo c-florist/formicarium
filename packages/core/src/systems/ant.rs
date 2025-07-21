@@ -2,6 +2,7 @@ use crate::components::world::{
     Ant, AntState, FoodPayload, FoodSource, Nest, Position, Target, Velocity,
 };
 use crate::config::CONFIG;
+use crate::engine::stats::Stats;
 use crate::utils::maths::target_distance_sq;
 use hecs::{Entity, World};
 use rand::Rng;
@@ -61,7 +62,7 @@ pub fn ant_arrival_at_food_system(world: &mut World) {
     }
 }
 
-pub fn ant_arrival_at_nest_system(world: &mut World) {
+pub fn ant_arrival_at_nest_system(world: &mut World, stats: &mut Stats) {
     let mut to_update_to_wandering = Vec::new();
     let arrival_distance_sq = CONFIG.ant.arrival_distance.powi(2);
 
@@ -87,9 +88,13 @@ pub fn ant_arrival_at_nest_system(world: &mut World) {
 
     // Apply updates for ants that have returned to the nest
     for entity in to_update_to_wandering {
-        if let Ok(state) = world.query_one_mut::<&mut AntState>(entity) {
+        if let Ok((state, food_payload)) =
+            world.query_one_mut::<(&mut AntState, &mut FoodPayload)>(entity)
+        {
             *state = AntState::Wandering;
+            stats.food_in_nest += food_payload.0;
         }
+
         world
             .remove::<(FoodPayload, Target)>(entity)
             .expect("Failed to update ant state in ant_arrival_at_nest_system");
@@ -204,6 +209,7 @@ mod tests {
     fn test_ant_arrival_at_nest_system_updates_ant_components() {
         // 1. Setup
         let mut world = World::new();
+        let mut stats = Stats::new();
         let nest_entity = world.spawn((Position { x: 0.0, y: 0.0 }, Nest));
         let ant_entity = world.spawn((
             Position { x: 0.0, y: 0.0 },
@@ -214,7 +220,7 @@ mod tests {
         ));
 
         // 2. Action
-        ant_arrival_at_nest_system(&mut world);
+        ant_arrival_at_nest_system(&mut world, &mut stats);
 
         // 3. Assertion
         let ant_state = world.get::<&AntState>(ant_entity).unwrap();
@@ -223,6 +229,9 @@ mod tests {
         // Check that the ant no longer has a payload or target
         assert!(world.get::<&FoodPayload>(ant_entity).is_err());
         assert!(world.get::<&Target>(ant_entity).is_err());
+
+        // Check that the stats have been updated
+        assert_eq!(stats.food_in_nest, 10);
     }
 
     #[test]
