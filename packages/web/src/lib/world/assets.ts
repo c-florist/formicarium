@@ -1,30 +1,53 @@
-import { Assets } from "pixi.js";
+import { Assets, type AssetsManifest } from "pixi.js";
 
-export const WORLD_ASSETS = {
-  WORKER_ANT: { alias: "worker-ant", src: "/characters/worker-ant.json" },
-  FOOD_SOURCE: { alias: "food", src: "/food/food-1.json" },
-  WORLD_MAP: { alias: "world-map", src: "/background/world-map-2.json" },
-  NEST: { alias: "nest", src: "/nests/big-stump.png" },
+export const ASSET_ALIASES = {
+  WORKER_ANT: "worker-ant",
+  FOOD_SOURCE: "food-source",
+  WORLD_MAP: "world-map",
+  NEST: "nest",
 } as const;
-
-export const DEFAULT_ANT_TEXTURE = "ant-down-0";
 
 export const CURSOR_DEFAULT = "url(/ui/cursor/cursor-default.png),auto";
 
+const manifest: AssetsManifest = {
+  bundles: [
+    {
+      name: "world",
+      assets: [
+        {
+          alias: ASSET_ALIASES.WORKER_ANT,
+          src: "/characters/worker-ant.json",
+          data: {
+            scaleMode: "nearest",
+          },
+        },
+        {
+          alias: ASSET_ALIASES.FOOD_SOURCE,
+          src: "/food/food-1.json",
+          data: {
+            scaleMode: "nearest",
+          },
+        },
+        {
+          alias: ASSET_ALIASES.WORLD_MAP,
+          src: "/background/world-map-2.json",
+          data: {
+            scaleMode: "nearest",
+          },
+        },
+        {
+          alias: ASSET_ALIASES.NEST,
+          src: "/nests/big-stump.png",
+          data: {
+            scaleMode: "nearest",
+          },
+        },
+      ],
+    },
+  ],
+};
+
 export const initialiseWorldAssets = async () => {
-  await Assets.load(Object.values(WORLD_ASSETS));
-
-  const NEAREST_SCALED_ASSETS = [
-    WORLD_ASSETS.WORKER_ANT,
-    WORLD_ASSETS.FOOD_SOURCE,
-    WORLD_ASSETS.NEST,
-  ];
-
-  // Set scaleMode on all textures in certain assets that need to be scaled significantly
-  for (const asset of NEAREST_SCALED_ASSETS) {
-    const loadedAsset = Assets.get(asset.alias);
-    for (const key in loadedAsset.textures) {
-      loadedAsset.textures[key].source.scaleMode = "nearest";
-    }
-  }
+  await Assets.init({ manifest });
+  await Assets.loadBundle("world");
 };

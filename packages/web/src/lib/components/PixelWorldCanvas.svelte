@@ -7,11 +7,7 @@ import {
   calculateIfHiddenInNest,
   calculateMovementDirection,
 } from "$lib/utils/maths";
-import {
-  CURSOR_DEFAULT,
-  DEFAULT_ANT_TEXTURE,
-  WORLD_ASSETS,
-} from "$lib/world/assets";
+import { ASSET_ALIASES, CURSOR_DEFAULT } from "$lib/world/assets";
 import { LAYER_INDEX, SPRITE_CONFIGS } from "$lib/world/constants";
 import { createNestContainer, createStatsBubble } from "$lib/world/render";
 import { type AntSprite, createSpriteWithConfig } from "$lib/world/sprite";
@@ -30,8 +26,8 @@ const worldContainer = new Container();
 
 let canvasContainer: HTMLDivElement;
 
-const workerAntAssets = Assets.get(WORLD_ASSETS.WORKER_ANT.alias);
-const foodSourceAssets = Assets.get(WORLD_ASSETS.FOOD_SOURCE.alias);
+const workerAntAssets = Assets.get(ASSET_ALIASES.WORKER_ANT);
+const foodSourceAssets = Assets.get(ASSET_ALIASES.FOOD_SOURCE);
 
 let antSprites: Map<number, AntSprite> = new Map();
 let foodSourceSprites: Map<number, Sprite> = new Map();
@@ -41,6 +37,8 @@ const initialisePixiApp = async () => {
   await app.init({
     resizeTo: canvasContainer,
     roundPixels: true,
+    sharedTicker: true,
+    premultipliedAlpha: false,
   });
   canvasContainer.appendChild(app.canvas);
 
@@ -112,11 +110,11 @@ const initialiseWorld = async (worldData: WorldDto) => {
     for (const [, antData] of antSprites) {
       if (antData.sprite.alpha > 0.9) {
         antData.animationFrame =
-          (antData.animationFrame + 1) % SPRITE_CONFIGS.ANT.frameCount;
+          (antData.animationFrame + 1) % SPRITE_CONFIGS.WORKER_ANT.frameCount;
         const frameName = `ant-${antData.direction}-${antData.animationFrame}`;
         antData.sprite.texture = workerAntAssets.textures[frameName];
 
-        const scale = SPRITE_CONFIGS.ANT.scale;
+        const scale = SPRITE_CONFIGS.WORKER_ANT.scale;
         if (antData.direction === "left") {
           antData.sprite.scale.x = -scale;
         } else {
@@ -217,8 +215,8 @@ $effect(() => {
 
     if (!antData) {
       const sprite = createSpriteWithConfig(
-        workerAntAssets.textures[DEFAULT_ANT_TEXTURE],
-        SPRITE_CONFIGS.ANT,
+        workerAntAssets.textures[SPRITE_CONFIGS.WORKER_ANT.defaultTextureName],
+        SPRITE_CONFIGS.WORKER_ANT,
       );
       worldContainer.addChild(sprite);
 
@@ -227,7 +225,7 @@ $effect(() => {
         previousPosition: { x: ant.x, y: ant.y },
         direction: "down",
         animationFrame: Math.floor(
-          Math.random() * SPRITE_CONFIGS.ANT.frameCount,
+          Math.random() * SPRITE_CONFIGS.WORKER_ANT.frameCount,
         ),
       };
       antSprites.set(ant.id, antData);

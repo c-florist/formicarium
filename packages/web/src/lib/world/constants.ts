@@ -1,9 +1,10 @@
 export const SPRITE_CONFIGS = {
-  ANT: {
+  WORKER_ANT: {
     scale: 1.8,
     anchor: { x: 0.5, y: 0 },
     frameCount: 4,
     concealedRadius: 60,
+    defaultTextureName: "ant-down-0",
   },
   FOOD: { scale: 1.5, anchor: { x: 0.5, y: -1 } },
   NEST: { scale: 6, anchor: { x: 0.5, y: 0.5 } },

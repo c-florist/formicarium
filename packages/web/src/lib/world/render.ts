@@ -1,4 +1,4 @@
-import { WORLD_ASSETS } from "$lib/world/assets";
+import { ASSET_ALIASES } from "$lib/world/assets";
 import { SPRITE_CONFIGS } from "$lib/world/constants";
 import type { NestDto } from "@formicarium/domain";
 import { Assets, Container, Graphics, Sprite, Text } from "pixi.js";
@@ -6,7 +6,7 @@ import { Assets, Container, Graphics, Sprite, Text } from "pixi.js";
 export const createNestContainer = async (nestDto: NestDto) => {
   const nestContainer = new Container();
 
-  const nestTexture = Assets.get(WORLD_ASSETS.NEST.alias);
+  const nestTexture = Assets.get(ASSET_ALIASES.NEST);
   nestTexture.source.scaleMode = "nearest";
   const nestSprite = new Sprite(nestTexture);
 

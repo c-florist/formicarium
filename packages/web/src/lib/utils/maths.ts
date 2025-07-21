@@ -21,5 +21,5 @@ export const calculateIfHiddenInNest = (
   nestY: number,
 ) => {
   const distanceToNest = Math.sqrt((antX - nestX) ** 2 + (antY - nestY) ** 2);
-  return distanceToNest > SPRITE_CONFIGS.ANT.concealedRadius ? 1 : 0;
+  return distanceToNest > SPRITE_CONFIGS.WORKER_ANT.concealedRadius ? 1 : 0;
 };
