@@ -1,5 +1,5 @@
 import { WORLD_ASSETS } from "$lib/world/assets";
-import { SPRITE_CONFIG } from "$lib/world/configs";
+import { SPRITE_CONFIGS } from "$lib/world/constants";
 import type { NestDto } from "@formicarium/domain";
 import { Assets, Container, Graphics, Sprite, Text } from "pixi.js";
 
@@ -10,7 +10,7 @@ export const createNestContainer = async (nestDto: NestDto) => {
   nestTexture.source.scaleMode = "nearest";
   const nestSprite = new Sprite(nestTexture);
 
-  const { anchor, scale } = SPRITE_CONFIG.NEST;
+  const { anchor, scale } = SPRITE_CONFIGS.NEST;
   nestSprite.anchor.set(anchor.x, anchor.y);
   nestSprite.x = nestDto.x;
   nestSprite.y = nestDto.y;

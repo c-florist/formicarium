@@ -1,5 +1,9 @@
 import { Sprite, type Texture } from "pixi.js";
-import type { SpriteConfig } from "./configs";
+
+export type SpriteConfig = {
+  scale: number;
+  anchor: { x: number; y: number };
+};
 
 export type AntSprite = {
   sprite: Sprite;

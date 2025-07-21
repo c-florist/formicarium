@@ -1,4 +1,4 @@
-import { ANIMATION_CONFIG } from "$lib/world/configs";
+import { SPRITE_CONFIGS } from "$lib/world/constants";
 
 export const seededRandom = (seed: number) => {
   const x = Math.sin(seed) * 10000;
@@ -21,5 +21,5 @@ export const calculateIfHiddenInNest = (
   nestY: number,
 ) => {
   const distanceToNest = Math.sqrt((antX - nestX) ** 2 + (antY - nestY) ** 2);
-  return distanceToNest > ANIMATION_CONFIG.hideSpriteRadius ? 1 : 0;
+  return distanceToNest > SPRITE_CONFIGS.ANT.concealedRadius ? 1 : 0;
 };

@@ -12,11 +12,7 @@ import {
   DEFAULT_ANT_TEXTURE,
   WORLD_ASSETS,
 } from "$lib/world/assets";
-import {
-  ANIMATION_CONFIG,
-  LAYER_INDEX,
-  SPRITE_CONFIG,
-} from "$lib/world/configs";
+import { LAYER_INDEX, SPRITE_CONFIGS } from "$lib/world/constants";
 import { createNestContainer, createStatsBubble } from "$lib/world/render";
 import { type AntSprite, createSpriteWithConfig } from "$lib/world/sprite";
 import { loadTiledMap } from "$lib/world/tiled";
@@ -116,11 +112,11 @@ const initialiseWorld = async (worldData: WorldDto) => {
     for (const [, antData] of antSprites) {
       if (antData.sprite.alpha > 0.9) {
         antData.animationFrame =
-          (antData.animationFrame + 1) % ANIMATION_CONFIG.antFrameCount;
+          (antData.animationFrame + 1) % SPRITE_CONFIGS.ANT.frameCount;
         const frameName = `ant-${antData.direction}-${antData.animationFrame}`;
         antData.sprite.texture = workerAntAssets.textures[frameName];
 
-        const scale = SPRITE_CONFIG.ANT.scale;
+        const scale = SPRITE_CONFIGS.ANT.scale;
         if (antData.direction === "left") {
           antData.sprite.scale.x = -scale;
         } else {
@@ -199,7 +195,7 @@ $effect(() => {
       const textureName = textureNames[deterministicTextureIndex];
       const texture = foodSourceAssets.textures[textureName];
 
-      foodSprite = createSpriteWithConfig(texture, SPRITE_CONFIG.FOOD);
+      foodSprite = createSpriteWithConfig(texture, SPRITE_CONFIGS.FOOD);
       worldContainer.addChild(foodSprite);
       foodSourceSprites.set(foodSource.id, foodSprite);
     }
@@ -222,7 +218,7 @@ $effect(() => {
     if (!antData) {
       const sprite = createSpriteWithConfig(
         workerAntAssets.textures[DEFAULT_ANT_TEXTURE],
-        SPRITE_CONFIG.ANT,
+        SPRITE_CONFIGS.ANT,
       );
       worldContainer.addChild(sprite);
 
@@ -231,7 +227,7 @@ $effect(() => {
         previousPosition: { x: ant.x, y: ant.y },
         direction: "down",
         animationFrame: Math.floor(
-          Math.random() * ANIMATION_CONFIG.antFrameCount,
+          Math.random() * SPRITE_CONFIGS.ANT.frameCount,
         ),
       };
       antSprites.set(ant.id, antData);
