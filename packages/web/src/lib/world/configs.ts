@@ -3,7 +3,7 @@ import type { Sprite } from "pixi.js";
 export const SPRITE_CONFIG = {
   ANT: { scale: 1.8, anchor: { x: 0.5, y: 0 } },
   FOOD: { scale: 1.5, anchor: { x: 0.5, y: -1 } },
-  NEST: { scale: 3.5, anchor: { x: 0.5, y: 0.5 } },
+  NEST: { scale: 6, anchor: { x: 0.5, y: 0.5 } },
 } as const;
 export type SpriteConfig = (typeof SPRITE_CONFIG)[keyof typeof SPRITE_CONFIG];
 
@@ -37,9 +37,8 @@ export const FOOD_SOURCE_CONFIG = {
 
 export const LAYERS = {
   BACKGROUND: 0,
-  MAP: 1,
-  STATIC_OBJECTS: 2,
-  ENTITIES: 3,
+  STATIC_OBJECTS: 1,
+  ENTITIES: 2,
 } as const;
 
 export type AntSprite = {

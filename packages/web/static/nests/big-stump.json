@@ -1,16 +1,13 @@
 {
   "frames": {
-    "big-stump-0": {
+    "stump": {
       "frame": { "x": 68, "y": 48, "w": 32, "h": 32 }
-    },
-    "big-tree-0": {
-      "frame": { "x": 54, "y": 0, "w": 48, "h": 48 }
     }
   },
   "meta": {
     "image": "big-stump.png",
     "format": "RGBA8888",
-    "size": { "w": 171, "h": 285 },
+    "size": { "w": 32, "h": 32 },
     "scale": "1",
     "layers": [{ "name": "Layer", "opacity": 255, "blendMode": "normal" }]
   }
