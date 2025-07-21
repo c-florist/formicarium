@@ -8,7 +8,6 @@
 ## TODO
 
 ### Currently working on
-1. Tiled map: Create a seamless background for the world view that's bigger than the world itself. 256x256 (16x16).
 1. Ant population dynamics: Instead of spawning new ants randomly, nest should keep track of its current population and food and spawn new ants based on a predefined growth rate and how much food is available. When ants return to nest they should deposit their food in the nest's food storage. Ants should only despawn when they've returned to the nest.
 1. Add ant health to stats bubbles.
 1. World creation with parameters: Allow user to specify parameters (starting number of ants, starting number of food sources, number of obstacles, ant spawn rate, max food sources).
