@@ -148,7 +148,7 @@ export class TiledMapRenderer {
       sprite.scale.set(scale);
 
       const type = this.tileTypes.get(tileId);
-      if (type === "tree") {
+      if (type === "foreground") {
         foreground.addChild(sprite);
       } else {
         background.addChild(sprite);

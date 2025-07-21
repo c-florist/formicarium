@@ -26,7 +26,7 @@ const toggleStatsOverlay = () => {
 
 <div class="relative flex flex-col h-screen bg-stone-700">
   <Navbar>
-    <Popover text="Display entity statistics" position="bottom">
+    <Popover text="Toggle stats" position="bottom">
       <Button
         onClick={toggleStatsOverlay}
       >

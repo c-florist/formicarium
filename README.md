@@ -13,7 +13,6 @@
 1. World creation with parameters: Allow user to specify parameters (starting number of ants, starting number of food sources, number of obstacles, ant spawn rate, max food sources).
 
 ### Improvements
-1. Add a collision system with obstacles, i.e. boulders.
 1. Improve pheromone following system so it influences direction to specific food source instead of nearest one.
 1. Add `to_nest` pheromones.
 1. Visualise pheromone trails.
@@ -25,6 +24,7 @@
 1. Distinguish between `outside` and `inside` worlds and allow ants to go inside a nest and dig tunnels, lay eggs, feed the queen.
 1. Introduce predators and design a system of interaction with them.
 1. Support multiple ant colonies per world: Allow for up to X number of colonies per world, design interactions between them (often ants kill other ant colonies when discovered).
+1. Add a collision system with obstacles, i.e. boulders.
 
 ## Attributions to include
 
