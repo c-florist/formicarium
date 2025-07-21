@@ -11,6 +11,7 @@ import { setupPanning } from "$lib/world/actions";
 import {
   ASSET_ALIASES,
   CURSOR_DEFAULT,
+  FOOD_ASSET_ALIASES,
   WORLD_MAP_CONFIG,
 } from "$lib/world/assets";
 import { LAYER_INDEX, SPRITE_CONFIGS } from "$lib/world/constants";
@@ -32,7 +33,7 @@ const worldContainer = new Container();
 let canvasContainer: HTMLDivElement;
 
 const workerAntAssets = Assets.get(ASSET_ALIASES.WORKER_ANT);
-const foodSourceAssets = Assets.get(ASSET_ALIASES.FOOD_SOURCE);
+const foodSourceAssets = Assets.get(FOOD_ASSET_ALIASES);
 
 let antSprites: Map<number, AntSprite> = new Map();
 let foodSourceSprites: Map<number, Sprite> = new Map();
@@ -187,10 +188,9 @@ $effect(() => {
     statsBubble.getChildAt<Text>(1).text = `Amount: ${foodSource.amount}`;
 
     if (!foodSprite) {
-      const textureNames = Object.keys(foodSourceAssets.textures);
-      const deterministicTextureIndex = foodSource.id % textureNames.length;
-      const textureName = textureNames[deterministicTextureIndex];
-      const texture = foodSourceAssets.textures[textureName];
+      const deterministicTextureIndex =
+        foodSource.id % FOOD_ASSET_ALIASES.length;
+      const texture = foodSourceAssets[deterministicTextureIndex];
 
       foodSprite = createSpriteWithConfig(texture, SPRITE_CONFIGS.FOOD);
       foodSprite.zIndex = LAYER_INDEX.ENTITIES;

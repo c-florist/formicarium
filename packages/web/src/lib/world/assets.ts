@@ -7,7 +7,10 @@ export const WORLD_MAP_CONFIG = {
 
 export const ASSET_ALIASES = {
   WORKER_ANT: "worker-ant",
-  FOOD_SOURCE: "food-source",
+  BANANAS: "bananas",
+  BREAD: "bread",
+  CORN: "corn",
+  KIWI: "kiwi",
   WORLD_MAP: "world-map",
   NEST: "nest",
   GROUND_TILESET: "ground-tileset",
@@ -25,6 +28,13 @@ export const ASSET_ALIASES = {
   PINK_FLOWER: "pink-flower",
 } as const;
 
+export const FOOD_ASSET_ALIASES = [
+  ASSET_ALIASES.BANANAS,
+  ASSET_ALIASES.BREAD,
+  ASSET_ALIASES.CORN,
+  ASSET_ALIASES.KIWI,
+];
+
 export const CURSOR_DEFAULT = "url(/ui/cursor/cursor-default.png),auto";
 
 const manifest: AssetsManifest = {
@@ -37,8 +47,20 @@ const manifest: AssetsManifest = {
           src: "/characters/worker-ant.json",
         },
         {
-          alias: ASSET_ALIASES.FOOD_SOURCE,
-          src: "/food/food-1.json",
+          alias: ASSET_ALIASES.BANANAS,
+          src: "/food/bananas.png",
+        },
+        {
+          alias: ASSET_ALIASES.BREAD,
+          src: "/food/bread.png",
+        },
+        {
+          alias: ASSET_ALIASES.CORN,
+          src: "/food/corn.png",
+        },
+        {
+          alias: ASSET_ALIASES.KIWI,
+          src: "/food/kiwi.png",
         },
         {
           alias: ASSET_ALIASES.WORLD_MAP,
@@ -48,7 +70,6 @@ const manifest: AssetsManifest = {
           alias: ASSET_ALIASES.NEST,
           src: "/nests/big-stump.png",
         },
-        // Tilesets
         {
           alias: ASSET_ALIASES.GROUND_TILESET,
           src: "/background/ground-tileset.png",
@@ -70,7 +91,6 @@ const manifest: AssetsManifest = {
           alias: ASSET_ALIASES.SMALL_TREE,
           src: "/background/small-tree.png",
         },
-        // Individual Obstacles/Decorations
         {
           alias: ASSET_ALIASES.SMALL_STUMP,
           src: "/background/small-stump.png",

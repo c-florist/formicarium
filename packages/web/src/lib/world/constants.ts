@@ -6,7 +6,7 @@ export const SPRITE_CONFIGS = {
     concealedRadius: 60,
     defaultTextureName: "ant-down-0",
   },
-  FOOD: { scale: 1, anchor: { x: 0.5, y: -1 } },
+  FOOD: { scale: 0.5, anchor: { x: 0.5, y: -1 } },
   NEST: { scale: 3, anchor: { x: 0.5, y: 0.5 } },
 } as const;
 
