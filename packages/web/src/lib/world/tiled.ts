@@ -56,13 +56,11 @@ export class TiledMapRenderer {
     this.map = map;
   }
 
-  async loadTilesets(basePath = "/background/") {
+  async loadTilesets() {
     for (const tileset of this.map.tilesets) {
       if (tileset.image) {
-        // Single tileset image - original logic
-        const texture = await Assets.load(basePath + tileset.image);
-        texture.source.scaleMode = "nearest";
-        texture.source.alphaMode = "no-premultiply-alpha";
+        // Tileset with tiles embedded in one image
+        const texture = await Assets.get(tileset.name);
 
         const {
           tilewidth,
@@ -87,10 +85,11 @@ export class TiledMapRenderer {
           this.tilesetTextures.set(tileset.firstgid + i, tileTexture);
         }
       } else if (tileset.tiles) {
-        // Collection tileset - each tile has its own image
+        // Otherwise it's a collection of individual images
         for (const tileData of tileset.tiles) {
           if (tileData.image) {
-            const texture = await Assets.load(basePath + tileData.image);
+            const textureName = tileData.image.replace(/\.png$/, "");
+            const texture = await Assets.get(textureName);
             texture.source.scaleMode = "nearest";
             texture.source.alphaMode = "no-premultiply-alpha";
 
@@ -119,13 +118,7 @@ export class TiledMapRenderer {
         }
       } else if (layer.data) {
         // Handle fixed-size maps
-        this.renderLayerData(
-          layer.data,
-          layer.width,
-          layer.height,
-          layerContainer,
-          scale,
-        );
+        this.renderLayerData(layer.data, layer.width, layerContainer, scale);
       }
 
       mapContainer.addChild(layerContainer);
@@ -135,7 +128,7 @@ export class TiledMapRenderer {
   }
 
   private renderChunk(chunk: TiledChunk, container: Container, scale = 1) {
-    const { data, width, height, x: chunkX, y: chunkY } = chunk;
+    const { data, width, x: chunkX, y: chunkY } = chunk;
 
     for (let i = 0; i < data.length; i++) {
       const tileId = data[i];
@@ -162,7 +155,6 @@ export class TiledMapRenderer {
   private renderLayerData(
     data: number[],
     width: number,
-    height: number,
     container: Container,
     scale = 1,
   ) {

@@ -60,7 +60,7 @@ const initialiseWorld = async (worldData: WorldDto) => {
   // Load and render Tiled map
   const tiledRenderer = await loadTiledMap("/background/world-map-2.json");
   await tiledRenderer.loadTilesets();
-  const mapScale = 2;
+  const mapScale = 2.5;
   const background = tiledRenderer.renderMap(mapScale);
   worldContainer.addChildAt(background, LAYER_INDEX.BACKGROUND);
 
