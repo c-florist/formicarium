@@ -1,5 +1,10 @@
 import { Assets, type AssetsManifest } from "pixi.js";
 
+export const WORLD_MAP_CONFIG = {
+  filePath: "/background/world-map-2.json",
+  scale: 2.5,
+};
+
 export const ASSET_ALIASES = {
   WORKER_ANT: "worker-ant",
   FOOD_SOURCE: "food-source",
@@ -37,7 +42,7 @@ const manifest: AssetsManifest = {
         },
         {
           alias: ASSET_ALIASES.WORLD_MAP,
-          src: "/background/world-map-2.json",
+          src: WORLD_MAP_CONFIG.filePath,
         },
         {
           alias: ASSET_ALIASES.NEST,

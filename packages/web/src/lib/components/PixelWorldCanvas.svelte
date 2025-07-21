@@ -8,11 +8,15 @@ import {
   calculateMovementDirection,
 } from "$lib/utils/maths";
 import { setupPanning } from "$lib/world/actions";
-import { ASSET_ALIASES, CURSOR_DEFAULT } from "$lib/world/assets";
+import {
+  ASSET_ALIASES,
+  CURSOR_DEFAULT,
+  WORLD_MAP_CONFIG,
+} from "$lib/world/assets";
 import { LAYER_INDEX, SPRITE_CONFIGS } from "$lib/world/constants";
 import { createNestContainer, createStatsBubble } from "$lib/world/render";
 import { type AntSprite, createSpriteWithConfig } from "$lib/world/sprite";
-import { loadTiledMap } from "$lib/world/tiled";
+import { TiledMapRenderer } from "$lib/world/tiled";
 import type { WorldDto } from "@formicarium/domain";
 import { event } from "@tauri-apps/api";
 import { Application, Assets, Container, Sprite, Text } from "pixi.js";
@@ -58,10 +62,11 @@ const initialisePixiApp = async () => {
 
 const initialiseWorld = async (worldData: WorldDto) => {
   // Load and render Tiled map
-  const tiledRenderer = await loadTiledMap("/background/world-map-2.json");
-  await tiledRenderer.loadTilesets();
-  const mapScale = 2.5;
-  const background = tiledRenderer.renderMap(mapScale);
+  const tiledRenderer = await TiledMapRenderer.fromFile(
+    WORLD_MAP_CONFIG.filePath,
+  );
+  tiledRenderer.loadTilesets();
+  const background = tiledRenderer.renderMap(WORLD_MAP_CONFIG.scale);
   worldContainer.addChildAt(background, LAYER_INDEX.BACKGROUND);
 
   const nest = await createNestContainer(worldData.nest);

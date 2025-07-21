@@ -56,11 +56,17 @@ export class TiledMapRenderer {
     this.map = map;
   }
 
-  async loadTilesets() {
+  static async fromFile(path: string) {
+    const mapFile = await fetch(path);
+    const map = await mapFile.json();
+    return new TiledMapRenderer(map);
+  }
+
+  loadTilesets() {
     for (const tileset of this.map.tilesets) {
       if (tileset.image) {
         // Tileset with tiles embedded in one image
-        const texture = await Assets.get(tileset.name);
+        const texture = Assets.get(tileset.name);
 
         const {
           tilewidth,
@@ -79,6 +85,7 @@ export class TiledMapRenderer {
 
           const tileTexture = new Texture({
             source: texture.source,
+
             frame: new Rectangle(x, y, tilewidth, tileheight),
           });
 
@@ -89,9 +96,7 @@ export class TiledMapRenderer {
         for (const tileData of tileset.tiles) {
           if (tileData.image) {
             const textureName = tileData.image.replace(/\.png$/, "");
-            const texture = await Assets.get(textureName);
-            texture.source.scaleMode = "nearest";
-            texture.source.alphaMode = "no-premultiply-alpha";
+            const texture = Assets.get(textureName);
 
             // For collection tiles, use the image as-is
             const globalTileId = tileset.firstgid + tileData.id;
@@ -102,22 +107,13 @@ export class TiledMapRenderer {
     }
   }
 
-  renderMap(scale = 1) {
+  renderMap(scale: number) {
     const mapContainer = new Container();
 
     for (const layer of this.map.layers) {
-      if (layer.type !== "tilelayer") continue;
-
       const layerContainer = new Container();
-      layerContainer.name = layer.name;
-
-      if (layer.chunks) {
-        // Handle infinite maps with chunks
-        for (const chunk of layer.chunks) {
-          this.renderChunk(chunk, layerContainer, scale);
-        }
-      } else if (layer.data) {
-        // Handle fixed-size maps
+      layerContainer.label = layer.name;
+      if (layer.data) {
         this.renderLayerData(layer.data, layer.width, layerContainer, scale);
       }
 
@@ -127,43 +123,22 @@ export class TiledMapRenderer {
     return mapContainer;
   }
 
-  private renderChunk(chunk: TiledChunk, container: Container, scale = 1) {
-    const { data, width, x: chunkX, y: chunkY } = chunk;
-
-    for (let i = 0; i < data.length; i++) {
-      const tileId = data[i];
-      if (tileId === 0) continue; // Empty tile
-
-      const texture = this.tilesetTextures.get(tileId);
-      if (!texture) continue;
-
-      const localX = i % width;
-      const localY = Math.floor(i / width);
-
-      const worldX = (chunkX + localX) * this.map.tilewidth * scale;
-      const worldY = (chunkY + localY) * this.map.tileheight * scale;
-
-      const sprite = new Sprite(texture);
-      sprite.x = worldX;
-      sprite.y = worldY;
-      sprite.scale.set(scale);
-
-      container.addChild(sprite);
-    }
-  }
-
   private renderLayerData(
     data: number[],
     width: number,
     container: Container,
-    scale = 1,
+    scale: number,
   ) {
     for (let i = 0; i < data.length; i++) {
       const tileId = data[i];
-      if (tileId === 0) continue; // Empty tile
+      if (tileId === 0) {
+        continue;
+      }
 
       const texture = this.tilesetTextures.get(tileId);
-      if (!texture) continue;
+      if (!texture) {
+        continue;
+      }
 
       const x = (i % width) * this.map.tilewidth * scale;
       const y = Math.floor(i / width) * this.map.tileheight * scale;
@@ -183,9 +158,4 @@ export class TiledMapRenderer {
       height: this.map.height * this.map.tileheight,
     };
   }
-}
-
-export async function loadTiledMap(mapPath: string) {
-  const mapData = (await fetch(mapPath).then((res) => res.json())) as TiledMap;
-  return new TiledMapRenderer(mapData);
 }
