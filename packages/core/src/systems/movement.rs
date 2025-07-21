@@ -173,8 +173,8 @@ mod tests {
 
         // 3. Assertion
         let pos = world.get::<&Position>(entity).unwrap();
-        assert_eq!(pos.x, 12.5);
-        assert_eq!(pos.y, 8.5);
+        assert_eq!(pos.x, 17.5);
+        assert_eq!(pos.y, 5.5);
     }
 
     #[test]

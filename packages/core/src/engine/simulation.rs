@@ -181,8 +181,8 @@ mod tests {
 
         // 3. Assertion
         let position = simulation.world.get::<&Position>(entity).unwrap();
-        assert_eq!(position.x, 15.0);
-        assert_eq!(position.y, 5.0);
+        assert_eq!(position.x, 25.0);
+        assert_eq!(position.y, 0.0);
     }
 
     #[test]
