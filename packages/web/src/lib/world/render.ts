@@ -7,7 +7,6 @@ export const createNestContainer = async (nestDto: NestDto) => {
   const nestContainer = new Container();
 
   const nestTexture = Assets.get(ASSET_ALIASES.NEST);
-  nestTexture.source.scaleMode = "nearest";
   const nestSprite = new Sprite(nestTexture);
 
   const { anchor, scale } = SPRITE_CONFIGS.NEST;

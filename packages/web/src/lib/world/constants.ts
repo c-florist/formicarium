@@ -7,7 +7,7 @@ export const SPRITE_CONFIGS = {
     defaultTextureName: "ant-down-0",
   },
   FOOD: { scale: 1.5, anchor: { x: 0.5, y: -1 } },
-  NEST: { scale: 6, anchor: { x: 0.5, y: 0.5 } },
+  NEST: { scale: 4, anchor: { x: 0.5, y: 0.5 } },
 } as const;
 
 export const LAYER_INDEX = {

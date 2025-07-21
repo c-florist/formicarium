@@ -7,6 +7,7 @@ import {
   calculateIfHiddenInNest,
   calculateMovementDirection,
 } from "$lib/utils/maths";
+import { setupPanning } from "$lib/world/actions";
 import { ASSET_ALIASES, CURSOR_DEFAULT } from "$lib/world/assets";
 import { LAYER_INDEX, SPRITE_CONFIGS } from "$lib/world/constants";
 import { createNestContainer, createStatsBubble } from "$lib/world/render";
@@ -66,36 +67,11 @@ const initialiseWorld = async (worldData: WorldDto) => {
   const nest = await createNestContainer(worldData.nest);
   worldContainer.addChildAt(nest, LAYER_INDEX.STATIC_OBJECTS);
 
-  // Setup viewport dragging
-  app.stage.eventMode = "static";
-  app.stage.hitArea = app.screen;
-
-  let dragging = false;
-  let dragStart = { x: 0, y: 0 };
-
-  app.stage.on("pointerdown", (event) => {
-    dragging = true;
-    dragStart.x = event.global.x - viewport.x;
-    dragStart.y = event.global.y - viewport.y;
-  });
-
-  app.stage.on("pointerup", () => {
-    dragging = false;
-  });
-  app.stage.on("pointerupoutside", () => {
-    dragging = false;
-  });
-
-  app.stage.on("pointermove", (event) => {
-    if (dragging) {
-      const newX = event.global.x - dragStart.x;
-      const newY = event.global.y - dragStart.y;
-      const { width: worldWidth, height: worldHeight } = worldData;
-      const { width: screenWidth, height: screenHeight } = app.screen;
-
-      viewport.x = Math.max(Math.min(newX, 0), screenWidth - worldWidth);
-      viewport.y = Math.max(Math.min(newY, 0), screenHeight - worldHeight);
-    }
+  setupPanning({
+    appStage: app.stage,
+    hitArea: app.screen,
+    viewport: viewport,
+    worldData: worldData,
   });
 
   // Setup animation tickers
