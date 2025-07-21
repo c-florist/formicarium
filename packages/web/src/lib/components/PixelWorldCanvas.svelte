@@ -54,6 +54,7 @@ const initialisePixiApp = async () => {
 
   viewport.addChild(worldContainer);
   viewport.filters = [adjustmentFilter];
+  worldContainer.sortableChildren = true;
 
   app.stage.addChild(viewport);
   app.stage.addChild(uiContainer);
@@ -66,11 +67,16 @@ const initialiseWorld = async (worldData: WorldDto) => {
     WORLD_MAP_CONFIG.filePath,
   );
   tiledRenderer.loadTilesets();
-  const background = tiledRenderer.renderMap(WORLD_MAP_CONFIG.scale);
-  worldContainer.addChildAt(background, LAYER_INDEX.BACKGROUND);
+  const { background, foreground } = tiledRenderer.renderMap(
+    WORLD_MAP_CONFIG.scale,
+  );
+  background.zIndex = LAYER_INDEX.BACKGROUND;
+  foreground.zIndex = LAYER_INDEX.FOREGROUND;
+  worldContainer.addChild(background, foreground);
 
   const nest = await createNestContainer(worldData.nest);
-  worldContainer.addChildAt(nest, LAYER_INDEX.STATIC_OBJECTS);
+  nest.zIndex = LAYER_INDEX.STATIC_OBJECTS;
+  worldContainer.addChild(nest);
 
   setupPanning({
     appStage: app.stage,
@@ -173,6 +179,7 @@ $effect(() => {
 
     if (!statsBubble) {
       statsBubble = createStatsBubble(`Amount: ${foodSource.amount}`);
+      statsBubble.zIndex = LAYER_INDEX.ENTITIES;
       foodSourceStats.set(foodSource.id, statsBubble);
       worldContainer.addChild(statsBubble);
     }
@@ -186,6 +193,7 @@ $effect(() => {
       const texture = foodSourceAssets.textures[textureName];
 
       foodSprite = createSpriteWithConfig(texture, SPRITE_CONFIGS.FOOD);
+      foodSprite.zIndex = LAYER_INDEX.ENTITIES;
       worldContainer.addChild(foodSprite);
       foodSourceSprites.set(foodSource.id, foodSprite);
     }
@@ -212,6 +220,7 @@ $effect(() => {
       );
       sprite.x = ant.x;
       sprite.y = ant.y;
+      sprite.zIndex = LAYER_INDEX.ENTITIES;
       worldContainer.addChild(sprite);
 
       antData = {

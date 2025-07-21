@@ -14,4 +14,5 @@ export const LAYER_INDEX = {
   BACKGROUND: 0,
   STATIC_OBJECTS: 1,
   ENTITIES: 2,
+  FOREGROUND: 3,
 } as const;

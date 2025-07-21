@@ -51,6 +51,7 @@ export type TiledTileData = {
 export class TiledMapRenderer {
   private map: TiledMap;
   private tilesetTextures: Map<number, Texture> = new Map();
+  private tileTypes: Map<number, string> = new Map();
 
   constructor(map: TiledMap) {
     this.map = map;
@@ -68,28 +69,25 @@ export class TiledMapRenderer {
         // Tileset with tiles embedded in one image
         const texture = Assets.get(tileset.name);
 
-        const {
-          tilewidth,
-          tileheight,
-          columns = 1,
-          tilecount,
-          spacing = 0,
-        } = tileset;
+        for (let i = 0; i < tileset.tilecount; i++) {
+          const localId = i;
+          const globalId = tileset.firstgid + localId;
+          const tileInfo = tileset.tiles?.find((t) => t.id === localId);
+          if (tileInfo?.type) {
+            this.tileTypes.set(globalId, tileInfo.type);
+          }
 
-        for (let i = 0; i < tilecount; i++) {
+          const { tilewidth, tileheight, columns = 1, spacing = 0 } = tileset;
           const col = i % columns;
           const row = Math.floor(i / columns);
-
           const x = col * (tilewidth + spacing);
           const y = row * (tileheight + spacing);
 
           const tileTexture = new Texture({
             source: texture.source,
-
             frame: new Rectangle(x, y, tilewidth, tileheight),
           });
-
-          this.tilesetTextures.set(tileset.firstgid + i, tileTexture);
+          this.tilesetTextures.set(globalId, tileTexture);
         }
       } else if (tileset.tiles) {
         // Otherwise it's a collection of individual images
@@ -97,10 +95,11 @@ export class TiledMapRenderer {
           if (tileData.image) {
             const textureName = tileData.image.replace(/\.png$/, "");
             const texture = Assets.get(textureName);
-
-            // For collection tiles, use the image as-is
-            const globalTileId = tileset.firstgid + tileData.id;
-            this.tilesetTextures.set(globalTileId, texture);
+            const globalId = tileset.firstgid + tileData.id;
+            this.tilesetTextures.set(globalId, texture);
+            if (tileData.type) {
+              this.tileTypes.set(globalId, tileData.type);
+            }
           }
         }
       }
@@ -108,37 +107,37 @@ export class TiledMapRenderer {
   }
 
   renderMap(scale: number) {
-    const mapContainer = new Container();
+    const background = new Container();
+    const foreground = new Container();
 
     for (const layer of this.map.layers) {
-      const layerContainer = new Container();
-      layerContainer.label = layer.name;
       if (layer.data) {
-        this.renderLayerData(layer.data, layer.width, layerContainer, scale);
+        this.renderLayerData(
+          layer.data,
+          layer.width,
+          background,
+          foreground,
+          scale,
+        );
       }
-
-      mapContainer.addChild(layerContainer);
     }
 
-    return mapContainer;
+    return { background, foreground };
   }
 
   private renderLayerData(
     data: number[],
     width: number,
-    container: Container,
+    background: Container,
+    foreground: Container,
     scale: number,
   ) {
     for (let i = 0; i < data.length; i++) {
       const tileId = data[i];
-      if (tileId === 0) {
-        continue;
-      }
+      if (tileId === 0) continue;
 
       const texture = this.tilesetTextures.get(tileId);
-      if (!texture) {
-        continue;
-      }
+      if (!texture) continue;
 
       const x = (i % width) * this.map.tilewidth * scale;
       const y = Math.floor(i / width) * this.map.tileheight * scale;
@@ -148,7 +147,12 @@ export class TiledMapRenderer {
       sprite.y = y;
       sprite.scale.set(scale);
 
-      container.addChild(sprite);
+      const type = this.tileTypes.get(tileId);
+      if (type === "tree") {
+        foreground.addChild(sprite);
+      } else {
+        background.addChild(sprite);
+      }
     }
   }
 
