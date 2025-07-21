@@ -14,20 +14,18 @@ import {
 } from "$lib/world/assets";
 import {
   ANIMATION_CONFIG,
-  type AntSprite,
-  FOOD_SOURCE_CONFIG,
-  LAYERS,
+  LAYER_INDEX,
   SPRITE_CONFIG,
 } from "$lib/world/configs";
 import { createNestContainer, createStatsBubble } from "$lib/world/render";
-import { createSpriteWithConfig } from "$lib/world/sprite";
+import { type AntSprite, createSpriteWithConfig } from "$lib/world/sprite";
 import { loadTiledMap } from "$lib/world/tiled";
 import type { WorldDto } from "@formicarium/domain";
 import { event } from "@tauri-apps/api";
 import { Application, Assets, Container, Sprite, Text } from "pixi.js";
 import { AdjustmentFilter } from "pixi-filters";
 import { onDestroy, onMount } from "svelte";
-import config from "../../../../domain/src/systemConfig.json";
+import SYSTEM_CONFIG from "../../../../domain/src/systemConfig.json";
 
 const app = new Application();
 const viewport = new Container();
@@ -69,10 +67,10 @@ const initialiseWorld = async (worldData: WorldDto) => {
   await tiledRenderer.loadTilesets();
   const mapScale = 3;
   const background = tiledRenderer.renderMap(mapScale);
-  worldContainer.addChildAt(background, LAYERS.BACKGROUND);
+  worldContainer.addChildAt(background, LAYER_INDEX.BACKGROUND);
 
   const nest = await createNestContainer(worldData.nest);
-  worldContainer.addChildAt(nest, LAYERS.STATIC_OBJECTS);
+  worldContainer.addChildAt(nest, LAYER_INDEX.STATIC_OBJECTS);
 
   // Setup viewport dragging
   app.stage.eventMode = "static";
@@ -108,7 +106,7 @@ const initialiseWorld = async (worldData: WorldDto) => {
 
   // Setup animation tickers
   let frameCounter = 0;
-  const animationSpeed = config.rendering.animationSpeed;
+  const animationSpeed = SYSTEM_CONFIG.rendering.animationSpeed;
 
   app.ticker.add(() => {
     frameCounter++;
@@ -213,7 +211,7 @@ $effect(() => {
     statsBubble.visible = showStats;
     foodSprite.alpha = Math.max(
       0.15,
-      foodSource.amount / FOOD_SOURCE_CONFIG.maxAmount,
+      foodSource.amount / SYSTEM_CONFIG.world.maxFoodSources,
     );
   }
 
@@ -240,7 +238,8 @@ $effect(() => {
     }
 
     if (ant.state.type === "dying") {
-      antData.sprite.alpha = ant.state.ticks / config.ant.deathAnimationTicks;
+      antData.sprite.alpha =
+        ant.state.ticks / SYSTEM_CONFIG.ant.deathAnimationTicks;
     } else {
       const deltaX = ant.x - antData.previousPosition.x;
       const deltaY = ant.y - antData.previousPosition.y;
