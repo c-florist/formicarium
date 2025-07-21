@@ -7,10 +7,6 @@ export const WORLD_MAP_CONFIG = {
 
 export const ASSET_ALIASES = {
   WORKER_ANT: "worker-ant",
-  BANANAS: "bananas",
-  BREAD: "bread",
-  CORN: "corn",
-  KIWI: "kiwi",
   WORLD_MAP: "world-map",
   NEST: "nest",
   GROUND_TILESET: "ground-tileset",
@@ -26,13 +22,25 @@ export const ASSET_ALIASES = {
   BLUE_FLOWER: "blue-flower",
   ORANGE_FLOWER: "orange-flower",
   PINK_FLOWER: "pink-flower",
+  FOOD_1: "food-1",
+  FOOD_2: "food-2",
+  FOOD_3: "food-3",
+  FOOD_4: "food-4",
+  FOOD_5: "food-5",
+  FOOD_6: "food-6",
+  FOOD_7: "food-7",
+  FOOD_8: "food-8",
 } as const;
 
 export const FOOD_ASSET_ALIASES = [
-  ASSET_ALIASES.BANANAS,
-  ASSET_ALIASES.BREAD,
-  ASSET_ALIASES.CORN,
-  ASSET_ALIASES.KIWI,
+  ASSET_ALIASES.FOOD_1,
+  ASSET_ALIASES.FOOD_2,
+  ASSET_ALIASES.FOOD_3,
+  ASSET_ALIASES.FOOD_4,
+  ASSET_ALIASES.FOOD_5,
+  ASSET_ALIASES.FOOD_6,
+  ASSET_ALIASES.FOOD_7,
+  ASSET_ALIASES.FOOD_8,
 ];
 
 export const CURSOR_DEFAULT = "url(/ui/cursor/cursor-default.png),auto";
@@ -47,20 +55,36 @@ const manifest: AssetsManifest = {
           src: "/characters/worker-ant.json",
         },
         {
-          alias: ASSET_ALIASES.BANANAS,
-          src: "/food/bananas.png",
+          alias: ASSET_ALIASES.FOOD_1,
+          src: "/food/food-1.png",
         },
         {
-          alias: ASSET_ALIASES.BREAD,
-          src: "/food/bread.png",
+          alias: ASSET_ALIASES.FOOD_2,
+          src: "/food/food-2.png",
         },
         {
-          alias: ASSET_ALIASES.CORN,
-          src: "/food/corn.png",
+          alias: ASSET_ALIASES.FOOD_3,
+          src: "/food/food-3.png",
         },
         {
-          alias: ASSET_ALIASES.KIWI,
-          src: "/food/kiwi.png",
+          alias: ASSET_ALIASES.FOOD_4,
+          src: "/food/food-4.png",
+        },
+        {
+          alias: ASSET_ALIASES.FOOD_5,
+          src: "/food/food-5.png",
+        },
+        {
+          alias: ASSET_ALIASES.FOOD_6,
+          src: "/food/food-6.png",
+        },
+        {
+          alias: ASSET_ALIASES.FOOD_7,
+          src: "/food/food-7.png",
+        },
+        {
+          alias: ASSET_ALIASES.FOOD_8,
+          src: "/food/food-8.png",
         },
         {
           alias: ASSET_ALIASES.WORLD_MAP,

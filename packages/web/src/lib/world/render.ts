@@ -47,5 +47,6 @@ export const createStatsBubble = (initialText: string) => {
     .fill({ color: 0x000000, alpha: 0.5 });
 
   bubble.addChild(background, text);
+
   return bubble;
 };

@@ -21,10 +21,10 @@
 ### Proposed features
 1. Introduce different ant types: `Solder`, `Queen`, `Worker`.
 1. Add user interaction with world: Allow for creating new food sources and obstacles with limits (e.g. only 14 obstacles allowed at a time).
-1. Distinguish between `outside` and `inside` worlds and allow ants to go inside a nest and dig tunnels, lay eggs, feed the queen.
 1. Introduce predators and design a system of interaction with them.
-1. Support multiple ant colonies per world: Allow for up to X number of colonies per world, design interactions between them (often ants kill other ant colonies when discovered).
 1. Add a collision system with obstacles, i.e. boulders.
+1. Stretch: Distinguish between `outside` and `inside` worlds and allow ants to go inside a nest and dig tunnels, lay eggs, feed the queen.
+1. Stretch: Support multiple ant colonies per world: Allow for up to X number of colonies per world, design interactions between them (often ants kill other ant colonies when discovered).
 
 ## Attributions to include
 

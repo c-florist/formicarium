@@ -201,7 +201,7 @@ $effect(() => {
     foodSprite.x = foodSource.x;
     foodSprite.y = foodSource.y;
     statsBubble.x = foodSprite.x;
-    statsBubble.y = foodSprite.y;
+    statsBubble.y = foodSprite.y + SPRITE_CONFIGS.FOOD.statsBubbleYOffset;
     statsBubble.visible = showStats;
     foodSprite.alpha = Math.max(
       0.15,
