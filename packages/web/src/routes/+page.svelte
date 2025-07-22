@@ -8,13 +8,21 @@ const startSimulation = () => {
 };
 </script>
 
-<main class="flex flex-col items-center justify-center min-h-screen bg-amber-50 text-center p-4">
-  <h1 class="text-5xl font-bold text-stone-800 mb-4">Welcome to the Formicarium</h1>
-  <p class="text-xl text-stone-600 mb-8">An ant colony simulator</p>
-  <button
-    on:click={startSimulation}
-    class="px-6 py-3 bg-green-700 text-white font-semibold rounded-lg shadow-md hover:bg-green-800 transition-colors cursor-default"
-  >
-    Start simulation
-  </button>
-</main>
+<div class="flex min-h-screen items-center justify-center bg-amber-100 p-4">
+  <div class="w-full max-w-4xl bg-stone-800 p-8 border-4 rounded-sm border-stone-900 shadow-[8px_8px_0_#00000020]">
+    <div class="text-center">
+      <h1 class="text-4xl font-bold text-amber-50 mb-4">
+        Welcome to the Formicarium
+      </h1>
+      <p class="mx-auto max-w-xl text-lg leading-relaxed text-stone-300 mb-8">
+        A real-time ant colony simulation showcasing complex emergent behaviors.
+      </p>
+      <button
+        on:click={startSimulation}
+        class="bg-green-700 px-6 py-3 font-bold text-white border-2 rounded-sm border-green-900 shadow-[4px_4px_0_theme(colors.green.900)] hover:bg-green-800 active:translate-y-0.5 active:shadow-[2px_2px_0_theme(colors.green.900)] transition-all cursor-pointer"
+      >
+        Start Simulation
+      </button>
+    </div>
+  </div>
+</div>

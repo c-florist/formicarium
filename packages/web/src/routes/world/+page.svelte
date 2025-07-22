@@ -15,7 +15,7 @@ onMount(async () => {
 });
 </script>
 
-<div class="relative w-full h-full">
+<div class="relative w-full h-full bg-amber-100">
   {#if isLoading}
     <div class="flex items-center justify-center h-full">
       <div class="text-center">
