@@ -25,6 +25,9 @@ export const createStatsBubble = (initialText: string) => {
 
   const text = new Text({
     text: initialText,
+    textureStyle: {
+      scaleMode: "nearest",
+    },
     style: {
       fontFamily: "Arial",
       fontSize: 12,
