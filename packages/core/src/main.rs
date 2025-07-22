@@ -35,8 +35,8 @@ fn initialise_simulation(
     app_handle: tauri::AppHandle,
     app_state: tauri::State<AppState>,
 ) {
-    let sim_width = device_width as f32 + 500.0;
-    let sim_height = device_height as f32 + 500.0;
+    let sim_width = device_width as f32 * 1.5;
+    let sim_height = device_height as f32 * 1.5;
 
     println!("Initialising world with size: {}x{}", sim_width, sim_height);
 
