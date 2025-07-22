@@ -56,7 +56,7 @@ impl Simulation {
         }
 
         // Spawn ants to start
-        for _ in 0..20 {
+        for _ in 0..50 {
             let dx = rng.random_range(-1.0..1.0);
             let dy = rng.random_range(-1.0..1.0);
             let ant_health = rng.random_range(500..1000);
@@ -201,7 +201,7 @@ mod tests {
             .count();
 
         // 2. Assertion
-        assert_eq!(ants, 20);
+        assert_eq!(ants, 50);
         assert_eq!(nests, 1);
         assert_eq!(food_sources, 50);
     }
@@ -219,7 +219,7 @@ mod tests {
         assert_eq!(dto.height, 100.0);
         assert_eq!(dto.nest, NestDto { x: 40.0, y: 40.0 });
         assert_eq!(dto.food_sources.len(), 50);
-        assert_eq!(dto.ants.len(), 20);
+        assert_eq!(dto.ants.len(), 50);
     }
 
     #[test]
@@ -232,7 +232,7 @@ mod tests {
         let dto = simulation.get_world_statistics_dto().unwrap();
 
         // 3. Assertion
-        assert!(dto.alive_ants >= 20);
+        assert!(dto.alive_ants >= 50);
         assert!(dto.food_source_count >= 50);
     }
 }

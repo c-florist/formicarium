@@ -155,28 +155,30 @@ pub fn ant_lifecycle_system(world: &mut World, rng: &mut impl Rng) {
     }
 
     // Spawn ants when food store reaches threshold
-    let mut ants_to_spawn = Vec::new();
+    let mut ants_to_spawn: u32 = 0;
+    let mut spawn_pos = Position { x: 0.0, y: 0.0 };
     for (_, (nest_pos, nest)) in world.query_mut::<(&mut Position, &mut Nest)>() {
         if nest.food_store >= 100 {
-            let num_ants = nest.food_store / 10;
-            for _ in 0..num_ants {
-                let dx = rng.random_range(-1.0..1.0);
-                let dy = rng.random_range(-1.0..1.0);
-                let ant_health = rng.random_range(CONFIG.ant.min_health..CONFIG.ant.max_health);
-
-                ants_to_spawn.push((
-                    *nest_pos,
-                    Velocity { dx, dy },
-                    AntState::Wandering,
-                    Ant { health: ant_health },
-                ));
-            }
+            ants_to_spawn = nest.food_store / 10;
+            spawn_pos = *nest_pos;
+            nest.food_store -= ants_to_spawn * 10;
         }
     }
 
-    if !ants_to_spawn.is_empty() {
-        world.spawn_batch(ants_to_spawn);
-    }
+    world.spawn_batch((0..ants_to_spawn).map(|e| {
+        (
+            e,
+            spawn_pos,
+            Velocity {
+                dx: rng.random_range(-1.0..1.0),
+                dy: rng.random_range(-1.0..1.0),
+            },
+            AntState::Wandering,
+            Ant {
+                health: rng.random_range(CONFIG.ant.min_health..CONFIG.ant.max_health),
+            },
+        )
+    }));
 }
 
 pub fn ant_dying_system(world: &mut World, stats: &mut Stats) {

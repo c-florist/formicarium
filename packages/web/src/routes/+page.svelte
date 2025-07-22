@@ -9,7 +9,7 @@ const startSimulation = () => {
 </script>
 
 <main class="flex flex-col items-center justify-center min-h-screen bg-amber-50 text-center p-4">
-  <h1 class="text-5xl font-bold text-stone-800 mb-4">Welcome to Formicarium</h1>
+  <h1 class="text-5xl font-bold text-stone-800 mb-4">Welcome to the Formicarium</h1>
   <p class="text-xl text-stone-600 mb-8">An ant colony simulator</p>
   <button
     on:click={startSimulation}
