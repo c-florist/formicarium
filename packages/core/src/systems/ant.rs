@@ -158,8 +158,8 @@ pub fn ant_lifecycle_system(world: &mut World, rng: &mut impl Rng) {
     // Spawn ants when food store reaches threshold
     let mut ants_to_spawn = Vec::new();
     for (_, (nest_pos, nest)) in world.query_mut::<(&mut Position, &mut Nest)>() {
-        if nest.food_store >= 1000 {
-            let num_ants = nest.food_store / 100;
+        if nest.food_store >= 100 {
+            let num_ants = nest.food_store / 10;
             for _ in 0..num_ants {
                 let dx = rng.random_range(-1.0..1.0);
                 let dy = rng.random_range(-1.0..1.0);
@@ -332,7 +332,7 @@ mod tests {
         let mut rng = StdRng::seed_from_u64(42);
         let mut world = World::new();
 
-        world.spawn((Position { x: 0.0, y: 0.0 }, Nest { food_store: 1500 }));
+        world.spawn((Position { x: 0.0, y: 0.0 }, Nest { food_store: 150 }));
 
         world.spawn((
             Position { x: 10.0, y: 10.0 },
