@@ -125,6 +125,32 @@ export class TiledMapRenderer {
     return { background, foreground };
   }
 
+  private extractTileIdAndFlags(tileId: number) {
+    const FLIPPED_HORIZONTALLY_FLAG = 0x80000000;
+    const FLIPPED_VERTICALLY_FLAG = 0x40000000;
+    const FLIPPED_DIAGONALLY_FLAG = 0x20000000;
+
+    const flippedHorizontally = (tileId & FLIPPED_HORIZONTALLY_FLAG) !== 0;
+    const flippedVertically = (tileId & FLIPPED_VERTICALLY_FLAG) !== 0;
+    const flippedDiagonally = (tileId & FLIPPED_DIAGONALLY_FLAG) !== 0;
+
+    // Clear the flags to get the actual tile ID
+    const id =
+      tileId &
+      ~(
+        FLIPPED_HORIZONTALLY_FLAG |
+        FLIPPED_VERTICALLY_FLAG |
+        FLIPPED_DIAGONALLY_FLAG
+      );
+
+    return {
+      id,
+      flippedHorizontally,
+      flippedVertically,
+      flippedDiagonally,
+    };
+  }
+
   private renderLayerData(
     data: number[],
     width: number,
@@ -133,11 +159,18 @@ export class TiledMapRenderer {
     scale: number,
   ) {
     for (let i = 0; i < data.length; i++) {
-      const tileId = data[i];
-      if (tileId === 0) continue;
+      const rawTileId = data[i];
+      if (rawTileId === 0) {
+        continue;
+      }
 
-      const texture = this.tilesetTextures.get(tileId);
-      if (!texture) continue;
+      const { id, flippedHorizontally, flippedVertically, flippedDiagonally } =
+        this.extractTileIdAndFlags(rawTileId);
+
+      const texture = this.tilesetTextures.get(id);
+      if (!texture) {
+        continue;
+      }
 
       const x = (i % width) * this.map.tilewidth * scale;
       const y = Math.floor(i / width) * this.map.tileheight * scale;
@@ -147,7 +180,30 @@ export class TiledMapRenderer {
       sprite.y = y;
       sprite.scale.set(scale);
 
-      const type = this.tileTypes.get(tileId);
+      // Apply transformations based on the flags
+      if (flippedDiagonally) {
+        sprite.anchor.set(0.5);
+        sprite.rotation = -Math.PI / 2;
+        sprite.x += this.map.tilewidth * scale * 0.5;
+        sprite.y += this.map.tileheight * scale * 0.5;
+        if (flippedHorizontally) {
+          sprite.scale.y *= -1;
+        }
+        if (flippedVertically) {
+          sprite.scale.x *= -1;
+        }
+      } else {
+        if (flippedHorizontally) {
+          sprite.scale.x *= -1;
+          sprite.x += this.map.tilewidth * scale;
+        }
+        if (flippedVertically) {
+          sprite.scale.y *= -1;
+          sprite.y += this.map.tileheight * scale;
+        }
+      }
+
+      const type = this.tileTypes.get(id);
       if (type === "foreground") {
         foreground.addChild(sprite);
       } else {
