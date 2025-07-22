@@ -8,15 +8,14 @@
 ## TODO
 
 ### Currently working on
+### Features
 1. Ant population dynamics: Instead of spawning new ants randomly, nest should keep track of its current population and food and spawn new ants based on a predefined growth rate and how much food is available. When ants return to nest they should deposit their food in the nest's food storage.
 1. Add ant health to stats bubbles.
 1. World creation with parameters: Allow user to specify parameters (starting number of ants, starting number of food sources, number of obstacles, ant spawn rate, max food sources).
 
-### Improvements
+#### Improvements
 1. Improve pheromone following system so it influences direction to specific food source instead of nearest one.
-1. Add `to_nest` pheromones.
 1. Visualise pheromone trails.
-1. Make the procedural world generation more interesting: More obstacles, more interesting background textures.
 
 ### Proposed features
 1. Introduce different ant types: `Solder`, `Queen`, `Worker`.

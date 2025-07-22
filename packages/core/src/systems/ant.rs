@@ -6,6 +6,7 @@ use crate::engine::stats::Stats;
 use crate::utils::maths::target_distance_sq;
 use hecs::{Entity, World};
 use rand::Rng;
+use rand::seq::IndexedRandom;
 
 pub fn ant_arrival_at_food_system(world: &mut World) {
     let mut to_update_to_returning = Vec::new();
@@ -154,25 +155,28 @@ pub fn ant_lifecycle_system(world: &mut World, rng: &mut impl Rng) {
         }
     }
 
-    // Spawn new ants at the nest randomly
-    if rng.random_bool(CONFIG.ant.reproduction_chance) {
-        let nest_pos = world
-            .query::<(&Position, &Nest)>()
-            .iter()
-            .next()
-            .map(|(_, (pos, _))| *pos);
-        let dx = rng.random_range(-1.0..1.0);
-        let dy = rng.random_range(-1.0..1.0);
-        let ant_health = rng.random_range(CONFIG.ant.min_health..CONFIG.ant.max_health);
+    // Spawn ants when food store reaches threshold
+    let mut ants_to_spawn = Vec::new();
+    for (_, (nest_pos, nest)) in world.query_mut::<(&mut Position, &mut Nest)>() {
+        if nest.food_store >= 1000 {
+            let num_ants = nest.food_store / 100;
+            for _ in 0..num_ants {
+                let dx = rng.random_range(-1.0..1.0);
+                let dy = rng.random_range(-1.0..1.0);
+                let ant_health = rng.random_range(CONFIG.ant.min_health..CONFIG.ant.max_health);
 
-        if let Some(nest_pos) = nest_pos {
-            world.spawn((
-                nest_pos,
-                Velocity { dx, dy },
-                AntState::Wandering,
-                Ant { health: ant_health },
-            ));
+                ants_to_spawn.push((
+                    *nest_pos,
+                    Velocity { dx, dy },
+                    AntState::Wandering,
+                    Ant { health: ant_health },
+                ));
+            }
         }
+    }
+
+    if !ants_to_spawn.is_empty() {
+        world.spawn_batch(ants_to_spawn);
     }
 }
 
@@ -328,7 +332,7 @@ mod tests {
         let mut rng = StdRng::seed_from_u64(42);
         let mut world = World::new();
 
-        world.spawn((Position { x: 0.0, y: 0.0 }, Nest::new()));
+        world.spawn((Position { x: 0.0, y: 0.0 }, Nest { food_store: 1500 }));
 
         world.spawn((
             Position { x: 10.0, y: 10.0 },
@@ -338,12 +342,10 @@ mod tests {
         ));
 
         // 2. Action
-        for _ in 0..50 {
-            ant_lifecycle_system(&mut world, &mut rng);
-        }
+        ant_lifecycle_system(&mut world, &mut rng);
 
         // 3. Assertion
         let ant_count = world.query::<(&Position, &Ant)>().iter().count();
-        assert!(ant_count > 1);
+        assert_eq!(ant_count, 16);
     }
 }

@@ -44,7 +44,6 @@ const initialisePixiApp = async () => {
     resizeTo: canvasContainer,
     roundPixels: true,
     sharedTicker: true,
-    premultipliedAlpha: false,
   });
   canvasContainer.appendChild(app.canvas);
 
