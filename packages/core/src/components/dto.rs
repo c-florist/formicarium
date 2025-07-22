@@ -53,7 +53,7 @@ pub struct FoodSourceDto {
 #[serde(rename_all = "camelCase")]
 #[ts(export, export_to = "../../domain/src/types/StatsDto.ts")]
 pub struct StatsDto {
-    pub ant_count: u32,
+    pub alive_ants: u32,
     pub food_source_count: u32,
     pub food_in_nest: u32,
 }

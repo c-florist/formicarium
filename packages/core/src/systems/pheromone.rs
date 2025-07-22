@@ -59,7 +59,7 @@ mod tests {
         let mut world = World::new();
         let mut rng = StdRng::seed_from_u64(42);
         // Spawn a nest
-        world.spawn((Position { x: 0.0, y: 0.0 }, Nest));
+        world.spawn((Position { x: 0.0, y: 0.0 }, Nest::new()));
         // Spawn an ant returning to the nest
         world.spawn((
             Position { x: 36.0, y: 48.0 },

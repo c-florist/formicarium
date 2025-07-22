@@ -30,7 +30,7 @@ pub enum AntState {
     Dying(u32),
 }
 
-#[derive(Debug, PartialEq)]
+#[derive(Debug, PartialEq, Clone, Copy)]
 pub struct FoodPayload(pub u32);
 
 // Pheromone system components
@@ -47,7 +47,15 @@ pub struct PheromoneToNest;
 
 // Static world components
 #[derive(Debug, PartialEq)]
-pub struct Nest;
+pub struct Nest {
+    pub food_store: u32,
+}
+
+impl Nest {
+    pub fn new() -> Self {
+        Nest { food_store: 0 }
+    }
+}
 
 #[derive(Debug, PartialEq)]
 pub struct FoodSource {

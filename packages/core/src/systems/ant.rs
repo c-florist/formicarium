@@ -2,7 +2,6 @@ use crate::components::world::{
     Ant, AntState, FoodPayload, FoodSource, Nest, Position, Target, Velocity,
 };
 use crate::config::CONFIG;
-use crate::engine::stats::Stats;
 use crate::utils::maths::target_distance_sq;
 use hecs::{Entity, World};
 use rand::Rng;
@@ -62,18 +61,19 @@ pub fn ant_arrival_at_food_system(world: &mut World) {
     }
 }
 
-pub fn ant_arrival_at_nest_system(world: &mut World, stats: &mut Stats) {
+pub fn ant_arrival_at_nest_system(world: &mut World) {
     let mut to_update_to_wandering = Vec::new();
+    let mut food_dropped_at_nest: u32 = 0;
     let arrival_distance_sq = CONFIG.ant.arrival_distance.powi(2);
 
     // Collect all ants with targets
-    let ants_with_targets: Vec<(Entity, Position, AntState, Entity)> = world
-        .query::<(&Position, &AntState, &Target, &Ant)>()
+    let ants_with_targets: Vec<(Entity, Position, AntState, Entity, FoodPayload)> = world
+        .query::<(&Position, &AntState, &Target, &Ant, &FoodPayload)>()
         .iter()
-        .map(|(e, (p, s, t, _))| (e, *p, *s, t.0))
+        .map(|(e, (p, s, t, _, fp))| (e, *p, *s, t.0, *fp))
         .collect();
 
-    for (ant_entity, ant_pos, ant_state, target_entity) in ants_with_targets {
+    for (ant_entity, ant_pos, ant_state, target_entity, food_payload) in ants_with_targets {
         if let Ok(target_pos) = world.get::<&Position>(target_entity) {
             let distance_sq = target_distance_sq(ant_pos.x, ant_pos.y, target_pos.x, target_pos.y);
 
@@ -82,22 +82,25 @@ pub fn ant_arrival_at_nest_system(world: &mut World, stats: &mut Stats) {
                 && world.get::<&Nest>(target_entity).is_ok()
             {
                 to_update_to_wandering.push(ant_entity);
+                food_dropped_at_nest += food_payload.0;
             }
         }
     }
 
     // Apply updates for ants that have returned to the nest
     for entity in to_update_to_wandering {
-        if let Ok((state, food_payload)) =
-            world.query_one_mut::<(&mut AntState, &mut FoodPayload)>(entity)
-        {
+        if let Ok(state) = world.query_one_mut::<&mut AntState>(entity) {
             *state = AntState::Wandering;
-            stats.food_in_nest += food_payload.0;
         }
 
         world
             .remove::<(FoodPayload, Target)>(entity)
             .expect("Failed to update ant state in ant_arrival_at_nest_system");
+    }
+
+    // Update food store in nest
+    if let Some((_, nest)) = world.query::<&mut Nest>().iter().next() {
+        nest.food_store += food_dropped_at_nest;
     }
 }
 
@@ -209,8 +212,7 @@ mod tests {
     fn test_ant_arrival_at_nest_system_updates_ant_components() {
         // 1. Setup
         let mut world = World::new();
-        let mut stats = Stats::new();
-        let nest_entity = world.spawn((Position { x: 0.0, y: 0.0 }, Nest));
+        let nest_entity = world.spawn((Position { x: 0.0, y: 0.0 }, Nest::new()));
         let ant_entity = world.spawn((
             Position { x: 0.0, y: 0.0 },
             AntState::ReturningToNest,
@@ -220,7 +222,7 @@ mod tests {
         ));
 
         // 2. Action
-        ant_arrival_at_nest_system(&mut world, &mut stats);
+        ant_arrival_at_nest_system(&mut world);
 
         // 3. Assertion
         let ant_state = world.get::<&AntState>(ant_entity).unwrap();
@@ -231,14 +233,14 @@ mod tests {
         assert!(world.get::<&Target>(ant_entity).is_err());
 
         // Check that the stats have been updated
-        assert_eq!(stats.food_in_nest, 10);
+        assert_eq!(world.get::<&Nest>(nest_entity).unwrap().food_store, 10);
     }
 
     #[test]
     fn test_ant_arrival_at_food_system_updates_ant_components_and_depletes_food_source() {
         // 1. Setup
         let mut world = World::new();
-        let nest_entity = world.spawn((Position { x: 0.0, y: 0.0 }, Nest));
+        let nest_entity = world.spawn((Position { x: 0.0, y: 0.0 }, Nest::new()));
         let food_entity = world.spawn((Position { x: 10.0, y: 10.0 }, FoodSource { amount: 100 }));
         let ant_entity = world.spawn((
             Position { x: 9.9, y: 9.9 },
@@ -324,7 +326,7 @@ mod tests {
         let mut rng = StdRng::seed_from_u64(42);
         let mut world = World::new();
 
-        world.spawn((Position { x: 0.0, y: 0.0 }, Nest));
+        world.spawn((Position { x: 0.0, y: 0.0 }, Nest::new()));
 
         world.spawn((
             Position { x: 10.0, y: 10.0 },

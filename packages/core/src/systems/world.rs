@@ -143,7 +143,7 @@ mod tests {
         let mut rng = StdRng::seed_from_u64(42);
         let mut world = World::new();
 
-        world.spawn((Position { x: 0.0, y: 0.0 }, Nest));
+        world.spawn((Position { x: 0.0, y: 0.0 }, Nest::new()));
 
         // 2. Action
         for _ in 0..500 {
