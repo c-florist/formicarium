@@ -1,7 +1,11 @@
 <script lang="ts">
 import { EMIT_EVENTS } from "$lib/core/events";
 import { initialiseSimulation } from "$lib/core/query";
-import { uiStateStore } from "$lib/stores/ui-state-store";
+import {
+  setSelectedAntId,
+  toggleStatsOverlay,
+  uiStateStore,
+} from "$lib/stores/ui-state-store";
 import { startWorldUpdates, worldStore } from "$lib/stores/world-store";
 import {
   calculateIfHiddenInNest,
@@ -153,9 +157,18 @@ $effect(() => {
 
   // Cleanup removed sprites
   for (const [antId, antData] of antSprites) {
+    antData.sprite.tint = 0xffffff;
+
     if (!currentAntIds.has(antId)) {
       worldContainer.removeChild(antData.sprite);
       antSprites.delete(antId);
+    }
+  }
+
+  if ($uiStateStore.selectedAntId !== null) {
+    const antData = antSprites.get($uiStateStore.selectedAntId);
+    if (antData) {
+      antData.sprite.tint = 0x00ffff;
     }
   }
 
@@ -220,6 +233,12 @@ $effect(() => {
       sprite.x = ant.x;
       sprite.y = ant.y;
       sprite.zIndex = LAYER_INDEX.ENTITIES;
+
+      sprite.eventMode = "static";
+      sprite.on("pointerdown", () => {
+        setSelectedAntId(ant.id);
+      });
+
       worldContainer.addChild(sprite);
 
       antData = {

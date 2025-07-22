@@ -9,7 +9,7 @@
 
 ### Currently working on
 ### Features
-1. Add ant health to stats bubbles.
+1. Show ant state and health stats somehow.
 1. World creation with parameters: Allow user to specify parameters (starting number of ants, starting number of food sources, number of obstacles, ant spawn rate, max food sources).
 
 #### Improvements
