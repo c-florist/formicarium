@@ -1,5 +1,6 @@
 <script lang="ts">
 import PixelWorldCanvas from "$lib/components/PixelWorldCanvas.svelte";
+import AntStatsPanel from "$lib/components/ui/AntStatsPanel.svelte";
 import { initialiseWorldAssets } from "$lib/world/assets";
 import { onMount } from "svelte";
 
@@ -29,6 +30,7 @@ onMount(async () => {
     </div>
   {:else}
     <PixelWorldCanvas />
+    <AntStatsPanel />
   {/if}
 </div>
 
