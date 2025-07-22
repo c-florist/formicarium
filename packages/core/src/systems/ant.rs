@@ -2,6 +2,7 @@ use crate::components::world::{
     Ant, AntState, FoodPayload, FoodSource, Nest, Position, Target, Velocity,
 };
 use crate::config::CONFIG;
+use crate::engine::stats::Stats;
 use crate::utils::maths::target_distance_sq;
 use hecs::{Entity, World};
 use rand::Rng;
@@ -175,7 +176,7 @@ pub fn ant_lifecycle_system(world: &mut World, rng: &mut impl Rng) {
     }
 }
 
-pub fn ant_dying_system(world: &mut World) {
+pub fn ant_dying_system(world: &mut World, stats: &mut Stats) {
     let mut to_update = Vec::new();
 
     // Find all ants with 0 health that are not already dying
@@ -194,6 +195,7 @@ pub fn ant_dying_system(world: &mut World) {
         if let Ok(state) = world.query_one_mut::<&mut AntState>(entity) {
             *state = AntState::Dying(CONFIG.ant.death_animation_ticks);
         }
+        stats.dead_ants += 1;
         world.remove_one::<Target>(entity).ok();
     }
 }

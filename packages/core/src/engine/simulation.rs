@@ -83,7 +83,7 @@ impl Simulation {
     pub fn tick(&mut self) {
         // Systems that control lifecycle events
         ant_lifecycle_system(&mut self.world, &mut self.rng);
-        ant_dying_system(&mut self.world);
+        ant_dying_system(&mut self.world, &mut self.stats);
         food_spawn_system(&mut self.world, self.width, self.height, &mut self.rng);
 
         // Systems that determine decisions and state changes.
@@ -154,6 +154,7 @@ impl Simulation {
     pub fn get_world_statistics_dto(&mut self) -> Result<StatsDto, &'static str> {
         Ok(StatsDto {
             alive_ants: self.stats.alive_ants,
+            dead_ants: self.stats.dead_ants,
             food_source_count: self.stats.food_sources,
             food_in_nest: self.stats.food_in_nest,
         })

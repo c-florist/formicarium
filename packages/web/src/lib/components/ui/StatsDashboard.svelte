@@ -50,21 +50,21 @@ $effect(() => {
   </button>
   {#if worldStats}
     <div class="space-y-2 mb-8">
-      <h2 class="text-xl font-bold mb-4">World state</h2>
+      <h2 class="text-xl font-bold mb-4">Population</h2>
       <h4 class="text-md font-bold mr-4">
         Alive ants: <span class="font-normal">{worldStats.aliveAnts}</span>
       </h4>
+      <h4 class="text-md font-bold mr-4">
+        Dead ants: <span class="font-normal">{worldStats.deadAnts}</span>
+      </h4>
+    </div>
+    <div class="space-y-2">
+      <h2 class="text-xl font-bold mb-4">Resources</h2>
       <h4 class="text-md font-bold mr-4">
         Food sources: <span class="font-normal">{worldStats.foodSourceCount}</span>
       </h4>
       <h4 class="text-md font-bold mr-4">
         Food in nest: <span class="font-normal">{worldStats.foodInNest}</span>
-      </h4>
-    </div>
-    <div class="space-y-2">
-      <h2 class="text-xl font-bold mb-4">Simulation statistics</h2>
-      <h4 class="text-md font-bold mr-4">
-        Total ants spawned: <span class="font-normal"></span>
       </h4>
     </div>
   {:else}

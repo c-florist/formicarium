@@ -54,6 +54,7 @@ pub struct FoodSourceDto {
 #[ts(export, export_to = "../../domain/src/types/StatsDto.ts")]
 pub struct StatsDto {
     pub alive_ants: u32,
+    pub dead_ants: u32,
     pub food_source_count: u32,
     pub food_in_nest: u32,
 }
