@@ -1,12 +1,8 @@
 <script lang="ts">
 import { EMIT_EVENTS } from "$lib/core/events";
 import { initialiseSimulation } from "$lib/core/query";
-import {
-  deselectAnt,
-  setSelectedAntId,
-  toggleStatsOverlay,
-  uiStateStore,
-} from "$lib/stores/ui-state-store";
+import { userOptions } from "$lib/state/simulation.svelte";
+import { setSelectedAntId, uiStateStore } from "$lib/stores/ui-state-store";
 import { startWorldUpdates, worldStore } from "$lib/stores/world-store";
 import {
   calculateIfHiddenInNest,
@@ -28,7 +24,7 @@ import { event } from "@tauri-apps/api";
 import { Application, Assets, Container, Sprite, Text } from "pixi.js";
 import { AdjustmentFilter } from "pixi-filters";
 import { onDestroy, onMount } from "svelte";
-import SYSTEM_CONFIG from "../../../../domain/src/globalConfig.json";
+import GLOBAL_CONFIG from "../../../../domain/src/globalConfig.json";
 
 const app = new Application();
 const viewport = new Container();
@@ -92,7 +88,7 @@ const initialiseWorld = async (worldData: WorldDto) => {
 
   // Setup animation tickers
   let frameCounter = 0;
-  const animationSpeed = SYSTEM_CONFIG.rendering.animationSpeed;
+  const animationSpeed = GLOBAL_CONFIG.rendering.animationSpeed;
 
   app.ticker.add((ticker) => {
     frameCounter++;
@@ -140,7 +136,11 @@ onMount(async () => {
   );
 
   const { clientWidth, clientHeight } = canvasContainer;
-  await initialiseSimulation(clientWidth, clientHeight);
+  await initialiseSimulation({
+    width: clientWidth,
+    height: clientHeight,
+    ...userOptions,
+  });
 
   startWorldUpdates();
 });
@@ -218,7 +218,7 @@ $effect(() => {
     statsBubble.visible = showStats;
     foodSprite.alpha = Math.max(
       0.15,
-      foodSource.amount / SYSTEM_CONFIG.world.maxFoodSources,
+      foodSource.amount / userOptions.maxFoodSources,
     );
   }
 
@@ -256,7 +256,7 @@ $effect(() => {
 
     if (ant.state.type === "dying") {
       antData.sprite.alpha =
-        ant.state.ticks / SYSTEM_CONFIG.ant.deathAnimationTicks;
+        ant.state.ticks / GLOBAL_CONFIG.ant.deathAnimationTicks;
     } else {
       const deltaX = ant.x - antData.previousPosition.x;
       const deltaY = ant.y - antData.previousPosition.y;

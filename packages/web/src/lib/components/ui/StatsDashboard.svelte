@@ -1,6 +1,6 @@
 <script lang="ts">
 import { getWorldStatistics } from "$lib/core/query";
-import { simulationState } from "$lib/stores/simulation-store";
+import { simulationState } from "$lib/state/simulation.svelte";
 import type { StatsDto } from "@formicarium/domain";
 
 let {
@@ -69,7 +69,7 @@ $effect(() => {
       </h4>
     </div>
   {:else}
-    {#if !$simulationState.isRunning}
+    {#if !simulationState.isRunning}
       <p>Waiting for simulation to start ...</p>
     {:else}
       <p>Statistics are unavailable, something must have gone wrong ...</p>

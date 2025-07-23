@@ -12,8 +12,11 @@ use hecs::World;
 use rand::{Rng, SeedableRng};
 use rand_pcg::Pcg64;
 use serde::{Deserialize, Serialize};
+use ts_rs::TS;
 
-#[derive(Serialize, Deserialize, Debug, Copy, Clone)]
+#[derive(Serialize, Deserialize, Debug, Copy, Clone, TS)]
+#[ts(export, export_to = "../../domain/src/types/SimulationOptions.ts")]
+#[serde(rename_all = "camelCase")]
 pub struct SimulationOptions {
     pub width: f32,
     pub height: f32,

@@ -39,8 +39,12 @@ fn initialise_simulation(
     sim_params.height *= 1.5;
 
     println!(
-        "Initialising world with size: {}x{}",
-        sim_params.width, sim_params.height
+        "Initialising world with parameters: width={}, height={}, starting_ants={}, starting_food_sources={}, max_food_sources={}",
+        sim_params.width,
+        sim_params.height,
+        sim_params.starting_ants,
+        sim_params.starting_food_sources,
+        sim_params.max_food_sources
     );
 
     let mut world = Simulation::new(sim_params);

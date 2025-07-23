@@ -1,4 +1,8 @@
-import type { StatsDto, WorldDto } from "@formicarium/domain";
+import type {
+  SimulationOptions,
+  StatsDto,
+  WorldDto,
+} from "@formicarium/domain";
 import { invoke } from "@tauri-apps/api/core";
 
 export const getWorldStatistics = async () => {
@@ -9,15 +13,9 @@ export const getWorldStatistics = async () => {
   }
 };
 
-export const initialiseSimulation = async (
-  deviceWidth: number,
-  deviceHeight: number,
-) => {
+export const initialiseSimulation = async (options: SimulationOptions) => {
   try {
-    await invoke("initialise_simulation", {
-      deviceWidth,
-      deviceHeight,
-    });
+    await invoke("initialise_simulation", { initParams: options });
   } catch (error) {
     console.error("Failed to initialise simulation:", error);
   }

@@ -1,11 +1,8 @@
-import { simulationState } from "$lib/stores/simulation-store";
+import { simulationState } from "$lib/state/simulation.svelte";
 import { redirect } from "@sveltejs/kit";
-import { get } from "svelte/store";
 
 export const load = () => {
-  const isRunning = get(simulationState).isRunning;
-
-  if (!isRunning) {
+  if (!simulationState.isRunning) {
     redirect(307, "/");
   }
 };
