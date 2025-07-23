@@ -2,6 +2,7 @@
 import { EMIT_EVENTS } from "$lib/core/events";
 import { initialiseSimulation } from "$lib/core/query";
 import {
+  deselectAnt,
   setSelectedAntId,
   toggleStatsOverlay,
   uiStateStore,

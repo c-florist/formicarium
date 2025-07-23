@@ -19,19 +19,20 @@ $: {
 
 {#if selectedAnt}
   <div class="absolute bottom-4 left-4 bg-stone-800/80 text-white p-4 rounded-lg shadow-lg border border-stone-600">
-    <h3 class="text-lg font-bold mb-2 border-b border-stone-600 pb-1">Ant #{selectedAnt.id}</h3>
-    <div class="grid grid-cols-2 gap-x-4 gap-y-1">
-      <span class="font-semibold">Health:</span>
-      <span>{selectedAnt.health}</span>
-      <span class="font-semibold">State:</span>
-      <span class="capitalize">{selectedAnt.state.type}</span>
+    <div class="flex flex-row justify-between mb-2 pb-2 border-b border-stone-600">
+      <h3 class="text-lg font-bold">Ant #{selectedAnt.id}</h3>
+      <button class="text-sm text-stone-400 hover:text-white cursor-pointer" on:click={() => deselectAnt()}>
+        Close
+      </button>
     </div>
-    <button class="mt-4 text-sm text-stone-400 hover:text-white" on:click={() => deselectAnt()}>
-      Clear selection
-    </button>
-  </div>
-{:else}
-  <div class="absolute bottom-4 left-4 bg-stone-800/80 text-white p-4 rounded-lg shadow-lg border border-stone-600">
-    <p class="text-stone-400">Click an ant to see its stats.</p>
+    <div class="flex flex-col space-x-1 space-y-1">
+      <div class="flex flex-row">
+        <p class="text-md font-semibold">Health: <span>{selectedAnt.health}</span></p>
+
+      </div>
+      <div class="flex flex-row">
+        <p class="text-md font-semibold">State: <span class="capitalize">{selectedAnt.state.type}</span></p>
+      </div>
+    </div>
   </div>
 {/if}
