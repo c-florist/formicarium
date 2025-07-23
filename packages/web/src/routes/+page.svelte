@@ -3,7 +3,8 @@ import { goto } from "$app/navigation";
 import PrimaryButton from "$lib/components/ui/PrimaryButton.svelte";
 import { simulationState, userOptions } from "$lib/state/simulation.svelte";
 
-const startSimulation = () => {
+const startSimulation = (event?: Event) => {
+  event?.preventDefault();
   simulationState.isRunning = true;
   goto("/world");
 };
@@ -25,7 +26,7 @@ const startSimulation = () => {
       </h3>
     </div>
 
-    <form on:submit|preventDefault={startSimulation} class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+    <form onsubmit={startSimulation} class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
       <div>
         <label for="startingAnts" class="block text-amber-50 mb-2">Starting Ants</label>
         <input

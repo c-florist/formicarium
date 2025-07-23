@@ -1,5 +1,6 @@
 <script lang="ts">
-let { onClick, text }: { onClick: () => void; text: string } = $props();
+let { onClick, text }: { onClick: (event?: Event) => void; text: string } =
+  $props();
 </script>
 
 <button

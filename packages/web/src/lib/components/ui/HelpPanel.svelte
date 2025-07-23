@@ -6,7 +6,7 @@ import { uiState } from "$lib/state/ui.svelte";
 <div class="absolute top-24 right-4 bg-stone-800/80 text-white p-4 rounded-lg shadow-lg border border-stone-600 w-64">
   <div class="flex flex-row justify-between mb-2 pb-2 border-b border-stone-600">
     <h3 class="text-lg font-bold">Help</h3>
-    <button class="text-sm text-stone-400 hover:text-white cursor-pointer" on:click={() => { uiState.showHelpPanel = false }}>
+    <button class="text-sm text-stone-400 hover:text-white cursor-pointer" onclick={() => { uiState.showHelpPanel = false }}>
       Close
     </button>
   </div>

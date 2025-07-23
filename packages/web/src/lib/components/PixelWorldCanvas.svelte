@@ -60,13 +60,6 @@ const initialisePixiApp = async () => {
   app.stage.addChild(viewport);
   app.stage.addChild(uiContainer);
   app.stage.cursor = CURSOR_DEFAULT;
-  app.stage.eventMode = "static";
-  app.stage.hitArea = app.screen;
-  app.stage.on("pointerdown", () => {
-    if (uiState.selectedAntId !== null) {
-      uiState.selectedAntId = null;
-    }
-  });
 };
 
 const initialiseWorld = async (worldData: WorldDto) => {

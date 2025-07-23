@@ -1,5 +1,6 @@
 <script lang="ts">
 import ConfirmModal from "$lib/components/ui/ConfirmModal.svelte";
+import DropdownMenu from "$lib/components/ui/DropdownMenu.svelte";
 import HelpPanel from "$lib/components/ui/HelpPanel.svelte";
 import Icon from "$lib/components/ui/Icon.svelte";
 import Navbar from "$lib/components/ui/Navbar.svelte";
@@ -8,9 +9,7 @@ import SecondaryButton from "$lib/components/ui/SecondaryButton.svelte";
 import WorldStatsPanel from "$lib/components/ui/WorldStatsPanel.svelte";
 import {
   hideConfirmation,
-  toggleHelpPanel,
   toggleStatsOverlay,
-  toggleWorldStatsPanel,
   uiState,
 } from "$lib/state/ui.svelte";
 
@@ -27,20 +26,7 @@ let { children } = $props();
           <Icon name="eye" class="w-6 h-6" />
         </SecondaryButton>
       </Popover>
-      <Popover text="Toggle stats panel" position="bottom">
-        <SecondaryButton
-          onClick={toggleWorldStatsPanel}
-        >
-          Stats
-        </SecondaryButton>
-      </Popover>
-      <Popover text="Help" position="bottom">
-        <SecondaryButton
-          onClick={toggleHelpPanel}
-        >
-          <Icon name="info" class="w-6 h-6" />
-        </SecondaryButton>
-      </Popover>
+      <DropdownMenu />
     </div>
   </Navbar>
   <main class="flex-1">
