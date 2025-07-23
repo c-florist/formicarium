@@ -11,22 +11,43 @@ use crate::utils::maths::target_distance_sq;
 use hecs::World;
 use rand::{Rng, SeedableRng};
 use rand_pcg::Pcg64;
+use serde::{Deserialize, Serialize};
+
+#[derive(Serialize, Deserialize, Debug, Copy, Clone)]
+pub struct SimulationOptions {
+    pub width: f32,
+    pub height: f32,
+    pub starting_ants: u32,
+    pub starting_food_sources: u32,
+    pub max_food_sources: u32,
+}
+
+impl Default for SimulationOptions {
+    fn default() -> Self {
+        SimulationOptions {
+            width: 100.0,
+            height: 100.0,
+            starting_ants: 50,
+            starting_food_sources: 50,
+            max_food_sources: 50,
+        }
+    }
+}
 
 pub struct Simulation {
     world: World,
-    width: f32,
-    height: f32,
+    options: SimulationOptions,
     rng: Pcg64,
     stats: Stats,
 }
 
 impl Simulation {
-    pub fn new(width: f32, height: f32) -> Self {
+    pub fn new(sim_options: SimulationOptions) -> Self {
         let mut world = World::new();
         let mut rng = Pcg64::from_rng(&mut rand::rng());
 
-        let start_x: f32 = width / 2.0;
-        let start_y: f32 = height / 2.0;
+        let start_x: f32 = sim_options.width / 2.0;
+        let start_y: f32 = sim_options.height / 2.0;
 
         let nest_pos_x = start_x - 10.0;
         let nest_pos_y = start_y - 10.0;
@@ -39,13 +60,13 @@ impl Simulation {
         ));
 
         // Spawn food sources
-        for _ in 0..50 {
+        for _ in 0..sim_options.starting_food_sources {
             let mut x;
             let mut y;
             // Loop until a valid position is found
             loop {
-                x = rng.random_range(0.0..width);
-                y = rng.random_range(0.0..height);
+                x = rng.random_range(0.0..sim_options.width);
+                y = rng.random_range(0.0..sim_options.height);
                 let distance_sq = target_distance_sq(nest_pos_x, nest_pos_y, x, y);
                 // Ensure the food source is not too close to the nest
                 if distance_sq > 50.0_f32.powi(2) {
@@ -56,7 +77,7 @@ impl Simulation {
         }
 
         // Spawn ants to start
-        for _ in 0..50 {
+        for _ in 0..sim_options.starting_ants {
             let dx = rng.random_range(-1.0..1.0);
             let dy = rng.random_range(-1.0..1.0);
             let ant_health = rng.random_range(500..1000);
@@ -73,8 +94,7 @@ impl Simulation {
 
         Self {
             world,
-            width,
-            height,
+            options: sim_options,
             rng,
             stats: Stats::default(),
         }
@@ -84,7 +104,13 @@ impl Simulation {
         // Systems that control lifecycle events
         ant_lifecycle_system(&mut self.world, &mut self.rng);
         ant_dying_system(&mut self.world, &mut self.stats);
-        food_spawn_system(&mut self.world, self.width, self.height, &mut self.rng);
+        food_spawn_system(
+            &mut self.world,
+            self.options.width,
+            self.options.height,
+            self.options.max_food_sources,
+            &mut self.rng,
+        );
 
         // Systems that determine decisions and state changes.
         food_discovery_system(&mut self.world);
@@ -104,7 +130,7 @@ impl Simulation {
 
         // Simulation-wide systems.
         apply_velocity_system(&mut self.world);
-        enforce_bounds_system(&mut self.world, self.width, self.height);
+        enforce_bounds_system(&mut self.world, self.options.width, self.options.height);
         update_world_stats(&mut self.world, &mut self.stats);
     }
 
@@ -146,8 +172,8 @@ impl Simulation {
             nest,
             food_sources,
             ants,
-            width: self.width,
-            height: self.height,
+            width: self.options.width,
+            height: self.options.height,
         })
     }
 
@@ -169,7 +195,8 @@ mod tests {
     #[test]
     fn test_simulation_tick_updates_position() {
         // 1. Setup
-        let mut simulation = Simulation::new(100.0, 100.0);
+        let params = SimulationOptions::default();
+        let mut simulation = Simulation::new(params);
         let entity = simulation.world.spawn((
             Position { x: 10.0, y: 10.0 },
             Velocity { dx: 5.0, dy: -5.0 },
@@ -187,7 +214,8 @@ mod tests {
     #[test]
     fn test_simulation_new_spawns_correct_entities() {
         // 1. Action
-        let simulation = Simulation::new(100.0, 100.0);
+        let params = SimulationOptions::default();
+        let simulation = Simulation::new(params);
         let ants = simulation.world.query::<(&Position, &Ant)>().iter().count();
         let nests = simulation
             .world
@@ -209,7 +237,8 @@ mod tests {
     #[test]
     fn test_get_world_state_dto_includes_all_entities_and_dimensions() {
         // 1. Setup
-        let mut simulation = Simulation::new(100.0, 100.0);
+        let params = SimulationOptions::default();
+        let mut simulation = Simulation::new(params);
 
         // 2. Action
         let dto = simulation.get_world_state_dto().unwrap();
@@ -225,7 +254,8 @@ mod tests {
     #[test]
     fn test_get_world_statistics_includes_all_expected_stats() {
         // 1. Setup
-        let mut simulation = Simulation::new(100.0, 100.0);
+        let params = SimulationOptions::default();
+        let mut simulation = Simulation::new(params);
         simulation.tick();
 
         // 2. Action

@@ -28,7 +28,7 @@ import { event } from "@tauri-apps/api";
 import { Application, Assets, Container, Sprite, Text } from "pixi.js";
 import { AdjustmentFilter } from "pixi-filters";
 import { onDestroy, onMount } from "svelte";
-import SYSTEM_CONFIG from "../../../../domain/src/systemConfig.json";
+import SYSTEM_CONFIG from "../../../../domain/src/globalConfig.json";
 
 const app = new Application();
 const viewport = new Container();

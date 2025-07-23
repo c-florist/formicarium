@@ -4,7 +4,6 @@ use serde::Deserialize;
 #[derive(Deserialize, Debug)]
 #[serde(rename_all = "camelCase")]
 pub struct WorldConfig {
-    pub max_food_sources: usize,
     pub food_spawn_chance: f64,
     pub food_spawn_min_distance_to_nest: f32,
 }
@@ -37,14 +36,14 @@ pub struct MovementConfig {
 }
 
 #[derive(Deserialize, Debug)]
-pub struct SimulationConfig {
+pub struct GlobalConfig {
     pub world: WorldConfig,
     pub ant: AntConfig,
     pub pheromone: PheromoneConfig,
     pub movement: MovementConfig,
 }
 
-pub static CONFIG: Lazy<SimulationConfig> = Lazy::new(|| {
-    let config_str = include_str!("../../domain/src/systemConfig.json");
-    serde_json::from_str(config_str).expect("Failed to parse systemConfig.json")
+pub static GLOBAL_CONFIG: Lazy<GlobalConfig> = Lazy::new(|| {
+    let config_str = include_str!("../../domain/src/globalConfig.json");
+    serde_json::from_str(config_str).expect("Failed to parse globalConfig.json")
 });

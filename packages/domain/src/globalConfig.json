@@ -1,9 +1,8 @@
 {
-  "_description": "This file contains configuration settings that need to be shared across the frontend and backend.",
+  "_description": "This file contains global configuration settings that need to be shared across the frontend and backend.",
   "world": {
-    "maxFoodSources": 100,
     "foodSpawnChance": 0.01,
-    "foodSpawnMinDistanceToNest": 50.0
+    "foodSpawnMinDistanceToNest": 25.0
   },
   "ant": {
     "arrivalDistance": 10.0,
