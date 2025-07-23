@@ -1,9 +1,9 @@
 <script lang="ts">
 import Button from "$lib/components/ui/Button.svelte";
 import Icon from "$lib/components/ui/Icon.svelte";
+import Menu from "$lib/components/ui/Menu.svelte";
 import Navbar from "$lib/components/ui/Navbar.svelte";
 import Popover from "$lib/components/ui/Popover.svelte";
-import StatsDashboard from "$lib/components/ui/StatsDashboard.svelte";
 import { toggleMenu, toggleStatsOverlay, uiState } from "$lib/state/ui.svelte";
 import { sineInOut } from "svelte/easing";
 import { slide } from "svelte/transition";
@@ -35,7 +35,7 @@ let { children } = $props();
       class="absolute top-0 right-0 w-96 bottom-0 z-10"
       transition:slide={{ duration: 300, easing: sineInOut, axis: "x" }}
     >
-      <StatsDashboard class="h-full" onclose={toggleMenu} />
+      <Menu class="h-full" onclose={toggleMenu} />
     </div>
   {/if}
 </div>

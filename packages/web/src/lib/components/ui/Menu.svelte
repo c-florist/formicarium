@@ -68,11 +68,5 @@ $effect(() => {
         Food in nest: <span class="font-normal">{worldStats.foodInNest}</span>
       </h4>
     </div>
-  {:else}
-    {#if !simulationState.isRunning}
-      <p>Waiting for simulation to start ...</p>
-    {:else}
-      <p>Statistics are unavailable, something must have gone wrong ...</p>
-    {/if}
   {/if}
 </div>
