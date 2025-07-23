@@ -1,10 +1,10 @@
 <script lang="ts">
-import Button from "$lib/components/ui/Button.svelte";
 import ConfirmModal from "$lib/components/ui/ConfirmModal.svelte";
 import HelpPanel from "$lib/components/ui/HelpPanel.svelte";
 import Icon from "$lib/components/ui/Icon.svelte";
 import Navbar from "$lib/components/ui/Navbar.svelte";
 import Popover from "$lib/components/ui/Popover.svelte";
+import SecondaryButton from "$lib/components/ui/SecondaryButton.svelte";
 import WorldStatsPanel from "$lib/components/ui/WorldStatsPanel.svelte";
 import {
   hideConfirmation,
@@ -21,25 +21,25 @@ let { children } = $props();
   <Navbar>
     <div class="flex items-center space-x-4">
       <Popover text="Reveal food stats" position="bottom">
-        <Button
+        <SecondaryButton
           onClick={toggleStatsOverlay}
         >
           <Icon name="eye" class="w-6 h-6" />
-        </Button>
+        </SecondaryButton>
       </Popover>
       <Popover text="Toggle stats panel" position="bottom">
-        <Button
+        <SecondaryButton
           onClick={toggleWorldStatsPanel}
         >
           Stats
-        </Button>
+        </SecondaryButton>
       </Popover>
       <Popover text="Help" position="bottom">
-        <Button
+        <SecondaryButton
           onClick={toggleHelpPanel}
         >
           <Icon name="info" class="w-6 h-6" />
-        </Button>
+        </SecondaryButton>
       </Popover>
     </div>
   </Navbar>

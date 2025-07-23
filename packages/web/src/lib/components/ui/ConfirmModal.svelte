@@ -1,5 +1,6 @@
 <script lang="ts">
 import PrimaryButton from "$lib/components/ui/PrimaryButton.svelte";
+import SecondaryButton from "$lib/components/ui/SecondaryButton.svelte";
 
 export let title: string;
 export let message: string;
@@ -12,12 +13,11 @@ export let onCancel: () => void;
     <h3 class="text-xl font-bold mb-4">{title}</h3>
     <p class="mb-6">{message}</p>
     <div class="flex justify-end space-x-4">
-      <button
-        class="px-4 py-2 rounded bg-stone-600 hover:bg-stone-500 cursor-pointer"
-        onclick={onCancel}
+      <SecondaryButton
+        onClick={onCancel}
       >
         Cancel
-      </button>
+      </SecondaryButton>
       <PrimaryButton onClick={onConfirm} text="Confirm" />
     </div>
   </div>
