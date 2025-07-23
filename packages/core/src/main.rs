@@ -18,7 +18,7 @@ pub struct AppState(Arc<Mutex<Option<Simulation>>>);
 fn main() {
     let app_state = AppState(Arc::new(Mutex::new(None)));
 
-    let targets = {
+    let log_targets = {
         #[cfg(debug_assertions)]
         {
             [
@@ -34,9 +34,20 @@ fn main() {
         }
     };
 
+    let log_level = {
+        #[cfg(debug_assertions)]
+        {
+            log::LevelFilter::Info
+        }
+        #[cfg(not(debug_assertions))]
+        {
+            log::LevelFilter::Warn
+        }
+    };
+
     let log_plugin = LogBuilder::new()
-        .targets(targets)
-        .level(log::LevelFilter::Info)
+        .targets(log_targets)
+        .level(log_level)
         .build();
 
     tauri::Builder::default()
