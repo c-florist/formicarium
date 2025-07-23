@@ -12,7 +12,6 @@
 
 ## Proposed features
 
-1. World creation with parameters: Allow user to specify parameters (starting number of ants, starting number of food sources, number of obstacles, ant spawn rate, max food sources).
 1. Introduce different ant types: `Solder`, `Queen`, `Worker`.
 1. Add user interaction with world: Allow for creating new food sources and obstacles with limits (e.g. only 14 obstacles allowed at a time).
 1. Introduce predators and design a system of interaction with them.
