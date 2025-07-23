@@ -31,11 +31,19 @@ export const toggleStatsOverlay = () => {
 };
 
 export const toggleWorldStatsPanel = () => {
-  uiState.showWorldStatsPanel = !uiState.showWorldStatsPanel;
+  const isOpen = uiState.showWorldStatsPanel;
+  uiState.showWorldStatsPanel = !isOpen;
+  if (!isOpen) {
+    uiState.showHelpPanel = false;
+  }
 };
 
 export const toggleHelpPanel = () => {
-  uiState.showHelpPanel = !uiState.showHelpPanel;
+  const isOpen = uiState.showHelpPanel;
+  uiState.showHelpPanel = !isOpen;
+  if (!isOpen) {
+    uiState.showWorldStatsPanel = false;
+  }
 };
 
 export const showConfirmation = (
