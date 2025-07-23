@@ -11,13 +11,26 @@ use components::dto::{StatsDto, WorldDto};
 use engine::simulation::{Simulation, SimulationOptions};
 use std::sync::{Arc, Mutex};
 use tauri::Emitter;
+use tauri_plugin_log::{Builder as LogBuilder, Target, TargetKind};
 
 pub struct AppState(Arc<Mutex<Option<Simulation>>>);
 
 fn main() {
     let app_state = AppState(Arc::new(Mutex::new(None)));
 
+    let log_plugin = LogBuilder::new()
+        .targets([
+            Target::new(TargetKind::Stdout),
+            Target::new(TargetKind::LogDir {
+                file_name: Some("app".into()),
+            }),
+            Target::new(TargetKind::Webview),
+        ])
+        .level(log::LevelFilter::Info)
+        .build();
+
     tauri::Builder::default()
+        .plugin(log_plugin)
         .manage(app_state)
         .invoke_handler(tauri::generate_handler![
             initialise_simulation,
@@ -34,18 +47,13 @@ fn initialise_simulation(
     app_handle: tauri::AppHandle,
     app_state: tauri::State<AppState>,
 ) {
+    log::info!("Received initialisation parameters: {:?}", init_params);
+
     let mut sim_params = init_params;
     sim_params.width *= 1.5;
     sim_params.height *= 1.5;
 
-    println!(
-        "Initialising world with parameters: width={}, height={}, starting_ants={}, starting_food_sources={}, max_food_sources={}",
-        sim_params.width,
-        sim_params.height,
-        sim_params.starting_ants,
-        sim_params.starting_food_sources,
-        sim_params.max_food_sources
-    );
+    log::info!("Initialising world with parameters: {:?}", sim_params);
 
     let mut world = Simulation::new(sim_params);
     let initial_world_state = world
@@ -53,7 +61,7 @@ fn initialise_simulation(
         .expect("Failed to get initial world state");
 
     if let Err(e) = app_handle.emit("sim-initialised", initial_world_state) {
-        eprintln!("Error emitting sim-initialised event: {e}");
+        log::error!("Error emitting sim-initialised event: {e}");
     }
 
     *app_state.0.lock().unwrap() = Some(world);
