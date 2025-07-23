@@ -1,4 +1,5 @@
 <script lang="ts">
+import { confirmAndExit } from "$lib/state/ui.svelte";
 import type { Snippet } from "svelte";
 
 let { children }: { children: Snippet } = $props();
@@ -6,8 +7,10 @@ let { children }: { children: Snippet } = $props();
 
 <nav class="w-full bg-stone-800 text-white p-4 border-b-4 border-stone-900">
   <div class="flex space-x-4 justify-between items-center">
-    <h1 class="text-2xl font-bold">Formicarium</h1>
-    <div class="space-x-4">
+    <button onclick={confirmAndExit} class="cursor-pointer">
+      <h1 class="text-2xl font-bold">Formicarium</h1>
+    </button>
+    <div class="flex items-center space-x-4">
       {#if children}
         {@render children()}
       {/if}

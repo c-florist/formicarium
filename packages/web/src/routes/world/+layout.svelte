@@ -1,11 +1,13 @@
 <script lang="ts">
 import Button from "$lib/components/ui/Button.svelte";
+import ConfirmModal from "$lib/components/ui/ConfirmModal.svelte";
 import HelpPanel from "$lib/components/ui/HelpPanel.svelte";
 import Icon from "$lib/components/ui/Icon.svelte";
 import Navbar from "$lib/components/ui/Navbar.svelte";
 import Popover from "$lib/components/ui/Popover.svelte";
 import WorldStatsPanel from "$lib/components/ui/WorldStatsPanel.svelte";
 import {
+  hideConfirmation,
   toggleHelpPanel,
   toggleStatsOverlay,
   toggleWorldStatsPanel,
@@ -22,7 +24,7 @@ let { children } = $props();
         <Button
           onClick={toggleStatsOverlay}
         >
-          Reveal food
+          <Icon name="eye" class="w-6 h-6" />
         </Button>
       </Popover>
       <Popover text="Toggle stats panel" position="bottom">
@@ -51,5 +53,14 @@ let { children } = $props();
 
   {#if uiState.showHelpPanel}
     <HelpPanel />
+  {/if}
+
+  {#if uiState.confirmation.isOpen}
+    <ConfirmModal
+      title={uiState.confirmation.title}
+      message={uiState.confirmation.message}
+      onConfirm={uiState.confirmation.onConfirm}
+      onCancel={hideConfirmation}
+    />
   {/if}
 </div>

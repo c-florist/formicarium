@@ -1,5 +1,6 @@
 <script lang="ts">
 import { goto } from "$app/navigation";
+import PrimaryButton from "$lib/components/ui/PrimaryButton.svelte";
 import { simulationState, userOptions } from "$lib/state/simulation.svelte";
 
 const startSimulation = () => {
@@ -8,18 +9,18 @@ const startSimulation = () => {
 };
 </script>
 
-<div class="flex min-h-screen items-center justify-center bg-amber-100 p-4">
+<div class="flex min-h-screen items-center justify-center bg-amber-100">
   <div
-    class="w-full max-w-4xl bg-stone-800 p-8 border-4 rounded-sm border-stone-900 shadow-[8px_8px_0_#00000020]"
+    class="w-full space-y-8 max-w-4xl bg-stone-800 p-8 border-4 rounded-sm border-stone-900 shadow-[8px_8px_0_#00000020]"
   >
-    <div class="text-center">
-      <h1 class="text-4xl font-bold text-amber-50 mb-4">
+    <div class="text-center space-y-4">
+      <h1 class="text-4xl font-bold text-amber-50">
         Welcome to the Formicarium
       </h1>
-      <p class="mx-auto max-w-xl text-lg leading-relaxed text-stone-300 mb-8">
+      <p class="mx-auto max-w-xl text-lg leading-relaxed text-stone-300">
         A real-time ant colony simulation.
       </p>
-      <h3 class="text-2xl font-bold text-amber-50 mb-4">
+      <h3 class="text-2xl font-bold text-amber-50">
         Configure your simulation run
       </h3>
     </div>
@@ -55,12 +56,7 @@ const startSimulation = () => {
     </form>
 
     <div class="text-center">
-      <button
-        on:click={startSimulation}
-        class="bg-green-700 px-6 py-3 font-bold text-white border-2 rounded-sm border-green-900 shadow-[4px_4px_0_theme(colors.green.900)] hover:bg-green-800 active:translate-y-0.5 active:shadow-[2px_2px_0_theme(colors.green.900)] transition-all cursor-pointer"
-      >
-        Start Simulation
-      </button>
+      <PrimaryButton onClick={startSimulation} text="Start simulation" />
     </div>
   </div>
 </div>
