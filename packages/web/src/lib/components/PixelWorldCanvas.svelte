@@ -60,6 +60,13 @@ const initialisePixiApp = async () => {
   app.stage.addChild(viewport);
   app.stage.addChild(uiContainer);
   app.stage.cursor = CURSOR_DEFAULT;
+  app.stage.eventMode = "static";
+  app.stage.hitArea = app.screen;
+  app.stage.on("pointerdown", () => {
+    if (uiState.selectedAntId !== null) {
+      uiState.selectedAntId = null;
+    }
+  });
 };
 
 const initialiseWorld = async (worldData: WorldDto) => {
@@ -235,7 +242,8 @@ $effect(() => {
       sprite.zIndex = LAYER_INDEX.ENTITIES;
 
       sprite.eventMode = "static";
-      sprite.on("pointerdown", () => {
+      sprite.on("pointerdown", (e) => {
+        e.stopPropagation();
         uiState.selectedAntId = ant.id;
       });
 
