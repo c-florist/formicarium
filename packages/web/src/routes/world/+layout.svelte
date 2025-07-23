@@ -4,24 +4,11 @@ import Icon from "$lib/components/ui/Icon.svelte";
 import Navbar from "$lib/components/ui/Navbar.svelte";
 import Popover from "$lib/components/ui/Popover.svelte";
 import StatsDashboard from "$lib/components/ui/StatsDashboard.svelte";
-import { uiStateStore } from "$lib/stores/ui-state-store";
+import { toggleMenu, toggleStatsOverlay, uiState } from "$lib/state/ui.svelte";
 import { sineInOut } from "svelte/easing";
 import { slide } from "svelte/transition";
 
 let { children } = $props();
-
-let isStatsDashboardOpen = $state(false);
-
-const toggleStatsDashboard = () => {
-  isStatsDashboardOpen = !isStatsDashboardOpen;
-};
-
-const toggleStatsOverlay = () => {
-  uiStateStore.update((state) => ({
-    ...state,
-    showStatsOverlay: !state.showStatsOverlay,
-  }));
-};
 </script>
 
 <div class="relative flex flex-col h-screen bg-stone-700">
@@ -34,7 +21,7 @@ const toggleStatsOverlay = () => {
       </Button>
     </Popover>
     <Button
-      onClick={toggleStatsDashboard}
+      onClick={toggleMenu}
     >
       Menu
     </Button>
@@ -43,12 +30,12 @@ const toggleStatsOverlay = () => {
     {@render children()}
   </main>
 
-  {#if isStatsDashboardOpen}
+  {#if uiState.menuIsOpen}
     <div
       class="absolute top-0 right-0 w-96 bottom-0 z-10"
       transition:slide={{ duration: 300, easing: sineInOut, axis: "x" }}
     >
-      <StatsDashboard class="h-full" onclose={toggleStatsDashboard} />
+      <StatsDashboard class="h-full" onclose={toggleMenu} />
     </div>
   {/if}
 </div>

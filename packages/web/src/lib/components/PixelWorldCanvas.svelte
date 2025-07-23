@@ -2,7 +2,7 @@
 import { EMIT_EVENTS } from "$lib/core/events";
 import { initialiseSimulation } from "$lib/core/query";
 import { userOptions } from "$lib/state/simulation.svelte";
-import { setSelectedAntId, uiStateStore } from "$lib/stores/ui-state-store";
+import { uiState } from "$lib/state/ui.svelte";
 import { startWorldUpdates, worldStore } from "$lib/stores/world-store";
 import {
   calculateIfHiddenInNest,
@@ -150,7 +150,6 @@ $effect(() => {
     return;
   }
 
-  const showStats = $uiStateStore.showStatsOverlay;
   const currentAntIds = new Set($worldStore.ants.map((ant) => ant.id));
   const currentFoodSourceIds = new Set(
     $worldStore.foodSources.map((foodSource) => foodSource.id),
@@ -166,8 +165,8 @@ $effect(() => {
     }
   }
 
-  if ($uiStateStore.selectedAntId !== null) {
-    const antData = antSprites.get($uiStateStore.selectedAntId);
+  if (uiState.selectedAntId !== null) {
+    const antData = antSprites.get(uiState.selectedAntId);
     if (antData) {
       antData.sprite.tint = 0x00ffff;
     }
@@ -215,7 +214,7 @@ $effect(() => {
     foodSprite.y = foodSource.y;
     statsBubble.x = foodSprite.x;
     statsBubble.y = foodSprite.y + SPRITE_CONFIGS.FOOD.statsBubbleYOffset;
-    statsBubble.visible = showStats;
+    statsBubble.visible = uiState.showStatsOverlay;
     foodSprite.alpha = Math.max(
       0.15,
       foodSource.amount / userOptions.maxFoodSources,
@@ -237,7 +236,7 @@ $effect(() => {
 
       sprite.eventMode = "static";
       sprite.on("pointerdown", () => {
-        setSelectedAntId(ant.id);
+        uiState.selectedAntId = ant.id;
       });
 
       worldContainer.addChild(sprite);

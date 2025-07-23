@@ -1,5 +1,5 @@
 <script lang="ts">
-import { deselectAnt, uiStateStore } from "$lib/stores/ui-state-store";
+import { uiState } from "$lib/state/ui.svelte";
 import { worldStore } from "$lib/stores/world-store";
 
 let selectedAnt:
@@ -7,9 +7,9 @@ let selectedAnt:
   | undefined;
 
 $: {
-  if ($uiStateStore.selectedAntId !== null && $worldStore) {
+  if (uiState.selectedAntId !== null && $worldStore) {
     selectedAnt = $worldStore.ants.find(
-      (ant) => ant.id === $uiStateStore.selectedAntId,
+      (ant) => ant.id === uiState.selectedAntId,
     );
   } else {
     selectedAnt = undefined;
@@ -21,7 +21,7 @@ $: {
   <div class="absolute bottom-4 left-4 bg-stone-800/80 text-white p-4 rounded-lg shadow-lg border border-stone-600">
     <div class="flex flex-row justify-between mb-2 pb-2 border-b border-stone-600">
       <h3 class="text-lg font-bold">Ant #{selectedAnt.id}</h3>
-      <button class="text-sm text-stone-400 hover:text-white cursor-pointer" on:click={() => deselectAnt()}>
+      <button class="text-sm text-stone-400 hover:text-white cursor-pointer" on:click={() => { uiState.selectedAntId = null }}>
         Close
       </button>
     </div>
