@@ -1,10 +1,12 @@
 <script lang="ts">
 import Button from "$lib/components/ui/Button.svelte";
+import HelpPanel from "$lib/components/ui/HelpPanel.svelte";
 import Icon from "$lib/components/ui/Icon.svelte";
 import Navbar from "$lib/components/ui/Navbar.svelte";
 import Popover from "$lib/components/ui/Popover.svelte";
 import WorldStatsPanel from "$lib/components/ui/WorldStatsPanel.svelte";
 import {
+  toggleHelpPanel,
   toggleStatsOverlay,
   toggleWorldStatsPanel,
   uiState,
@@ -15,20 +17,29 @@ let { children } = $props();
 
 <div class="relative flex flex-col h-screen bg-stone-700">
   <Navbar>
-    <Popover text="Reveal food stats" position="bottom">
-      <Button
-        onClick={toggleStatsOverlay}
-      >
-        Reveal food
-      </Button>
-    </Popover>
-    <Popover text="Toggle stats panel" position="left">
-      <Button
-        onClick={toggleWorldStatsPanel}
-      >
-        Stats
-      </Button>
-    </Popover>
+    <div class="flex items-center space-x-4">
+      <Popover text="Reveal food stats" position="bottom">
+        <Button
+          onClick={toggleStatsOverlay}
+        >
+          Reveal food
+        </Button>
+      </Popover>
+      <Popover text="Toggle stats panel" position="bottom">
+        <Button
+          onClick={toggleWorldStatsPanel}
+        >
+          Stats
+        </Button>
+      </Popover>
+      <Popover text="Help" position="bottom">
+        <Button
+          onClick={toggleHelpPanel}
+        >
+          <Icon name="info" class="w-6 h-6" />
+        </Button>
+      </Popover>
+    </div>
   </Navbar>
   <main class="flex-1">
     {@render children()}
@@ -36,5 +47,9 @@ let { children } = $props();
 
   {#if uiState.showWorldStatsPanel}
     <WorldStatsPanel />
+  {/if}
+
+  {#if uiState.showHelpPanel}
+    <HelpPanel />
   {/if}
 </div>
