@@ -18,14 +18,24 @@ pub struct AppState(Arc<Mutex<Option<Simulation>>>);
 fn main() {
     let app_state = AppState(Arc::new(Mutex::new(None)));
 
-    let log_plugin = LogBuilder::new()
-        .targets([
-            Target::new(TargetKind::Stdout),
-            Target::new(TargetKind::LogDir {
+    let targets = {
+        #[cfg(debug_assertions)]
+        {
+            [
+                Target::new(TargetKind::Stdout),
+                Target::new(TargetKind::Webview),
+            ]
+        }
+        #[cfg(not(debug_assertions))]
+        {
+            [Target::new(TargetKind::LogDir {
                 file_name: Some("app".into()),
-            }),
-            Target::new(TargetKind::Webview),
-        ])
+            })]
+        }
+    };
+
+    let log_plugin = LogBuilder::new()
+        .targets(targets)
         .level(log::LevelFilter::Info)
         .build();
 
@@ -47,13 +57,13 @@ fn initialise_simulation(
     app_handle: tauri::AppHandle,
     app_state: tauri::State<AppState>,
 ) {
-    log::info!("Received initialisation parameters: {:?}", init_params);
+    log::info!("Received initialisation parameters: {init_params:?}");
 
     let mut sim_params = init_params;
     sim_params.width *= 1.5;
     sim_params.height *= 1.5;
 
-    log::info!("Initialising world with parameters: {:?}", sim_params);
+    log::info!("Initialising world with parameters: {sim_params:?}");
 
     let mut world = Simulation::new(sim_params);
     let initial_world_state = world
