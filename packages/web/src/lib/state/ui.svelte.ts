@@ -1,12 +1,12 @@
 type UIState = {
   showStatsOverlay: boolean;
-  menuIsOpen: boolean;
+  showWorldStatsPanel: boolean;
   selectedAntId: number | null;
 };
 
 export const uiState = $state<UIState>({
   showStatsOverlay: false,
-  menuIsOpen: false,
+  showWorldStatsPanel: false,
   selectedAntId: null,
 });
 
@@ -14,6 +14,6 @@ export const toggleStatsOverlay = () => {
   uiState.showStatsOverlay = !uiState.showStatsOverlay;
 };
 
-export const toggleMenu = () => {
-  uiState.menuIsOpen = !uiState.menuIsOpen;
+export const toggleWorldStatsPanel = () => {
+  uiState.showWorldStatsPanel = !uiState.showWorldStatsPanel;
 };
