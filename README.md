@@ -1,28 +1,35 @@
-# formicarium
+# Formicarium
 
+![Formicarium App Icon](packages/core/icons/64x64.png)
 
 > noun: formicarium
 >
-> an ant's nest, especially one in an artificial container for purposes of study.
+> An ant's nest, especially one in an artificial container for purposes of study.
 
-## Improvements list
+A real-time simulation of an ant colony, built to visualise the emergent behavior of ants (for fun).
 
-1. Improve pheromone following system so it influences direction to specific food source instead of nearest one.
-1. Visualise pheromone trails?
+## Getting started
 
-## Proposed features
+Visit the [releases page](https://github.com/kyoh-dev/formicarium/releases) to download the latest version of Formicarium for your operating system.
 
-### Core engine and renderer
-1. Introduce different ant types: `Solder`, `Queen`, `Worker`.
-1. Add user interaction with world: E.g. allow for creating new food sources.
-1. Introduce predators and design a system of interaction with them.
-1. Add a collision system with obstacles, i.e. boulders.
-1. Stretch: Distinguish between `outside` and `inside` worlds and allow ants to go inside a nest and dig tunnels, lay eggs, feed the queen.
-1. Stretch: Support multiple ant colonies per world: Allow for up to X number of colonies per world, design interactions between them (often ants kill other ant colonies when discovered).
+## Demo
 
-### UI/UX
-1. Add simulation controls: Pause, Reset, Adjust speed.
+TODO
 
-### Attributions to include
+## Roadmap
 
-* App icon by [Freepik - Flaticon](https://www.flaticon.com/authors/freepik)
+### Core simulation
+- [ ] **Advanced pheromones:** Improve pheromone system to guide ants to specific food sources.
+- [ ] **Diverse ant roles:** Introduce different ant types such as `Queen`, `Worker`, and `Soldier` with unique behaviors.
+- [ ] **Predators & obstacles:** Add predators and environmental obstacles (e.g., boulders) to create a more dynamic simulation.
+- [ ] **Multi-colony support:** Allow multiple ant colonies to coexist and interact within the same world.
+- [ ] **Nest interior vs exterior:** Distinguish between the outside world and the nest interior, allowing for complex behaviors like tunneling and brood care.
+
+### User interface & experience
+- [ ] **Simulation controls:** Implement UI controls to pause, reset, and adjust the simulation speed.
+- [ ] **Interactive world:** Allow users to add new food sources or other elements to the world in real-time.
+- [ ] **Pheromone visualization:** Create a visual representation of pheromone trails.
+
+## Attributions
+
+App icon by [Freepik - Flaticon](https://www.flaticon.com/authors/freepik)
