@@ -217,7 +217,7 @@ $effect(() => {
     statsBubble.visible = uiState.showStatsOverlay;
     foodSprite.alpha = Math.max(
       0.15,
-      foodSource.amount / userOptions.maxFoodSources,
+      foodSource.amount / GLOBAL_CONFIG.world.foodSourceMaxAmount,
     );
   }
 
