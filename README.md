@@ -14,7 +14,7 @@ Visit the [releases page](https://github.com/kyoh-dev/formicarium/releases) to d
 
 ## Demo
 
-TODO
+![Formicarium Application Demo](docs/v1.0_demo.gif)
 
 ## Roadmap
 
