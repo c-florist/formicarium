@@ -1,6 +1,6 @@
 [package]
 name = "formicarium"
-version = "1.0.0"
+version = "1.0.1"
 description = "[noun]: an ant's nest, especially one in an artificial container for purposes of study."
 authors = ["Connor Flowers"]
 license = ""
