@@ -1,4 +1,5 @@
 packages:
-  - "packages/core"
+  - "packages/simulation"
+  - "packages/wasm-client"
   - "packages/domain"
   - "packages/web"
