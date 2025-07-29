@@ -5,20 +5,19 @@ set dotenv-load := true
 _default:
     @just --list
 
-# Run the full stack in dev mode
-dev:
-    pnpm tauri dev
-
 # Run linting and fix issues
 tidy *flags:
-    cargo fmt --manifest-path packages/core/Cargo.toml
+    cargo fmt --manifest-path packages/simulation/Cargo.toml
+    cargo fmt --manifest-path packages/wasm-client/Cargo.toml
     pnpm run tidy {{flags}}
 
 # Run type checking
 typecheck:
     pnpm run typecheck
-    cargo check --manifest-path packages/core/Cargo.toml
+    cargo check --manifest-path packages/simulation/Cargo.toml
+    cargo check --manifest-path packages/wasm-client/Cargo.toml
 
 # Run tests
 test:
-    cargo test --manifest-path packages/core/Cargo.toml
+    cargo test --manifest-path packages/simulation/Cargo.toml
+    cargo test --manifest-path packages/wasm-client/Cargo.toml
