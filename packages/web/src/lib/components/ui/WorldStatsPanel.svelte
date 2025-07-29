@@ -1,21 +1,14 @@
-
 <script lang="ts">
-import { getWorldStatistics } from "$lib/core/query";
 import { uiState } from "$lib/state/ui.svelte";
+import { wasmState } from "$lib/state/wasm.svelte";
 import type { StatsDto } from "@formicarium/domain";
 
-let worldStats = $state<StatsDto | undefined>(undefined);
+let worldStats = $state<StatsDto>();
 
 $effect(() => {
   const interval = setInterval(async () => {
-    worldStats = await getWorldStatistics();
+    worldStats = wasmState.simulationService?.getWorldStatistics();
   }, 1000);
-
-  const setWorldStats = async () => {
-    worldStats = await getWorldStatistics();
-  };
-
-  setWorldStats();
 
   return () => clearInterval(interval);
 });

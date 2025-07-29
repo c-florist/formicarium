@@ -1,9 +1,9 @@
 <script lang="ts">
-import { EMIT_EVENTS } from "$lib/core/events";
-import { initialiseSimulation } from "$lib/core/query";
+import { SimulationService } from "$lib/services/simulation-service";
 import { userOptions } from "$lib/state/simulation.svelte";
 import { uiState } from "$lib/state/ui.svelte";
-import { startWorldUpdates, worldStore } from "$lib/stores/world-store";
+import { wasmState } from "$lib/state/wasm.svelte";
+import { worldStore } from "$lib/stores/world-store";
 import {
   calculateIfHiddenInNest,
   calculateMovementDirection,
@@ -20,7 +20,6 @@ import { createNestContainer, createStatsBubble } from "$lib/world/render";
 import { type AntSprite, createSpriteWithConfig } from "$lib/world/sprite";
 import { TiledMapRenderer } from "$lib/world/tiled";
 import type { WorldDto } from "@formicarium/domain";
-import { event } from "@tauri-apps/api";
 import { Application, Assets, Container, Sprite, Text } from "pixi.js";
 import { AdjustmentFilter } from "pixi-filters";
 import { onDestroy, onMount } from "svelte";
@@ -127,22 +126,31 @@ const initialiseWorld = async (worldData: WorldDto) => {
 onMount(async () => {
   await initialisePixiApp();
 
-  const unlisten = await event.once<WorldDto>(
-    EMIT_EVENTS.SIM_INITIALISED,
-    (event) => {
-      initialiseWorld(event.payload);
-      unlisten();
-    },
-  );
-
   const { clientWidth, clientHeight } = canvasContainer;
-  await initialiseSimulation({
+  wasmState.simulationService = new SimulationService({
     width: clientWidth,
     height: clientHeight,
     ...userOptions,
   });
 
-  startWorldUpdates();
+  const initialWorldState = wasmState.simulationService.getWorldState();
+  worldStore.set(initialWorldState);
+  await initialiseWorld(initialWorldState);
+
+  // Start the game loop
+  const gameLoop = () => {
+    if (!wasmState.simulationService) {
+      throw new Error("Simulation service not initialised properly");
+    }
+
+    wasmState.simulationService.tick();
+    const worldState = wasmState.simulationService.getWorldState();
+    worldStore.set(worldState);
+
+    wasmState.animationFrameId = requestAnimationFrame(gameLoop);
+  };
+
+  gameLoop();
 });
 
 $effect(() => {
@@ -275,6 +283,9 @@ $effect(() => {
 });
 
 onDestroy(() => {
+  if (wasmState.animationFrameId) {
+    cancelAnimationFrame(wasmState.animationFrameId);
+  }
   if (app.canvas) {
     app.destroy(true);
   }
