@@ -1,6 +1,6 @@
 # Formicarium
 
-![Formicarium App Icon](packages/core/icons/64x64.png)
+![Formicarium App Icon](packages/domain/static/icons/64x64.png)
 
 > noun: formicarium
 >
