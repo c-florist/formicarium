@@ -10,11 +10,7 @@ A real-time simulation of an ant colony, built to visualise the emergent behavio
 
 ## Getting started
 
-Visit the [releases page](https://github.com/kyoh-dev/formicarium/releases) to download the latest version of Formicarium for your operating system.
-
-## Demo
-
-![Formicarium Application Demo](docs/v1.0_demo.gif)
+TODO
 
 ## Roadmap
 
@@ -29,6 +25,14 @@ Visit the [releases page](https://github.com/kyoh-dev/formicarium/releases) to d
 - [ ] **Simulation controls:** Implement UI controls to pause, reset, and adjust the simulation speed.
 - [ ] **Interactive world:** Allow users to add new food sources or other elements to the world in real-time.
 - [ ] **Pheromone visualization:** Create a visual representation of pheromone trails.
+
+## Project history
+
+What started as a way to test out writing desktop apps using Tauri, turned into a bit of an obsession in creating a realistic and immersive simulation. Whilst Tauri makes things easy to package for desktop, I wanted a way to allow anyone to run the simulation quickly, and so migrated to a WASM-based app.
+
+Below you'll find the old demo for the first iteration of the simulation on desktop.
+
+![Formicarium Application Demo](docs/v1.0_demo.gif)
 
 ## Attributions
 
