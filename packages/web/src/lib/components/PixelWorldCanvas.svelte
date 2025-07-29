@@ -1,9 +1,12 @@
 <script lang="ts">
-import { SimulationService } from "$lib/services/simulation-service";
+import SimulationService from "$lib/services/simulation";
 import { userOptions } from "$lib/state/simulation.svelte";
 import { uiState } from "$lib/state/ui.svelte";
-import { wasmState } from "$lib/state/wasm.svelte";
-import { worldStore } from "$lib/stores/world-store";
+import {
+  startWorldUpdates,
+  stopWorldUpdates,
+  worldStore,
+} from "$lib/stores/world";
 import {
   calculateIfHiddenInNest,
   calculateMovementDirection,
@@ -35,9 +38,9 @@ let canvasContainer: HTMLDivElement;
 const workerAntAssets = Assets.get(ASSET_ALIASES.WORKER_ANT);
 const foodSourceAssets = Assets.get(FOOD_ASSET_ALIASES);
 
-let antSprites: Map<number, AntSprite> = new Map();
-let foodSourceSprites: Map<number, Sprite> = new Map();
-let foodSourceStats: Map<number, Container> = new Map();
+const antSprites: Map<number, AntSprite> = new Map();
+const foodSourceSprites: Map<number, Sprite> = new Map();
+const foodSourceStats: Map<number, Container> = new Map();
 
 const initialisePixiApp = async () => {
   await app.init({
@@ -61,7 +64,11 @@ const initialisePixiApp = async () => {
   app.stage.cursor = CURSOR_DEFAULT;
 };
 
-const initialiseWorld = async (worldData: WorldDto) => {
+const initialiseWorld = async () => {
+  if (!$worldStore) {
+    throw new Error("Tried to initialise world without world store data");
+  }
+
   // Load and render Tiled map
   const tiledRenderer = await TiledMapRenderer.fromFile(
     WORLD_MAP_CONFIG.filePath,
@@ -74,7 +81,7 @@ const initialiseWorld = async (worldData: WorldDto) => {
   foreground.zIndex = LAYER_INDEX.FOREGROUND;
   worldContainer.addChild(background, foreground);
 
-  const nest = await createNestContainer(worldData.nest);
+  const nest = await createNestContainer($worldStore.nest);
   nest.zIndex = LAYER_INDEX.STATIC_OBJECTS;
   worldContainer.addChild(nest);
 
@@ -82,7 +89,7 @@ const initialiseWorld = async (worldData: WorldDto) => {
     appStage: app.stage,
     hitArea: app.screen,
     viewport: viewport,
-    worldData: worldData,
+    worldData: $worldStore,
   });
 
   // Setup animation tickers
@@ -127,30 +134,14 @@ onMount(async () => {
   await initialisePixiApp();
 
   const { clientWidth, clientHeight } = canvasContainer;
-  wasmState.simulationService = new SimulationService({
+  SimulationService.init({
     width: clientWidth,
     height: clientHeight,
     ...userOptions,
   });
 
-  const initialWorldState = wasmState.simulationService.getWorldState();
-  worldStore.set(initialWorldState);
-  await initialiseWorld(initialWorldState);
-
-  // Start the game loop
-  const gameLoop = () => {
-    if (!wasmState.simulationService) {
-      throw new Error("Simulation service not initialised properly");
-    }
-
-    wasmState.simulationService.tick();
-    const worldState = wasmState.simulationService.getWorldState();
-    worldStore.set(worldState);
-
-    wasmState.animationFrameId = requestAnimationFrame(gameLoop);
-  };
-
-  gameLoop();
+  await initialiseWorld();
+  startWorldUpdates();
 });
 
 $effect(() => {
@@ -283,9 +274,7 @@ $effect(() => {
 });
 
 onDestroy(() => {
-  if (wasmState.animationFrameId) {
-    cancelAnimationFrame(wasmState.animationFrameId);
-  }
+  stopWorldUpdates();
   if (app.canvas) {
     app.destroy(true);
   }

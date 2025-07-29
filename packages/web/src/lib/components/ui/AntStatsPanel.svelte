@@ -1,6 +1,6 @@
 <script lang="ts">
 import { uiState } from "$lib/state/ui.svelte";
-import { worldStore } from "$lib/stores/world-store";
+import { worldStore } from "$lib/stores/world";
 
 let selectedAnt:
   | { id: number; health: number; state: { type: string } }
