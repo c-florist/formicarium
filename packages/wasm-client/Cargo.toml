@@ -1,0 +1,14 @@
+[package]
+name = "wasm-client"
+version = "0.1.0"
+description = "wasm client for the simulation"
+authors = ["Connor Flowers"]
+repository = "https://github.com/c-florist/formicarium/tree/main/packages/wasm-client"
+edition = "2024"
+rust-version = "1.88.0"
+
+[lib]
+crate-type = ["cdylib"]
+
+[dependencies]
+simulation = { path = "../simulation" }
