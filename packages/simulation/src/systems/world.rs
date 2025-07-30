@@ -40,9 +40,7 @@ pub fn food_spawn_system(
 
     let food_source_count = world.query::<(&Position, &FoodSource)>().iter().count() as u32;
 
-    if food_source_count < max_food_sources
-        && rng.random_bool(SIM_CONFIG.world.food_spawn_chance)
-    {
+    if food_source_count < max_food_sources && rng.random_bool(SIM_CONFIG.world.food_spawn_chance) {
         let mut x;
         let mut y;
         loop {

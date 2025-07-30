@@ -11,12 +11,12 @@ repos:
         name: 'cargo check simulation'
         language: system
         entry: cargo check --manifest-path packages/simulation/Cargo.toml
-        files: '(packages/simulation|packages/wasm-client)/.*'
+        files: 'packages/simulation/.*'
         pass_filenames: false
 
       - id: rustfmt
         name: 'fmt simulation'
         language: system
         entry: cargo fmt --manifest-path packages/simulation/Cargo.toml
-        files: '(packages/simulation|packages/wasm-client)/.*'
+        files: 'packages/simulation/.*'
         pass_filenames: false

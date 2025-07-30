@@ -175,8 +175,7 @@ pub fn ant_lifecycle_system(world: &mut World, rng: &mut impl Rng) {
             },
             AntState::Wandering,
             Ant {
-                health: rng
-                    .random_range(SIM_CONFIG.ant.min_health..SIM_CONFIG.ant.max_health),
+                health: rng.random_range(SIM_CONFIG.ant.min_health..SIM_CONFIG.ant.max_health),
             },
         )
     }));
