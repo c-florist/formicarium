@@ -1,18 +1,13 @@
 <script lang="ts">
 import { goto } from "$app/navigation";
 import PrimaryButton from "$lib/components/ui/PrimaryButton.svelte";
-import {
-  simulationState,
-  USER_OPTION_LIMITS,
-  userOptions,
-} from "$lib/state/simulation.svelte";
+import { USER_OPTION_LIMITS, userOptions } from "$lib/state/input.svelte";
 
 let form: HTMLFormElement;
 
 const startSimulation = (event?: Event) => {
   event?.preventDefault();
   if (form.checkValidity()) {
-    simulationState.isRunning = true;
     goto("/world");
   } else {
     form.reportValidity();
@@ -29,7 +24,7 @@ const startSimulation = (event?: Event) => {
         Welcome to the Formicarium
       </h1>
       <p class="mx-auto max-w-xl text-lg leading-relaxed text-stone-300">
-        A real-time ant colony simulation.
+        A real-time ant colony simulation
       </p>
       <h3 class="text-2xl font-bold text-amber-50">
         Configure your simulation run

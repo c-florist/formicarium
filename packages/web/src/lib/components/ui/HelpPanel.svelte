@@ -1,4 +1,3 @@
-
 <script lang="ts">
 import { uiState } from "$lib/state/ui.svelte";
 </script>

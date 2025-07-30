@@ -1,13 +1,4 @@
-import { Assets, type AssetsManifest, path } from "pixi.js";
-
-/**
- * Patch PixiJS path.isUrl to support Tauri protocol.
- */
-const patchPixiPath = () => {
-  path.isUrl = (p: string): boolean => {
-    return /^(?:https?|tauri):/.test(path.toPosix(p));
-  };
-};
+import { Assets, type AssetsManifest } from "pixi.js";
 
 export const WORLD_MAP_CONFIG = {
   filePath: "/background/world-map-2.json",
@@ -149,7 +140,6 @@ const manifest: AssetsManifest = {
 };
 
 export const initialiseWorldAssets = async () => {
-  patchPixiPath();
   await Assets.init({ manifest });
   await Assets.loadBundle("world");
 

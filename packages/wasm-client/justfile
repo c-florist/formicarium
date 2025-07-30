@@ -1,0 +1,8 @@
+set export
+set dotenv-load := true
+
+_default:
+    @just --list
+
+build:
+    RUSTFLAGS='--cfg getrandom_backend="wasm_js"' wasm-pack build --target bundler

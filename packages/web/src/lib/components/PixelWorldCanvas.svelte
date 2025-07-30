@@ -1,9 +1,12 @@
 <script lang="ts">
-import { EMIT_EVENTS } from "$lib/core/events";
-import { initialiseSimulation } from "$lib/core/query";
-import { userOptions } from "$lib/state/simulation.svelte";
+import SimulationService from "$lib/services/simulation";
+import { userOptions } from "$lib/state/input.svelte";
 import { uiState } from "$lib/state/ui.svelte";
-import { startWorldUpdates, worldStore } from "$lib/stores/world-store";
+import {
+  startWorldUpdates,
+  stopWorldUpdates,
+  worldStore,
+} from "$lib/stores/world";
 import {
   calculateIfHiddenInNest,
   calculateMovementDirection,
@@ -19,8 +22,6 @@ import { LAYER_INDEX, SPRITE_CONFIGS } from "$lib/world/constants";
 import { createNestContainer, createStatsBubble } from "$lib/world/render";
 import { type AntSprite, createSpriteWithConfig } from "$lib/world/sprite";
 import { TiledMapRenderer } from "$lib/world/tiled";
-import type { WorldDto } from "@formicarium/domain";
-import { event } from "@tauri-apps/api";
 import { Application, Assets, Container, Sprite, Text } from "pixi.js";
 import { AdjustmentFilter } from "pixi-filters";
 import { onDestroy, onMount } from "svelte";
@@ -36,15 +37,13 @@ let canvasContainer: HTMLDivElement;
 const workerAntAssets = Assets.get(ASSET_ALIASES.WORKER_ANT);
 const foodSourceAssets = Assets.get(FOOD_ASSET_ALIASES);
 
-let antSprites: Map<number, AntSprite> = new Map();
-let foodSourceSprites: Map<number, Sprite> = new Map();
-let foodSourceStats: Map<number, Container> = new Map();
+const antSprites: Map<number, AntSprite> = new Map();
+const foodSourceSprites: Map<number, Sprite> = new Map();
+const foodSourceStats: Map<number, Container> = new Map();
 
 const initialisePixiApp = async () => {
   await app.init({
     resizeTo: canvasContainer,
-    roundPixels: true,
-    sharedTicker: true,
   });
   canvasContainer.appendChild(app.canvas);
 
@@ -62,7 +61,11 @@ const initialisePixiApp = async () => {
   app.stage.cursor = CURSOR_DEFAULT;
 };
 
-const initialiseWorld = async (worldData: WorldDto) => {
+const initialiseWorld = async () => {
+  if (!$worldStore) {
+    throw new Error("Tried to initialise world without world store data");
+  }
+
   // Load and render Tiled map
   const tiledRenderer = await TiledMapRenderer.fromFile(
     WORLD_MAP_CONFIG.filePath,
@@ -75,7 +78,7 @@ const initialiseWorld = async (worldData: WorldDto) => {
   foreground.zIndex = LAYER_INDEX.FOREGROUND;
   worldContainer.addChild(background, foreground);
 
-  const nest = await createNestContainer(worldData.nest);
+  const nest = await createNestContainer($worldStore.nest);
   nest.zIndex = LAYER_INDEX.STATIC_OBJECTS;
   worldContainer.addChild(nest);
 
@@ -83,7 +86,7 @@ const initialiseWorld = async (worldData: WorldDto) => {
     appStage: app.stage,
     hitArea: app.screen,
     viewport: viewport,
-    worldData: worldData,
+    worldData: $worldStore,
   });
 
   // Setup animation tickers
@@ -127,21 +130,14 @@ const initialiseWorld = async (worldData: WorldDto) => {
 onMount(async () => {
   await initialisePixiApp();
 
-  const unlisten = await event.once<WorldDto>(
-    EMIT_EVENTS.SIM_INITIALISED,
-    (event) => {
-      initialiseWorld(event.payload);
-      unlisten();
-    },
-  );
-
   const { clientWidth, clientHeight } = canvasContainer;
-  await initialiseSimulation({
+  SimulationService.init({
     width: clientWidth,
     height: clientHeight,
     ...userOptions,
   });
 
+  await initialiseWorld();
   startWorldUpdates();
 });
 
@@ -275,6 +271,7 @@ $effect(() => {
 });
 
 onDestroy(() => {
+  stopWorldUpdates();
   if (app.canvas) {
     app.destroy(true);
   }
