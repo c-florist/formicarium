@@ -10,6 +10,34 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  build-wasm-client:
+    name: Build wasm-client
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@1.88.0
+
+      - name: Cache Rust dependencies
+        uses: Swatinem/rust-cache@98c8021b550208e191a6a3145459bfc9fb29c4c0
+
+      - name: Install wasm-pack
+        run: cargo install wasm-pack
+
+      - name: Build wasm package
+        working-directory: packages/wasm-client
+        env:
+          RUSTFLAGS: --cfg getrandom_backend="wasm_js"
+        run: wasm-pack build --target bundler
+
+      - name: Upload pkg artifact
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: pkg
+          path: packages/wasm-client/pkg
+
   lint:
     name: Lint
     runs-on: ubuntu-latest
@@ -64,10 +92,17 @@ jobs:
   typecheck:
     name: Typecheck
     runs-on: ubuntu-latest
-    needs: test
+    needs: [build-wasm-client, test]
     steps:
       - name: Checkout
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+
+      - name: Download pkg artifact
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: pkg
+          path: packages/wasm-client/pkg
+
       - name: Setup pnpm
         uses: pnpm/action-setup@a7487c7e89a18df4991f7f222e4898a00d66ddda
         with:
