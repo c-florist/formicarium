@@ -1,17 +1,6 @@
 <script lang="ts">
-import SimulationService from "$lib/services/simulation";
 import { uiState } from "$lib/state/ui.svelte";
-import type { StatsDto } from "@formicarium/domain";
-
-let worldStats = $state<StatsDto>();
-
-$effect(() => {
-  const interval = setInterval(() => {
-    worldStats = SimulationService.getWorldStatistics();
-  }, 1000);
-
-  return () => clearInterval(interval);
-});
+import { statsStore } from "$lib/stores/world";
 </script>
 
 <div class="absolute top-24 right-4 bg-stone-800/80 text-white p-4 rounded-lg shadow-lg border border-stone-600 w-64">
@@ -21,22 +10,24 @@ $effect(() => {
       Close
     </button>
   </div>
-  {#if worldStats}
+  {#if $statsStore}
     <div class="space-y-2 mb-4">
       <h4 class="text-md font-bold mr-4">
-        Alive ants: <span class="font-normal">{worldStats.aliveAnts}</span>
+        Alive ants: <span class="font-normal">{$statsStore.aliveAnts}</span>
       </h4>
       <h4 class="text-md font-bold mr-4">
-        Dead ants: <span class="font-normal">{worldStats.deadAnts}</span>
+        Dead ants: <span class="font-normal">{$statsStore.deadAnts}</span>
       </h4>
     </div>
     <div class="space-y-2">
       <h4 class="text-md font-bold mr-4">
-        Food sources: <span class="font-normal">{worldStats.foodSourceCount}</span>
+        Food sources: <span class="font-normal">{$statsStore.foodSourceCount}</span>
       </h4>
       <h4 class="text-md font-bold mr-4">
-        Food in nest: <span class="font-normal">{worldStats.foodInNest}</span>
+        Food in nest: <span class="font-normal">{$statsStore.foodInNest}</span>
       </h4>
     </div>
+  {:else}
+    <p class="text-stone-400">Waiting for simulation data...</p>
   {/if}
 </div>

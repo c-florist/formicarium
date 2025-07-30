@@ -1,18 +1,13 @@
 <script lang="ts">
 import { goto } from "$app/navigation";
 import PrimaryButton from "$lib/components/ui/PrimaryButton.svelte";
-import {
-  simulationState,
-  USER_OPTION_LIMITS,
-  userOptions,
-} from "$lib/state/simulation.svelte";
+import { USER_OPTION_LIMITS, userOptions } from "$lib/state/input.svelte";
 
 let form: HTMLFormElement;
 
 const startSimulation = (event?: Event) => {
   event?.preventDefault();
   if (form.checkValidity()) {
-    simulationState.isRunning = true;
     goto("/world");
   } else {
     form.reportValidity();

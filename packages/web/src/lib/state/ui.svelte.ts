@@ -30,18 +30,16 @@ export const toggleStatsOverlay = () => {
   uiState.showStatsOverlay = !uiState.showStatsOverlay;
 };
 
-export const toggleWorldStatsPanel = () => {
-  const isOpen = uiState.showWorldStatsPanel;
-  uiState.showWorldStatsPanel = !isOpen;
-  if (!isOpen) {
+export const openWorldStatsPanel = () => {
+  uiState.showWorldStatsPanel = true;
+  if (uiState.showWorldStatsPanel) {
     uiState.showHelpPanel = false;
   }
 };
 
-export const toggleHelpPanel = () => {
-  const isOpen = uiState.showHelpPanel;
-  uiState.showHelpPanel = !isOpen;
-  if (!isOpen) {
+export const openHelpPanel = () => {
+  uiState.showHelpPanel = true;
+  if (uiState.showHelpPanel) {
     uiState.showWorldStatsPanel = false;
   }
 };

@@ -1,6 +1,6 @@
 <script lang="ts">
 import SimulationService from "$lib/services/simulation";
-import { userOptions } from "$lib/state/simulation.svelte";
+import { userOptions } from "$lib/state/input.svelte";
 import { uiState } from "$lib/state/ui.svelte";
 import {
   startWorldUpdates,
@@ -22,7 +22,6 @@ import { LAYER_INDEX, SPRITE_CONFIGS } from "$lib/world/constants";
 import { createNestContainer, createStatsBubble } from "$lib/world/render";
 import { type AntSprite, createSpriteWithConfig } from "$lib/world/sprite";
 import { TiledMapRenderer } from "$lib/world/tiled";
-import type { WorldDto } from "@formicarium/domain";
 import { Application, Assets, Container, Sprite, Text } from "pixi.js";
 import { AdjustmentFilter } from "pixi-filters";
 import { onDestroy, onMount } from "svelte";
