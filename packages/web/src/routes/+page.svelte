@@ -24,7 +24,7 @@ const startSimulation = (event?: Event) => {
         Welcome to the Formicarium
       </h1>
       <p class="mx-auto max-w-xl text-lg leading-relaxed text-stone-300">
-        A real-time ant colony simulation.
+        A real-time ant colony simulation
       </p>
       <h3 class="text-2xl font-bold text-amber-50">
         Configure your simulation run

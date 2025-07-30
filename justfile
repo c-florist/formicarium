@@ -5,6 +5,9 @@ set dotenv-load := true
 _default:
     @just --list
 
+dev:
+    pnpm --filter web dev
+
 # Run linting and fix issues
 tidy *flags:
     cargo fmt --manifest-path packages/simulation/Cargo.toml
