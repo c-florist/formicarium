@@ -18,14 +18,17 @@ import {
   FOOD_ASSET_ALIASES,
   WORLD_MAP_CONFIG,
 } from "$lib/world/assets";
-import { LAYER_INDEX, SPRITE_CONFIGS } from "$lib/world/constants";
+import {
+  CLIENT_CONFIG,
+  LAYER_INDEX,
+  SPRITE_CONFIGS,
+} from "$lib/world/constants";
 import { createNestContainer, createStatsBubble } from "$lib/world/render";
 import { type AntSprite, createSpriteWithConfig } from "$lib/world/sprite";
 import { TiledMapRenderer } from "$lib/world/tiled";
 import { Application, Assets, Container, Sprite, Text } from "pixi.js";
 import { AdjustmentFilter } from "pixi-filters";
 import { onDestroy, onMount } from "svelte";
-import GLOBAL_CONFIG from "../../../../domain/src/globalConfig.json";
 
 const app = new Application();
 const viewport = new Container();
@@ -91,7 +94,7 @@ const initialiseWorld = async () => {
 
   // Setup animation tickers
   let frameCounter = 0;
-  const animationSpeed = GLOBAL_CONFIG.rendering.animationSpeed;
+  const animationSpeed = CLIENT_CONFIG.ANIMATION_SPEED;
 
   app.ticker.add((ticker) => {
     frameCounter++;
@@ -213,7 +216,7 @@ $effect(() => {
     statsBubble.visible = uiState.showStatsOverlay;
     foodSprite.alpha = Math.max(
       0.15,
-      foodSource.amount / GLOBAL_CONFIG.world.foodSourceMaxAmount,
+      foodSource.amount / CLIENT_CONFIG.FOOD_SOURCE_MAX_AMOUNT,
     );
   }
 
@@ -252,7 +255,7 @@ $effect(() => {
 
     if (ant.state.type === "dying") {
       antData.sprite.alpha =
-        ant.state.ticks / GLOBAL_CONFIG.ant.deathAnimationTicks;
+        ant.state.ticks / CLIENT_CONFIG.ANT_DEATH_ANIMATION_TICKS;
     } else {
       const deltaX = ant.x - antData.previousPosition.x;
       const deltaY = ant.y - antData.previousPosition.y;

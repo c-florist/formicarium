@@ -2,16 +2,14 @@
   "_description": "This file contains global configuration settings that need to be shared across the frontend and backend.",
   "world": {
     "foodSpawnChance": 0.01,
-    "foodSpawnMinDistanceToNest": 25.0,
-    "foodSourceMaxAmount": 100
+    "foodSpawnMinDistanceToNest": 25.0
   },
   "ant": {
     "arrivalDistance": 10.0,
     "foodPayloadAmount": 10,
     "discoveryRadius": 31.6,
     "minHealth": 500,
-    "maxHealth": 1000,
-    "deathAnimationTicks": 30
+    "maxHealth": 1000
   },
   "pheromone": {
     "emitChance": 0.5,
@@ -22,8 +20,5 @@
   "movement": {
     "wanderProbability": 0.05,
     "speed": 3.0
-  },
-  "rendering": {
-    "animationSpeed": 6
   }
 }

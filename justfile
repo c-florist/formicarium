@@ -5,6 +5,7 @@ set dotenv-load := true
 _default:
     @just --list
 
+# Run the dev server
 dev:
     pnpm --filter web dev
 

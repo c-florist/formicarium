@@ -16,3 +16,10 @@ export const LAYER_INDEX = {
   ENTITIES: 2,
   FOREGROUND: 3,
 } as const;
+
+export const CLIENT_CONFIG = {
+  ANIMATION_SPEED: 6,
+  FOOD_SOURCE_MAX_AMOUNT: 100,
+  // Number of ticks the death animation occurs over
+  ANT_DEATH_ANIMATION_TICKS: 30,
+} as const;
