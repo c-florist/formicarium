@@ -1,6 +1,6 @@
 use crate::components::dto::{AntDto, FoodSourceDto, NestDto, StatsDto, WorldDto};
 use crate::components::world::{Ant, AntState, FoodSource, Nest, Position, Velocity};
-use crate::config::GLOBAL_CONFIG;
+use crate::engine::config::SIM_CONFIG;
 use crate::engine::stats::Stats;
 use crate::systems::{
     ant_arrival_at_food_system, ant_arrival_at_nest_system, ant_dying_system, ant_lifecycle_system,
@@ -73,7 +73,7 @@ impl Simulation {
                 y = rng.random_range(0.0..sim_options.height);
                 let distance_sq = target_distance_sq(nest_pos_x, nest_pos_y, x, y);
                 // Ensure the food source is not too close to the nest
-                if distance_sq > GLOBAL_CONFIG.world.food_spawn_min_distance_to_nest.powi(2) {
+                if distance_sq > SIM_CONFIG.world.food_spawn_min_distance_to_nest.powi(2) {
                     break;
                 }
             }
