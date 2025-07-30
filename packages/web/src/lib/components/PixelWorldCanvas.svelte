@@ -44,8 +44,6 @@ const foodSourceStats: Map<number, Container> = new Map();
 const initialisePixiApp = async () => {
   await app.init({
     resizeTo: canvasContainer,
-    roundPixels: true,
-    sharedTicker: true,
   });
   canvasContainer.appendChild(app.canvas);
 
