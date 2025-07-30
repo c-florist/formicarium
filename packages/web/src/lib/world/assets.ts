@@ -140,7 +140,6 @@ const manifest: AssetsManifest = {
 };
 
 export const initialiseWorldAssets = async () => {
-  patchPixiPath();
   await Assets.init({ manifest });
   await Assets.loadBundle("world");
 
