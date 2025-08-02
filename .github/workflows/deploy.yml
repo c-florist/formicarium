@@ -40,9 +40,6 @@ jobs:
           node-version: 22.11
           cache: 'pnpm'
 
-      - name: Install dependencies
-        run: pnpm install
-
       - name: Install Vercel CLI
         run: npm install --global vercel@latest
 
