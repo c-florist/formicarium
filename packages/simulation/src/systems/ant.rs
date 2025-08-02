@@ -205,6 +205,30 @@ pub fn ant_dying_system(world: &mut World, stats: &mut Stats) {
     }
 }
 
+pub fn ant_foraging_system(world: &mut World) {
+    let mut to_update_to_wandering = Vec::new();
+
+    // Find all ants that are foraging
+    for (ant_entity, (_, target)) in world
+        .query::<(&AntState, &Target)>()
+        .iter()
+        .filter(|(_, (state, _))| **state == AntState::Foraging)
+    {
+        // If the target food source doesn't exist, the ant should go back to wandering
+        if world.get::<&FoodSource>(target.0).is_err() {
+            to_update_to_wandering.push(ant_entity);
+        }
+    }
+
+    // Apply updates for ants that have lost their food source
+    for entity in to_update_to_wandering {
+        if let Ok(state) = world.query_one_mut::<&mut AntState>(entity) {
+            *state = AntState::Wandering;
+        }
+        world.remove_one::<Target>(entity).ok();
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -214,6 +238,29 @@ mod tests {
     use hecs::World;
     use rand::SeedableRng;
     use rand::rngs::StdRng;
+
+    #[test]
+    fn test_ant_foraging_system_updates_ant_to_wandering_when_food_source_is_gone() {
+        // 1. Setup
+        let mut world = World::new();
+        let food_entity = world.spawn((Position { x: 10.0, y: 10.0 }, FoodSource { amount: 100 }));
+        let ant_entity = world.spawn((
+            Position { x: 9.9, y: 9.9 },
+            AntState::Foraging,
+            Target(food_entity),
+            Ant { health: 100 },
+        ));
+
+        // 2. Action
+        // Remove the food source, simulating it being depleted
+        world.despawn(food_entity).unwrap();
+        ant_foraging_system(&mut world);
+
+        // 3. Assertion
+        let ant_state = world.get::<&AntState>(ant_entity).unwrap();
+        assert_eq!(*ant_state, AntState::Wandering);
+        assert!(world.get::<&Target>(ant_entity).is_err());
+    }
 
     #[test]
     fn test_ant_arrival_at_nest_system_updates_ant_components() {
