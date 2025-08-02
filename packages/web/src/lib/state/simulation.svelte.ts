@@ -1,8 +1,12 @@
 type SimulationState = {
   speed: number;
+  isPaused: boolean;
 };
 
-export const simulationState = $state<SimulationState>({ speed: 150 });
+export const simulationState = $state<SimulationState>({
+  speed: 150,
+  isPaused: false,
+});
 
 const SPEED_INCREMENT = 10;
 const SPEED_LIMIT = {
@@ -24,6 +28,10 @@ export const decrementSpeed = () => {
   );
 };
 
-export const resetSpeed = () => {
+export const resetSimulationSpeed = () => {
   simulationState.speed = 150;
+};
+
+export const togglePause = () => {
+  simulationState.isPaused = !simulationState.isPaused;
 };

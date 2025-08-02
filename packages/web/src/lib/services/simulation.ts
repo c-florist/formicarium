@@ -1,4 +1,4 @@
-import { worldStore } from "$lib/stores/world";
+import { worldStore } from "$lib/stores/world.svelte";
 import type {
   SimulationOptions,
   StatsDto,

@@ -1,6 +1,6 @@
 <script lang="ts">
 import { uiState } from "$lib/state/ui.svelte";
-import { worldStore } from "$lib/stores/world";
+import { worldStore } from "$lib/stores/world.svelte";
 </script>
 
 <div class="absolute top-24 right-4 bg-stone-800/80 text-white p-4 rounded-lg shadow-lg border border-stone-600 w-64">

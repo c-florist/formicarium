@@ -6,7 +6,7 @@ import {
   startWorldUpdates,
   stopWorldUpdates,
   worldStore,
-} from "$lib/stores/world";
+} from "$lib/stores/world.svelte";
 import {
   calculateIfHiddenInNest,
   calculateMovementDirection,

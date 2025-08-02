@@ -18,6 +18,12 @@ export const startWorldUpdates = () => {
   let accumulator = 0;
 
   const gameLoop = (currentTime: number) => {
+    if (simulationState.isPaused) {
+      lastUpdateTime = currentTime;
+      animationFrameId = requestAnimationFrame(gameLoop);
+      return;
+    }
+
     const deltaTime = currentTime - lastUpdateTime;
     lastUpdateTime = currentTime;
     accumulator += deltaTime;
