@@ -114,7 +114,7 @@ jobs:
           node-version: 22.11
           cache: 'pnpm'
 
-      - name: Install node modules
+      - name: Install dependencies
         run: pnpm install
 
       - name: Run typecheck
