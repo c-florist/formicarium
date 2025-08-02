@@ -11,7 +11,6 @@ import {
   calculateIfHiddenInNest,
   calculateMovementDirection,
 } from "$lib/utils/maths";
-import { setupPanning } from "$lib/world/actions";
 import {
   ASSET_ALIASES,
   CURSOR_DEFAULT,
@@ -27,13 +26,13 @@ import { createNestContainer, createStatsBubble } from "$lib/world/render";
 import { type AntSprite, createSpriteWithConfig } from "$lib/world/sprite";
 import { TiledMapRenderer } from "$lib/world/tiled";
 import { Application, Assets, Container, Sprite, Text } from "pixi.js";
-import { AdjustmentFilter } from "pixi-filters";
+import { Viewport } from "pixi-viewport";
 import { onDestroy, onMount } from "svelte";
 
 const app = new Application();
-const viewport = new Container();
 const uiContainer = new Container();
 const worldContainer = new Container();
+let viewport: Viewport;
 
 let canvasContainer: HTMLDivElement;
 let lastSelectedAntId: number | null = null;
@@ -53,13 +52,6 @@ const initialisePixiApp = async () => {
     resolution: window.devicePixelRatio || 1,
   });
   canvasContainer.appendChild(app.canvas);
-
-  viewport.addChild(worldContainer);
-  worldContainer.sortableChildren = true;
-
-  app.stage.addChild(viewport);
-  app.stage.addChild(uiContainer);
-  app.stage.cursor = CURSOR_DEFAULT;
 };
 
 const initialiseWorld = async () => {
@@ -76,6 +68,27 @@ const initialiseWorld = async () => {
   // Get the true world dimensions now that the map is loaded
   const worldDimensions = tiledRenderer.getMapDimensions();
 
+  viewport = new Viewport({
+    screenWidth: canvasContainer.clientWidth,
+    screenHeight: canvasContainer.clientHeight,
+    worldWidth: worldDimensions.width,
+    worldHeight: worldDimensions.height,
+    events: app.renderer.events,
+  });
+
+  viewport.addChild(worldContainer);
+  worldContainer.sortableChildren = true;
+
+  app.stage.addChild(viewport);
+  app.stage.addChild(uiContainer);
+
+  viewport.drag().pinch().wheel().decelerate();
+  viewport.clampZoom({
+    minScale: 1,
+    maxScale: 5,
+  });
+  viewport.clamp({ direction: "all" });
+
   SimulationService.init({
     ...userOptions,
     ...worldDimensions,
@@ -88,13 +101,6 @@ const initialiseWorld = async () => {
   const nest = await createNestContainer($worldStore.nest);
   nest.zIndex = LAYER_INDEX.STATIC_OBJECTS;
   worldContainer.addChild(nest);
-
-  setupPanning({
-    appStage: app.stage,
-    hitArea: app.screen,
-    viewport: viewport,
-    worldData: $worldStore,
-  });
 
   // Setup animation tickers
   let frameCounter = 0;

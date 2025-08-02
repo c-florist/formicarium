@@ -15,6 +15,7 @@
     "@pixi/ui": "^2.2.4",
     "@tailwindcss/vite": "^4.1.11",
     "pixi-filters": "^6.1.4",
+    "pixi-viewport": "^6.0.3",
     "pixi.js": "^8.11.0",
     "tailwindcss": "^4.1.11"
   },

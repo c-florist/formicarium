@@ -1,6 +1,6 @@
 export const SPRITE_CONFIGS = {
   WORKER_ANT: {
-    scale: 1,
+    scale: 0.7,
     anchor: { x: 0.5, y: 0 },
     frameCount: 4,
     concealedRadius: 60,
