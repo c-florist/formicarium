@@ -3,9 +3,9 @@ use crate::components::world::{Ant, AntState, FoodSource, Nest, Position, Veloci
 use crate::engine::config::SIM_CONFIG;
 use crate::engine::stats::Stats;
 use crate::systems::{
-    ant_arrival_at_food_system, ant_arrival_at_nest_system, ant_dying_system, ant_foraging_system,
-    ant_lifecycle_system, apply_velocity_system, despawn_system, enforce_bounds_system,
-    food_discovery_system, food_spawn_system, pheromone_decay_system, pheromone_emission_system,
+    ant_dying_system, ant_find_food_system, ant_foraging_system, ant_lifecycle_system,
+    ant_returning_system, apply_velocity_system, despawn_system, enforce_bounds_system,
+    food_spawn_system, pheromone_decay_system, pheromone_emission_system,
     pheromone_following_system, target_movement_system, update_world_stats,
 };
 use crate::utils::maths::target_distance_sq;
@@ -117,10 +117,9 @@ impl Simulation {
         );
 
         // Systems that determine decisions and state changes.
-        food_discovery_system(&mut self.world);
+        ant_find_food_system(&mut self.world);
         ant_foraging_system(&mut self.world);
-        ant_arrival_at_food_system(&mut self.world);
-        ant_arrival_at_nest_system(&mut self.world);
+        ant_returning_system(&mut self.world);
 
         // Pheromone systems that modify the world state.
         pheromone_emission_system(&mut self.world, &mut self.rng);
