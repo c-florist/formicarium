@@ -93,7 +93,7 @@ const initialiseWorld = async () => {
   let frameCounter = 0;
   const animationSpeed = CLIENT_CONFIG.ANIMATION_SPEED;
 
-  app.ticker.add((ticker) => {
+  app.ticker.add(() => {
     frameCounter++;
     const animateThisFrame = frameCounter >= animationSpeed;
     if (animateThisFrame) {
@@ -192,7 +192,8 @@ $effect(() => {
       const deltaX = ant.x - antData.targetPosition.x;
       const deltaY = ant.y - antData.targetPosition.y;
       antData.direction = calculateMovementDirection(deltaX, deltaY);
-      antData.targetPosition = { x: ant.x, y: ant.y };
+      antData.targetPosition.x = ant.x;
+      antData.targetPosition.y = ant.y;
       antData.sprite.alpha = calculateIfHiddenInNest(
         ant.x,
         ant.y,
