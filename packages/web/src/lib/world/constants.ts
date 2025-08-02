@@ -15,6 +15,7 @@ export const LAYER_INDEX = {
   STATIC_OBJECTS: 1,
   ENTITIES: 2,
   FOREGROUND: 3,
+  WORLD_UI: 4,
 } as const;
 
 export const CLIENT_CONFIG = {

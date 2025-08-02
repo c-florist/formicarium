@@ -240,6 +240,7 @@ $effect(() => {
 
   // --- Food Source Management ---
   const seenFoodSourceIds = new Set(foodSourceSprites.keys());
+  const inverseScale = 1 / viewport.scale.x;
 
   // Update/Create Food Sources
   for (const foodSource of $worldStore.foodSources) {
@@ -255,12 +256,12 @@ $effect(() => {
         foodSourceStats.set(foodSource.id, statsBubble);
       } else {
         statsBubble = createStatsBubble(`Amount: ${foodSource.amount}`);
-        statsBubble.zIndex = LAYER_INDEX.ENTITIES;
         foodSourceStats.set(foodSource.id, statsBubble);
         worldContainer.addChild(statsBubble);
       }
     }
 
+    statsBubble.zIndex = LAYER_INDEX.WORLD_UI;
     statsBubble.getChildAt<Text>(1).text = `Amount: ${foodSource.amount}`;
 
     if (!foodSprite) {
@@ -276,8 +277,11 @@ $effect(() => {
 
     foodSprite.x = foodSource.x;
     foodSprite.y = foodSource.y;
+
     statsBubble.x = foodSprite.x;
-    statsBubble.y = foodSprite.y + SPRITE_CONFIGS.FOOD.statsBubbleYOffset;
+    statsBubble.y =
+      foodSprite.y + SPRITE_CONFIGS.FOOD.statsBubbleYOffset / viewport.scale.y;
+    statsBubble.scale.set(inverseScale);
     statsBubble.visible = uiState.showStatsOverlay;
     foodSprite.alpha = Math.max(
       0.15,
