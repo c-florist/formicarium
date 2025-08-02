@@ -44,6 +44,7 @@ const foodSourceAssets = Assets.get(FOOD_ASSET_ALIASES);
 const antSprites: Map<number, AntSprite> = new Map();
 const foodSourceSprites: Map<number, Sprite> = new Map();
 const foodSourceStats: Map<number, Container> = new Map();
+const statsBubblePool: Container[] = [];
 
 const initialisePixiApp = async () => {
   await app.init({
@@ -243,10 +244,16 @@ $effect(() => {
     let foodSprite = foodSourceSprites.get(foodSource.id);
 
     if (!statsBubble) {
-      statsBubble = createStatsBubble(`Amount: ${foodSource.amount}`);
-      statsBubble.zIndex = LAYER_INDEX.ENTITIES;
-      foodSourceStats.set(foodSource.id, statsBubble);
-      worldContainer.addChild(statsBubble);
+      if (statsBubblePool.length > 0) {
+        statsBubble = statsBubblePool.pop()!;
+        statsBubble.visible = true;
+        foodSourceStats.set(foodSource.id, statsBubble);
+      } else {
+        statsBubble = createStatsBubble(`Amount: ${foodSource.amount}`);
+        statsBubble.zIndex = LAYER_INDEX.ENTITIES;
+        foodSourceStats.set(foodSource.id, statsBubble);
+        worldContainer.addChild(statsBubble);
+      }
     }
 
     statsBubble.getChildAt<Text>(1).text = `Amount: ${foodSource.amount}`;
@@ -283,7 +290,8 @@ $effect(() => {
 
     const statsBubble = foodSourceStats.get(foodSourceId);
     if (statsBubble) {
-      worldContainer.removeChild(statsBubble);
+      statsBubble.visible = false;
+      statsBubblePool.push(statsBubble);
       foodSourceStats.delete(foodSourceId);
     }
   }
