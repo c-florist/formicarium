@@ -16,11 +16,6 @@ class SimulationService {
   private wasmSimulation: WasmSimulation | null = null;
 
   init = (options: SimulationOptions) => {
-    // Hack to make the world a bit bigger than device screen
-    // TODO: Replace with nicer, "infinite" map
-    options.width *= 1.5;
-    options.height *= 1.5;
-
     this.wasmSimulation = new WasmSimulation(options);
 
     const initialWorldState = this.wasmSimulation.get_world_state();

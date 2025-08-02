@@ -63,21 +63,27 @@ const initialisePixiApp = async () => {
 };
 
 const initialiseWorld = async () => {
-  if (!$worldStore) {
-    throw new Error("Tried to initialise world without world store data");
-  }
-
   // Load and render Tiled map
   const tiledRenderer = await TiledMapRenderer.fromFile(
     WORLD_MAP_CONFIG.filePath,
   );
   tiledRenderer.loadTilesets();
-  const { background, foreground } = tiledRenderer.renderMap(
-    WORLD_MAP_CONFIG.scale,
-  );
+  const { background, foreground } = tiledRenderer.renderMap();
   background.zIndex = LAYER_INDEX.BACKGROUND;
   foreground.zIndex = LAYER_INDEX.FOREGROUND;
   worldContainer.addChild(background, foreground);
+
+  // Get the true world dimensions now that the map is loaded
+  const worldDimensions = tiledRenderer.getMapDimensions();
+
+  SimulationService.init({
+    ...userOptions,
+    ...worldDimensions,
+  });
+
+  if (!$worldStore) {
+    throw new Error("World store not initialized after simulation init");
+  }
 
   const nest = await createNestContainer($worldStore.nest);
   nest.zIndex = LAYER_INDEX.STATIC_OBJECTS;
@@ -131,14 +137,6 @@ const initialiseWorld = async () => {
 
 onMount(async () => {
   await initialisePixiApp();
-
-  const { clientWidth, clientHeight } = canvasContainer;
-  SimulationService.init({
-    width: clientWidth,
-    height: clientHeight,
-    ...userOptions,
-  });
-
   await initialiseWorld();
   startWorldUpdates();
 });
