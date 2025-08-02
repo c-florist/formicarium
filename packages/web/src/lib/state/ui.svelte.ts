@@ -4,6 +4,7 @@ type UIState = {
   showStatsOverlay: boolean;
   showWorldStatsPanel: boolean;
   showHelpPanel: boolean;
+  showSimulationControls: boolean;
   selectedAntId: number | null;
   confirmation: {
     isOpen: boolean;
@@ -17,6 +18,7 @@ export const uiState = $state<UIState>({
   showStatsOverlay: false,
   showWorldStatsPanel: false,
   showHelpPanel: false,
+  showSimulationControls: false,
   selectedAntId: null,
   confirmation: {
     isOpen: false,
@@ -28,6 +30,10 @@ export const uiState = $state<UIState>({
 
 export const toggleStatsOverlay = () => {
   uiState.showStatsOverlay = !uiState.showStatsOverlay;
+};
+
+export const toggleSimulationControls = () => {
+  uiState.showSimulationControls = !uiState.showSimulationControls;
 };
 
 export const openWorldStatsPanel = () => {

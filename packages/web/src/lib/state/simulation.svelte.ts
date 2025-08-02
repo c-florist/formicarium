@@ -4,10 +4,10 @@ type SimulationState = {
 
 export const simulationState = $state<SimulationState>({ speed: 150 });
 
-const SPEED_INCREMENT = 5;
+const SPEED_INCREMENT = 10;
 const SPEED_LIMIT = {
   min: 300,
-  max: 25,
+  max: 20,
 };
 
 export const incrementSpeed = () => {

@@ -1,7 +1,10 @@
 <script lang="ts">
 import PixelWorldCanvas from "$lib/components/PixelWorldCanvas.svelte";
 import AntStatsPanel from "$lib/components/ui/AntStatsPanel.svelte";
+import DropdownMenu from "$lib/components/ui/DropdownMenu.svelte";
+import Navbar from "$lib/components/ui/Navbar.svelte";
 import SimulationControls from "$lib/components/ui/SimulationControls.svelte";
+import { uiState } from "$lib/state/ui.svelte";
 import { initialiseWorldAssets } from "$lib/world/assets";
 import { onMount } from "svelte";
 
@@ -32,7 +35,9 @@ onMount(async () => {
   {:else}
     <PixelWorldCanvas />
     <AntStatsPanel />
-    <SimulationControls />
+    {#if uiState.showSimulationControls}
+      <SimulationControls />
+    {/if}
   {/if}
 </div>
 

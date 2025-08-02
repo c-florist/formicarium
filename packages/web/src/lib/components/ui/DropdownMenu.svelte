@@ -1,6 +1,10 @@
 <script lang="ts">
 import SecondaryButton from "$lib/components/ui/SecondaryButton.svelte";
-import { openHelpPanel, openWorldStatsPanel } from "$lib/state/ui.svelte";
+import {
+  openHelpPanel,
+  openWorldStatsPanel,
+  toggleSimulationControls,
+} from "$lib/state/ui.svelte";
 
 let isOpen = $state(false);
 let container: HTMLDivElement;
@@ -41,6 +45,15 @@ const handleFocusOut = (event: FocusEvent) => {
     <div
       class="absolute right-0 mt-2 w-48 bg-stone-800 rounded-md shadow-lg z-20 border border-stone-600"
     >
+      <button
+        class="block w-full text-left px-4 py-2 text-sm text-white hover:bg-stone-700 cursor-pointer"
+        onclick={() => {
+          toggleSimulationControls();
+          closeMenu();
+        }}
+      >
+        Speed controls
+      </button>
       <button
         class="block w-full text-left px-4 py-2 text-sm text-white hover:bg-stone-700 cursor-pointer"
         onclick={() => {
