@@ -95,33 +95,34 @@ const initialiseWorld = async () => {
 
   app.ticker.add((ticker) => {
     frameCounter++;
-    if (frameCounter >= animationSpeed) {
+    const animateThisFrame = frameCounter >= animationSpeed;
+    if (animateThisFrame) {
       frameCounter = 0;
-      for (const [, antData] of antSprites) {
-        if (antData.sprite.alpha > 0.9) {
-          antData.animationFrame =
-            (antData.animationFrame + 1) % SPRITE_CONFIGS.WORKER_ANT.frameCount;
-          const frameName = `ant-${antData.direction}-${antData.animationFrame}`;
-          antData.sprite.texture = workerAntAssets.textures[frameName];
-
-          const scale = SPRITE_CONFIGS.WORKER_ANT.scale;
-          if (antData.direction === "left") {
-            antData.sprite.scale.x = -scale;
-          } else {
-            antData.sprite.scale.x = scale;
-          }
-        }
-      }
     }
 
-    // Smoothly move ants
     for (const [, antData] of antSprites) {
+      // Animate ants
+      if (animateThisFrame && antData.sprite.alpha > 0.9) {
+        antData.animationFrame =
+          (antData.animationFrame + 1) % SPRITE_CONFIGS.WORKER_ANT.frameCount;
+        const frameName = `ant-${antData.direction}-${antData.animationFrame}`;
+        antData.sprite.texture = workerAntAssets.textures[frameName];
+
+        const scale = SPRITE_CONFIGS.WORKER_ANT.scale;
+        if (antData.direction === "left") {
+          antData.sprite.scale.x = -scale;
+        } else {
+          antData.sprite.scale.x = scale;
+        }
+      }
+
+      // Smoothly move ants
       const { sprite, targetPosition } = antData;
       if (targetPosition) {
         const dx = targetPosition.x - sprite.x;
         const dy = targetPosition.y - sprite.y;
-        sprite.x += dx * ticker.deltaTime * 0.1;
-        sprite.y += dy * ticker.deltaTime * 0.1;
+        sprite.x += dx * 0.1;
+        sprite.y += dy * 0.1;
       }
     }
   });
