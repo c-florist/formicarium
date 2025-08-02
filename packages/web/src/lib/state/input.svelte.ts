@@ -9,7 +9,7 @@ export const userOptions = $state<UserSimulationOptions>({
 });
 
 export const USER_OPTION_LIMITS = {
-  startingAnts: { min: 10, max: 1000 },
-  startingFoodSources: { min: 10, max: 200 },
+  startingAnts: { min: 10, max: 2500 },
+  startingFoodSources: { min: 10, max: 1000 },
   maxFoodSources: { min: 1, max: 1000 },
 };
