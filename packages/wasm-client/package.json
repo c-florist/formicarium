@@ -1,0 +1,10 @@
+{
+  "name": "@formicarium/wasm-client",
+  "version": "1.0.0",
+  "private": true,
+  "main": "pkg/wasm_client.js",
+  "types": "pkg/wasm_client.d.ts",
+  "files": [
+    "pkg"
+  ]
+}
