@@ -87,6 +87,7 @@ export class TiledMapRenderer {
             source: texture.source,
             frame: new Rectangle(x, y, tilewidth, tileheight),
           });
+          tileTexture.source.scaleMode = "nearest";
           this.tilesetTextures.set(globalId, tileTexture);
         }
       } else if (tileset.tiles) {
