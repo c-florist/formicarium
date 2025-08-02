@@ -11,7 +11,6 @@ import {
   calculateIfHiddenInNest,
   calculateMovementDirection,
 } from "$lib/utils/maths";
-import { setupPanning } from "$lib/world/actions";
 import {
   ASSET_ALIASES,
   CURSOR_DEFAULT,
@@ -27,13 +26,13 @@ import { createNestContainer, createStatsBubble } from "$lib/world/render";
 import { type AntSprite, createSpriteWithConfig } from "$lib/world/sprite";
 import { TiledMapRenderer } from "$lib/world/tiled";
 import { Application, Assets, Container, Sprite, Text } from "pixi.js";
-import { AdjustmentFilter } from "pixi-filters";
+import { Viewport } from "pixi-viewport";
 import { onDestroy, onMount } from "svelte";
 
 const app = new Application();
-const viewport = new Container();
 const uiContainer = new Container();
 const worldContainer = new Container();
+let viewport: Viewport;
 
 let canvasContainer: HTMLDivElement;
 let lastSelectedAntId: number | null = null;
@@ -53,42 +52,55 @@ const initialisePixiApp = async () => {
     resolution: window.devicePixelRatio || 1,
   });
   canvasContainer.appendChild(app.canvas);
+};
+
+const initialiseWorld = async () => {
+  // Load and render Tiled map
+  const tiledRenderer = await TiledMapRenderer.fromFile(
+    WORLD_MAP_CONFIG.filePath,
+  );
+  tiledRenderer.loadTilesets();
+  const { background, foreground } = tiledRenderer.renderMap();
+  background.zIndex = LAYER_INDEX.BACKGROUND;
+  foreground.zIndex = LAYER_INDEX.FOREGROUND;
+  worldContainer.addChild(background, foreground);
+
+  // Get the true world dimensions now that the map is loaded
+  const worldDimensions = tiledRenderer.getMapDimensions();
+
+  viewport = new Viewport({
+    screenWidth: canvasContainer.clientWidth,
+    screenHeight: canvasContainer.clientHeight,
+    worldWidth: worldDimensions.width,
+    worldHeight: worldDimensions.height,
+    events: app.renderer.events,
+  });
 
   viewport.addChild(worldContainer);
   worldContainer.sortableChildren = true;
 
   app.stage.addChild(viewport);
   app.stage.addChild(uiContainer);
-  app.stage.cursor = CURSOR_DEFAULT;
-};
 
-const initialiseWorld = async () => {
+  viewport.drag().pinch().wheel().decelerate();
+  viewport.clampZoom({
+    minScale: 1,
+    maxScale: 5,
+  });
+  viewport.clamp({ direction: "all" });
+
+  SimulationService.init({
+    ...userOptions,
+    ...worldDimensions,
+  });
+
   if (!$worldStore) {
-    throw new Error("Tried to initialise world without world store data");
+    throw new Error("World store not initialized after simulation init");
   }
-
-  // Load and render Tiled map
-  const tiledRenderer = await TiledMapRenderer.fromFile(
-    WORLD_MAP_CONFIG.filePath,
-  );
-  tiledRenderer.loadTilesets();
-  const { background, foreground } = tiledRenderer.renderMap(
-    WORLD_MAP_CONFIG.scale,
-  );
-  background.zIndex = LAYER_INDEX.BACKGROUND;
-  foreground.zIndex = LAYER_INDEX.FOREGROUND;
-  worldContainer.addChild(background, foreground);
 
   const nest = await createNestContainer($worldStore.nest);
   nest.zIndex = LAYER_INDEX.STATIC_OBJECTS;
   worldContainer.addChild(nest);
-
-  setupPanning({
-    appStage: app.stage,
-    hitArea: app.screen,
-    viewport: viewport,
-    worldData: $worldStore,
-  });
 
   // Setup animation tickers
   let frameCounter = 0;
@@ -131,14 +143,6 @@ const initialiseWorld = async () => {
 
 onMount(async () => {
   await initialisePixiApp();
-
-  const { clientWidth, clientHeight } = canvasContainer;
-  SimulationService.init({
-    width: clientWidth,
-    height: clientHeight,
-    ...userOptions,
-  });
-
   await initialiseWorld();
   startWorldUpdates();
 });
@@ -236,6 +240,7 @@ $effect(() => {
 
   // --- Food Source Management ---
   const seenFoodSourceIds = new Set(foodSourceSprites.keys());
+  const inverseScale = 1 / viewport.scale.x;
 
   // Update/Create Food Sources
   for (const foodSource of $worldStore.foodSources) {
@@ -251,12 +256,12 @@ $effect(() => {
         foodSourceStats.set(foodSource.id, statsBubble);
       } else {
         statsBubble = createStatsBubble(`Amount: ${foodSource.amount}`);
-        statsBubble.zIndex = LAYER_INDEX.ENTITIES;
         foodSourceStats.set(foodSource.id, statsBubble);
         worldContainer.addChild(statsBubble);
       }
     }
 
+    statsBubble.zIndex = LAYER_INDEX.WORLD_UI;
     statsBubble.getChildAt<Text>(1).text = `Amount: ${foodSource.amount}`;
 
     if (!foodSprite) {
@@ -272,8 +277,11 @@ $effect(() => {
 
     foodSprite.x = foodSource.x;
     foodSprite.y = foodSource.y;
+
     statsBubble.x = foodSprite.x;
-    statsBubble.y = foodSprite.y + SPRITE_CONFIGS.FOOD.statsBubbleYOffset;
+    statsBubble.y =
+      foodSprite.y + SPRITE_CONFIGS.FOOD.statsBubbleYOffset / viewport.scale.y;
+    statsBubble.scale.set(inverseScale);
     statsBubble.visible = uiState.showStatsOverlay;
     foodSprite.alpha = Math.max(
       0.15,

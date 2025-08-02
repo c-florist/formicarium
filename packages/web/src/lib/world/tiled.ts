@@ -106,19 +106,13 @@ export class TiledMapRenderer {
     }
   }
 
-  renderMap(scale: number) {
+  renderMap() {
     const background = new Container();
     const foreground = new Container();
 
     for (const layer of this.map.layers) {
       if (layer.data) {
-        this.renderLayerData(
-          layer.data,
-          layer.width,
-          background,
-          foreground,
-          scale,
-        );
+        this.renderLayerData(layer.data, layer.width, background, foreground);
       }
     }
 
@@ -156,7 +150,6 @@ export class TiledMapRenderer {
     width: number,
     background: Container,
     foreground: Container,
-    scale: number,
   ) {
     for (let i = 0; i < data.length; i++) {
       const rawTileId = data[i];
@@ -172,20 +165,19 @@ export class TiledMapRenderer {
         continue;
       }
 
-      const x = (i % width) * this.map.tilewidth * scale;
-      const y = Math.floor(i / width) * this.map.tileheight * scale;
+      const x = (i % width) * this.map.tilewidth;
+      const y = Math.floor(i / width) * this.map.tileheight;
 
       const sprite = new Sprite(texture);
       sprite.x = x;
       sprite.y = y;
-      sprite.scale.set(scale);
 
       // Apply transformations based on the flags
       if (flippedDiagonally) {
         sprite.anchor.set(0.5);
         sprite.rotation = -Math.PI / 2;
-        sprite.x += this.map.tilewidth * scale * 0.5;
-        sprite.y += this.map.tileheight * scale * 0.5;
+        sprite.x += this.map.tilewidth * 0.5;
+        sprite.y += this.map.tileheight * 0.5;
         if (flippedHorizontally) {
           sprite.scale.y *= -1;
         }
@@ -195,11 +187,11 @@ export class TiledMapRenderer {
       } else {
         if (flippedHorizontally) {
           sprite.scale.x *= -1;
-          sprite.x += this.map.tilewidth * scale;
+          sprite.x += this.map.tilewidth;
         }
         if (flippedVertically) {
           sprite.scale.y *= -1;
-          sprite.y += this.map.tileheight * scale;
+          sprite.y += this.map.tileheight;
         }
       }
 
