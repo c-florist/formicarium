@@ -36,6 +36,7 @@ const uiContainer = new Container();
 const worldContainer = new Container();
 
 let canvasContainer: HTMLDivElement;
+let lastSelectedAntId: number | null = null;
 
 const workerAntAssets = Assets.get(ASSET_ALIASES.WORKER_ANT);
 const foodSourceAssets = Assets.get(FOOD_ASSET_ALIASES);
@@ -47,16 +48,12 @@ const foodSourceStats: Map<number, Container> = new Map();
 const initialisePixiApp = async () => {
   await app.init({
     resizeTo: canvasContainer,
+    autoDensity: true,
+    resolution: window.devicePixelRatio || 1,
   });
   canvasContainer.appendChild(app.canvas);
 
-  const adjustmentFilter = new AdjustmentFilter({
-    gamma: 0.9,
-    saturation: 1.05,
-  });
-
   viewport.addChild(worldContainer);
-  viewport.filters = [adjustmentFilter];
   worldContainer.sortableChildren = true;
 
   app.stage.addChild(viewport);
@@ -156,19 +153,28 @@ $effect(() => {
 
   // Cleanup removed sprites
   for (const [antId, antData] of antSprites) {
-    antData.sprite.tint = 0xffffff;
-
     if (!currentAntIds.has(antId)) {
       worldContainer.removeChild(antData.sprite);
       antSprites.delete(antId);
     }
   }
 
-  if (uiState.selectedAntId !== null) {
-    const antData = antSprites.get(uiState.selectedAntId);
-    if (antData) {
-      antData.sprite.tint = 0x00ffff;
+  if (uiState.selectedAntId !== lastSelectedAntId) {
+    if (lastSelectedAntId !== null) {
+      const lastSelectedAnt = antSprites.get(lastSelectedAntId);
+      if (lastSelectedAnt) {
+        lastSelectedAnt.sprite.tint = 0xffffff;
+      }
     }
+
+    if (uiState.selectedAntId !== null) {
+      const newSelectedAnt = antSprites.get(uiState.selectedAntId);
+      if (newSelectedAnt) {
+        newSelectedAnt.sprite.tint = 0x00ffff;
+      }
+    }
+
+    lastSelectedAntId = uiState.selectedAntId;
   }
 
   for (const [foodSourceId, foodSprite] of foodSourceSprites) {
@@ -243,7 +249,6 @@ $effect(() => {
 
       antData = {
         sprite,
-        previousPosition: { x: ant.x, y: ant.y },
         targetPosition: { x: ant.x, y: ant.y },
         direction: "down",
         animationFrame: Math.floor(
@@ -257,8 +262,8 @@ $effect(() => {
       antData.sprite.alpha =
         ant.state.ticks / CLIENT_CONFIG.ANT_DEATH_ANIMATION_TICKS;
     } else {
-      const deltaX = ant.x - antData.previousPosition.x;
-      const deltaY = ant.y - antData.previousPosition.y;
+      const deltaX = ant.x - antData.targetPosition.x;
+      const deltaY = ant.y - antData.targetPosition.y;
       antData.direction = calculateMovementDirection(deltaX, deltaY);
       antData.targetPosition = { x: ant.x, y: ant.y };
       antData.sprite.alpha = calculateIfHiddenInNest(
@@ -268,8 +273,6 @@ $effect(() => {
         $worldStore.nest.y,
       );
     }
-
-    antData.previousPosition = { x: ant.x, y: ant.y };
   }
 });
 
