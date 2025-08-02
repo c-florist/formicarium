@@ -13,7 +13,7 @@ $: selectedAnt =
 </script>
 
 {#if selectedAnt}
-  <div class="absolute bottom-4 left-4 bg-stone-800/80 text-white p-4 rounded-lg shadow-lg border border-stone-600">
+  <div class="absolute bottom-4 left-4 bg-stone-800/80 text-white p-4 rounded-lg shadow-lg border border-stone-600 z-10">
     <div class="flex flex-row justify-between mb-2 pb-2 border-b border-stone-600">
       <h3 class="text-lg font-bold">Ant #{selectedAnt.id}</h3>
       <button class="text-sm text-stone-400 hover:text-white cursor-pointer" onclick={() => { uiState.selectedAntId = null }}>

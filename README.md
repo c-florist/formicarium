@@ -15,7 +15,6 @@ TODO
 ## Roadmap
 
 ### Core simulation
-- [ ] **Advanced pheromones:** Improve pheromone system to guide ants to specific food sources.
 - [ ] **Diverse ant roles:** Introduce different ant types such as `Queen`, `Worker`, and `Soldier` with unique behaviors.
 - [ ] **Predators & obstacles:** Add predators and environmental obstacles (e.g., boulders) to create a more dynamic simulation.
 - [ ] **Multi-colony support:** Allow multiple ant colonies to coexist and interact within the same world.
@@ -23,7 +22,6 @@ TODO
 
 ### User interface & experience
 - [ ] **Simulation controls:** Implement UI controls to pause, reset, and adjust the simulation speed.
-- [ ] **Interactive world:** Allow users to add new food sources or other elements to the world in real-time.
 - [ ] **Pheromone visualization:** Create a visual representation of pheromone trails.
 
 ## Project history

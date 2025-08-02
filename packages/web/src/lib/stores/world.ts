@@ -1,4 +1,5 @@
 import SimulationService from "$lib/services/simulation";
+import { simulationState } from "$lib/state/simulation.svelte";
 import type { StatsDto, WorldDto } from "@formicarium/domain";
 import { writable } from "svelte/store";
 
@@ -6,7 +7,6 @@ export const worldStore = writable<{ world: WorldDto; stats: StatsDto } | null>(
   null,
 );
 
-const SIMULATION_TICK_RATE = 150; // ms per tick
 let animationFrameId: number | null = null;
 
 export const startWorldUpdates = () => {
@@ -23,12 +23,12 @@ export const startWorldUpdates = () => {
     accumulator += deltaTime;
 
     // Run the simulation logic if enough time has passed
-    while (accumulator >= SIMULATION_TICK_RATE) {
+    while (accumulator >= simulationState.speed) {
       SimulationService.tick();
       const worldData = SimulationService.getWorldData();
       worldStore.set(worldData);
 
-      accumulator -= SIMULATION_TICK_RATE;
+      accumulator -= simulationState.speed;
     }
 
     animationFrameId = requestAnimationFrame(gameLoop);
