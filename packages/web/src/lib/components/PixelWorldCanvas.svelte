@@ -244,8 +244,9 @@ $effect(() => {
     let foodSprite = foodSourceSprites.get(foodSource.id);
 
     if (!statsBubble) {
-      if (statsBubblePool.length > 0) {
-        statsBubble = statsBubblePool.pop()!;
+      const pooledBubble = statsBubblePool.pop();
+      if (pooledBubble) {
+        statsBubble = pooledBubble;
         statsBubble.visible = true;
         foodSourceStats.set(foodSource.id, statsBubble);
       } else {

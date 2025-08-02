@@ -6,15 +6,10 @@ let selectedAnt:
   | { id: number; health: number; state: { type: string } }
   | undefined;
 
-$: {
-  if (uiState.selectedAntId !== null && $worldStore) {
-    selectedAnt = $worldStore.ants.find(
-      (ant) => ant.id === uiState.selectedAntId,
-    );
-  } else {
-    selectedAnt = undefined;
-  }
-}
+$: selectedAnt =
+  uiState.selectedAntId !== null && $worldStore
+    ? $worldStore.ants.find((ant) => ant.id === uiState.selectedAntId)
+    : undefined;
 </script>
 
 {#if selectedAnt}

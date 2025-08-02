@@ -5,25 +5,43 @@ import { writable } from "svelte/store";
 export const worldStore = writable<WorldDto | null>(null);
 export const statsStore = writable<StatsDto | null>(null);
 
-let intervalId: NodeJS.Timeout | null = null;
+const SIMULATION_TICK_RATE = 100; // ms per tick
+let animationFrameId: number | null = null;
 
 export const startWorldUpdates = () => {
-  if (intervalId) {
+  if (animationFrameId) {
     throw new Error("World updates are already running");
   }
 
-  intervalId = setInterval(() => {
-    const worldData = SimulationService.advance();
-    worldStore.set(worldData);
+  let lastUpdateTime = performance.now();
+  let accumulator = 0;
 
-    const statsData = SimulationService.getWorldStatistics();
-    statsStore.set(statsData);
-  }, 100);
+  const gameLoop = (currentTime: number) => {
+    const deltaTime = currentTime - lastUpdateTime;
+    lastUpdateTime = currentTime;
+    accumulator += deltaTime;
+
+    // Run the simulation logic if enough time has passed
+    while (accumulator >= SIMULATION_TICK_RATE) {
+      const worldData = SimulationService.advance();
+      worldStore.set(worldData);
+
+      const statsData = SimulationService.getWorldStatistics();
+      statsStore.set(statsData);
+
+      accumulator -= SIMULATION_TICK_RATE;
+    }
+
+    animationFrameId = requestAnimationFrame(gameLoop);
+  };
+
+  // Start the loop
+  animationFrameId = requestAnimationFrame(gameLoop);
 };
 
 export const stopWorldUpdates = () => {
-  if (intervalId) {
-    clearInterval(intervalId);
-    intervalId = null;
+  if (animationFrameId) {
+    cancelAnimationFrame(animationFrameId);
+    animationFrameId = null;
   }
 };
