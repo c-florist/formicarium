@@ -12,7 +12,7 @@ onMount(async () => {
   // Show connecting screen for fun
   setTimeout(() => {
     isLoading = false;
-  }, 2000);
+  }, 1000);
 });
 </script>
 

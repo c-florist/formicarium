@@ -41,6 +41,14 @@ class SimulationService {
 
     return this.wasmSimulation.get_world_state();
   };
+
+  destroy = () => {
+    if (!this.wasmSimulation) {
+      return;
+    }
+    this.wasmSimulation.free();
+    this.wasmSimulation = null;
+  };
 }
 
 export default new SimulationService();

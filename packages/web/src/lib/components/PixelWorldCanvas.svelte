@@ -309,6 +309,7 @@ $effect(() => {
 
 onDestroy(() => {
   stopWorldUpdates();
+  SimulationService.destroy();
   if (app.canvas) {
     app.destroy(true);
   }

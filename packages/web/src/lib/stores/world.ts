@@ -43,5 +43,7 @@ export const stopWorldUpdates = () => {
   if (animationFrameId) {
     cancelAnimationFrame(animationFrameId);
     animationFrameId = null;
+    worldStore.set(null);
+    statsStore.set(null);
   }
 };
