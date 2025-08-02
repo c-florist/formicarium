@@ -6,7 +6,7 @@ export const worldStore = writable<{ world: WorldDto; stats: StatsDto } | null>(
   null,
 );
 
-const SIMULATION_TICK_RATE = 100; // ms per tick
+const SIMULATION_TICK_RATE = 150; // ms per tick
 let animationFrameId: number | null = null;
 
 export const startWorldUpdates = () => {

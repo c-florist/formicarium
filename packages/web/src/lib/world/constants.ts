@@ -3,11 +3,11 @@ export const SPRITE_CONFIGS = {
     scale: 0.7,
     anchor: { x: 0.5, y: 0 },
     frameCount: 4,
-    concealedRadius: 60,
+    concealedRadius: 25,
     defaultTextureName: "ant-down-0",
   },
   FOOD: { scale: 1, anchor: { x: 0.5, y: 0 }, statsBubbleYOffset: -12 },
-  NEST: { scale: 1, anchor: { x: 0.5, y: 0.5 } },
+  NEST: { scale: 2, anchor: { x: 0.5, y: 0.5 } },
 } as const;
 
 export const LAYER_INDEX = {
