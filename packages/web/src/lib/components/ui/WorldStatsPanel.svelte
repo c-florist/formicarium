@@ -1,6 +1,6 @@
 <script lang="ts">
 import { uiState } from "$lib/state/ui.svelte";
-import { statsStore } from "$lib/stores/world";
+import { worldStore } from "$lib/stores/world";
 </script>
 
 <div class="absolute top-24 right-4 bg-stone-800/80 text-white p-4 rounded-lg shadow-lg border border-stone-600 w-64">
@@ -10,21 +10,21 @@ import { statsStore } from "$lib/stores/world";
       Close
     </button>
   </div>
-  {#if $statsStore}
+  {#if $worldStore}
     <div class="space-y-2 mb-4">
       <h4 class="text-md font-bold mr-4">
-        Alive ants: <span class="font-normal">{$statsStore.aliveAnts}</span>
+        Alive ants: <span class="font-normal">{$worldStore.stats.aliveAnts}</span>
       </h4>
       <h4 class="text-md font-bold mr-4">
-        Dead ants: <span class="font-normal">{$statsStore.deadAnts}</span>
+        Dead ants: <span class="font-normal">{$worldStore.stats.deadAnts}</span>
       </h4>
     </div>
     <div class="space-y-2">
       <h4 class="text-md font-bold mr-4">
-        Food sources: <span class="font-normal">{$statsStore.foodSourceCount}</span>
+        Food sources: <span class="font-normal">{$worldStore.stats.foodSourceCount}</span>
       </h4>
       <h4 class="text-md font-bold mr-4">
-        Food in nest: <span class="font-normal">{$statsStore.foodInNest}</span>
+        Food in nest: <span class="font-normal">{$worldStore.stats.foodInNest}</span>
       </h4>
     </div>
   {:else}

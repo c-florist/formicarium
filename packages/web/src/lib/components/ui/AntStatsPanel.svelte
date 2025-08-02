@@ -8,7 +8,7 @@ let selectedAnt:
 
 $: selectedAnt =
   uiState.selectedAntId !== null && $worldStore
-    ? $worldStore.ants.find((ant) => ant.id === uiState.selectedAntId)
+    ? $worldStore.world.ants.find((ant) => ant.id === uiState.selectedAntId)
     : undefined;
 </script>
 

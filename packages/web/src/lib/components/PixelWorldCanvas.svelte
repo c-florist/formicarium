@@ -13,7 +13,6 @@ import {
 } from "$lib/utils/maths";
 import {
   ASSET_ALIASES,
-  CURSOR_DEFAULT,
   FOOD_ASSET_ALIASES,
   WORLD_MAP_CONFIG,
 } from "$lib/world/assets";
@@ -98,7 +97,7 @@ const initialiseWorld = async () => {
     throw new Error("World store not initialized after simulation init");
   }
 
-  const nest = await createNestContainer($worldStore.nest);
+  const nest = await createNestContainer($worldStore.world.nest);
   nest.zIndex = LAYER_INDEX.STATIC_OBJECTS;
   worldContainer.addChild(nest);
 
@@ -156,7 +155,7 @@ $effect(() => {
   const seenAntIds = new Set(antSprites.keys());
 
   // Update/Create Ant Sprites
-  for (const ant of $worldStore.ants) {
+  for (const ant of $worldStore.world.ants) {
     seenAntIds.delete(ant.id); // Mark this ant as "seen" for this frame
     let antData = antSprites.get(ant.id);
 
@@ -202,8 +201,8 @@ $effect(() => {
       antData.sprite.alpha = calculateIfHiddenInNest(
         ant.x,
         ant.y,
-        $worldStore.nest.x,
-        $worldStore.nest.y,
+        $worldStore.world.nest.x,
+        $worldStore.world.nest.y,
       );
     }
   }
@@ -243,7 +242,7 @@ $effect(() => {
   const inverseScale = 1 / viewport.scale.x;
 
   // Update/Create Food Sources
-  for (const foodSource of $worldStore.foodSources) {
+  for (const foodSource of $worldStore.world.foodSources) {
     seenFoodSourceIds.delete(foodSource.id); // Mark as seen
     let statsBubble = foodSourceStats.get(foodSource.id);
     let foodSprite = foodSourceSprites.get(foodSource.id);

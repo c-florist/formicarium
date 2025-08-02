@@ -18,28 +18,29 @@ class SimulationService {
   init = (options: SimulationOptions) => {
     this.wasmSimulation = new WasmSimulation(options);
 
-    const initialWorldState = this.wasmSimulation.get_world_state();
-    worldStore.set(initialWorldState);
+    const initialWorldData = this.getWorldData();
+    worldStore.set(initialWorldData);
   };
 
-  getWorldStatistics = (): StatsDto => {
+  getWorldData = (): { world: WorldDto; stats: StatsDto } => {
     if (!this.wasmSimulation) {
       throw new Error(
         "Simulation not initialised before attempting to get world statistics",
       );
     }
-    return this.wasmSimulation.get_world_statistics();
+    return {
+      world: this.wasmSimulation.get_world_state(),
+      stats: this.wasmSimulation.get_world_statistics(),
+    };
   };
 
-  advance = (): WorldDto => {
+  tick = () => {
     if (!this.wasmSimulation) {
       throw new Error(
         "Simulation not initialised before attempting to advance",
       );
     }
     this.wasmSimulation.tick();
-
-    return this.wasmSimulation.get_world_state();
   };
 
   destroy = () => {
