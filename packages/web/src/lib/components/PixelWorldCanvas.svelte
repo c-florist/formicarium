@@ -49,11 +49,14 @@ const initialisePixiApp = async () => {
     resizeTo: canvasContainer,
     autoDensity: true,
     resolution: window.devicePixelRatio || 1,
+    roundPixels: true,
   });
   canvasContainer.appendChild(app.canvas);
 };
 
 const initialiseWorld = async () => {
+  worldContainer.cullable = true;
+
   // Load and render Tiled map
   const tiledRenderer = await TiledMapRenderer.fromFile(
     WORLD_MAP_CONFIG.filePath,
