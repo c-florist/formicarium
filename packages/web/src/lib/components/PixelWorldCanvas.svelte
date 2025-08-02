@@ -147,19 +147,72 @@ $effect(() => {
     return;
   }
 
-  const currentAntIds = new Set($worldStore.ants.map((ant) => ant.id));
-  const currentFoodSourceIds = new Set(
-    $worldStore.foodSources.map((foodSource) => foodSource.id),
-  );
+  // --- Ant Management ---
+  const seenAntIds = new Set(antSprites.keys());
 
-  // Cleanup removed sprites
-  for (const [antId, antData] of antSprites) {
-    if (!currentAntIds.has(antId)) {
+  // Update/Create Ant Sprites
+  for (const ant of $worldStore.ants) {
+    seenAntIds.delete(ant.id); // Mark this ant as "seen" for this frame
+    let antData = antSprites.get(ant.id);
+
+    // If ant doesn't exist, create it
+    if (!antData) {
+      const sprite = createSpriteWithConfig(
+        workerAntAssets.textures[SPRITE_CONFIGS.WORKER_ANT.defaultTextureName],
+        SPRITE_CONFIGS.WORKER_ANT,
+      );
+      sprite.x = ant.x;
+      sprite.y = ant.y;
+      sprite.zIndex = LAYER_INDEX.ENTITIES;
+
+      sprite.eventMode = "static";
+      sprite.on("pointerdown", (e) => {
+        e.stopPropagation();
+        uiState.selectedAntId = ant.id;
+      });
+
+      worldContainer.addChild(sprite);
+
+      antData = {
+        sprite,
+        targetPosition: { x: ant.x, y: ant.y },
+        direction: "down",
+        animationFrame: Math.floor(
+          Math.random() * SPRITE_CONFIGS.WORKER_ANT.frameCount,
+        ),
+      };
+      antSprites.set(ant.id, antData);
+    }
+
+    // Update ant state
+    if (ant.state.type === "dying") {
+      antData.sprite.alpha =
+        ant.state.ticks / CLIENT_CONFIG.ANT_DEATH_ANIMATION_TICKS;
+    } else {
+      const deltaX = ant.x - antData.targetPosition.x;
+      const deltaY = ant.y - antData.targetPosition.y;
+      antData.direction = calculateMovementDirection(deltaX, deltaY);
+      antData.targetPosition = { x: ant.x, y: ant.y };
+      antData.sprite.alpha = calculateIfHiddenInNest(
+        ant.x,
+        ant.y,
+        $worldStore.nest.x,
+        $worldStore.nest.y,
+      );
+    }
+  }
+
+  // Cleanup removed ant sprites
+  for (const antId of seenAntIds) {
+    const antData = antSprites.get(antId);
+    if (antData) {
       worldContainer.removeChild(antData.sprite);
       antSprites.delete(antId);
     }
   }
+  // --- End of Ant Management ---
 
+  // --- Selection Management ---
   if (uiState.selectedAntId !== lastSelectedAntId) {
     if (lastSelectedAntId !== null) {
       const lastSelectedAnt = antSprites.get(lastSelectedAntId);
@@ -177,22 +230,14 @@ $effect(() => {
 
     lastSelectedAntId = uiState.selectedAntId;
   }
+  // --- End of Selection Management ---
 
-  for (const [foodSourceId, foodSprite] of foodSourceSprites) {
-    if (!currentFoodSourceIds.has(foodSourceId)) {
-      worldContainer.removeChild(foodSprite);
-      foodSourceSprites.delete(foodSourceId);
-
-      const statsBubble = foodSourceStats.get(foodSourceId);
-      if (statsBubble) {
-        worldContainer.removeChild(statsBubble);
-        foodSourceStats.delete(foodSourceId);
-      }
-    }
-  }
+  // --- Food Source Management ---
+  const seenFoodSourceIds = new Set(foodSourceSprites.keys());
 
   // Update/Create Food Sources
   for (const foodSource of $worldStore.foodSources) {
+    seenFoodSourceIds.delete(foodSource.id); // Mark as seen
     let statsBubble = foodSourceStats.get(foodSource.id);
     let foodSprite = foodSourceSprites.get(foodSource.id);
 
@@ -227,54 +272,21 @@ $effect(() => {
     );
   }
 
-  // Update/Create Ant Sprites
-  for (const ant of $worldStore.ants) {
-    let antData = antSprites.get(ant.id);
-
-    if (!antData) {
-      const sprite = createSpriteWithConfig(
-        workerAntAssets.textures[SPRITE_CONFIGS.WORKER_ANT.defaultTextureName],
-        SPRITE_CONFIGS.WORKER_ANT,
-      );
-      sprite.x = ant.x;
-      sprite.y = ant.y;
-      sprite.zIndex = LAYER_INDEX.ENTITIES;
-
-      sprite.eventMode = "static";
-      sprite.on("pointerdown", (e) => {
-        e.stopPropagation();
-        uiState.selectedAntId = ant.id;
-      });
-
-      worldContainer.addChild(sprite);
-
-      antData = {
-        sprite,
-        targetPosition: { x: ant.x, y: ant.y },
-        direction: "down",
-        animationFrame: Math.floor(
-          Math.random() * SPRITE_CONFIGS.WORKER_ANT.frameCount,
-        ),
-      };
-      antSprites.set(ant.id, antData);
+  // Cleanup removed food source sprites
+  for (const foodSourceId of seenFoodSourceIds) {
+    const foodSprite = foodSourceSprites.get(foodSourceId);
+    if (foodSprite) {
+      worldContainer.removeChild(foodSprite);
+      foodSourceSprites.delete(foodSourceId);
     }
 
-    if (ant.state.type === "dying") {
-      antData.sprite.alpha =
-        ant.state.ticks / CLIENT_CONFIG.ANT_DEATH_ANIMATION_TICKS;
-    } else {
-      const deltaX = ant.x - antData.targetPosition.x;
-      const deltaY = ant.y - antData.targetPosition.y;
-      antData.direction = calculateMovementDirection(deltaX, deltaY);
-      antData.targetPosition = { x: ant.x, y: ant.y };
-      antData.sprite.alpha = calculateIfHiddenInNest(
-        ant.x,
-        ant.y,
-        $worldStore.nest.x,
-        $worldStore.nest.y,
-      );
+    const statsBubble = foodSourceStats.get(foodSourceId);
+    if (statsBubble) {
+      worldContainer.removeChild(statsBubble);
+      foodSourceStats.delete(foodSourceId);
     }
   }
+  // --- End of Food Source Management ---
 });
 
 onDestroy(() => {
