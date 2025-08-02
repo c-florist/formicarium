@@ -66,7 +66,7 @@ pub struct MovementConfig {
 impl Default for MovementConfig {
     fn default() -> Self {
         Self {
-            wander_probability: 0.05,
+            wander_probability: 0.1,
             speed: 3.0,
         }
     }
